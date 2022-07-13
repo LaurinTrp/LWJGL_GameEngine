@@ -7,15 +7,15 @@ import java.util.ArrayList;
 
 import glm.vec._4.Vec4;
 import gui.Engine_Main;
-import passes.standard.RectanglePass;
-import passes.standard.TrianglePass;
-import passes.texture.TexturePass;
-import passes.transformation.Compass;
-import passes.transformation.Cottage;
-import passes.transformation.LightSourcePass;
-import passes.transformation.MyModel;
-import passes.transformation.TransformationPass;
 import render.model.Model;
+import render.passes.standard.RectanglePass;
+import render.passes.standard.TrianglePass;
+import render.passes.texture.TexturePass;
+import render.passes.transformation.Compass;
+import render.passes.transformation.Cottage;
+import render.passes.transformation.LightSourcePass;
+import render.passes.transformation.MyModel;
+import render.passes.transformation.TransformationPass;
 import utils.loaders.ModelLoader;
 
 public class Renderer {

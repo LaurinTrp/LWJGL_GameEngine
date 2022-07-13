@@ -1,4 +1,4 @@
-package passes.standard;
+package render.passes.standard;
 
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;

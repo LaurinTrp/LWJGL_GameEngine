@@ -1,40 +1,37 @@
-package passes.transformation;
+package render.passes.transformation;
 
 import org.lwjgl.glfw.GLFW;
 
+import glm.vec._4.Vec4;
 import gui.Engine_Main;
 import render.model.Model;
 import render.model.NormalDrawing;
 import utils.loaders.ModelLoader;
 
-public class MyModel extends Model{
+public class Cottage extends Model {
+
+	private final static String model = "/media/laurin/Laurin Festplatte/Blender/Models/Cottage/cottageWithCube.obj";
 	
-	private NormalDrawing normalDrawing;
-	
-	public MyModel() {
-		super(ModelLoader.loadModel("/media/laurin/Laurin Festplatte/Blender/Models/CubeNumbers.obj"));
+	public Cottage() {
+		super(ModelLoader.loadModel(model));
 		initShader("Transformation");
-		getMaterial().setTexture(ModelLoader.loadMaterial("/media/laurin/Laurin Festplatte/Blender/Models/CubeNumbers.obj"));
+		getMaterial().setTexture(ModelLoader.loadMaterial(model));
 		bindModel();
 		
-		normalDrawing = new NormalDrawing(this);
+//		getMaterial().setAmbientColor(new Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		
+		modelMatrix.scale(.2f);
+		
 	}
 	
 	@Override
 	protected void renderProcess() {
 		super.renderProcess();
-
 		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_LEFT)) {
 			modelMatrix.rotateY(Math.toRadians(-1));
 		}
 		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_RIGHT)) {
 			modelMatrix.rotateY(Math.toRadians(1));
-		}	
-	}
-	
-	@Override
-	public void render() {
-		super.render();
-		normalDrawing.render();
+		}
 	}
 }

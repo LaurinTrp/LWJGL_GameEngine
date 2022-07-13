@@ -1,4 +1,4 @@
-package passes.texture;
+package render.passes.texture;
 
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
