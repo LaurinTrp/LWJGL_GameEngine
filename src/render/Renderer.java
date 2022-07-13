@@ -102,7 +102,7 @@ public class Renderer {
 		
 //		compass.render();
 //
-//		lightSourcePass.render();
+		lightSourcePass.render();
 		terrain.render();
 
 	}

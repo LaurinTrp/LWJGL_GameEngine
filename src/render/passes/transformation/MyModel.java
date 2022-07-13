@@ -13,9 +13,8 @@ public class MyModel extends Model{
 	
 	public MyModel() {
 		super(ModelLoader.loadModel("/media/laurin/Laurin Festplatte/Blender/Models/CubeNumbers.obj"));
-		initShader("Transformation");
+		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterial("/media/laurin/Laurin Festplatte/Blender/Models/CubeNumbers.obj"));
-		bindModel();
 		
 		normalDrawing = new NormalDrawing(this);
 	}
@@ -36,5 +35,10 @@ public class MyModel extends Model{
 	public void render() {
 		super.render();
 		normalDrawing.render();
+	}
+
+	@Override
+	public void afterInit() {
+		
 	}
 }

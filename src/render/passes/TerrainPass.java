@@ -22,7 +22,6 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -115,8 +114,6 @@ public class TerrainPass {
 			indicesArray[i] = indices.get(i);
 		}
 
-		System.out.println(Arrays.toString(verticesBuffer));
-
 		this.uvs = new float[uvs.size() * 4];
 		for (int i = 0; i < uvs.size(); i++) {
 			this.uvs[i * 4 + 0] = uvs.get(i).x;
@@ -139,9 +136,6 @@ public class TerrainPass {
 
 	private void initVAOs() {
 
-		// create vertex array
-//		float[] vertices = Shapes.Cube.buffer;
-
 		float[] dataBuffer = ModelUtils.flattenArrays(verticesBuffer, null, uvs, null);
 
 		// create VAO
@@ -163,8 +157,6 @@ public class TerrainPass {
 			glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
 			glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesArray, GL15.GL_STATIC_DRAW);
 
-//			System.out.println(Arrays.toString(indicesArray));
-
 			// define Vertex Attributes
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 4, GL_FLOAT, false, 8 * 4, 0 * 4);
@@ -185,8 +177,6 @@ public class TerrainPass {
 
 	private void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
-//			modelMatrices.get(i).translate(new Vec3(lightsourcePositions.get(i).x, lightsourcePositions.get(i).y, lightsourcePositions.get(i).z));
-//			modelMatrices.get(i).scale(0.2f);
 	}
 
 	private void initShader() {

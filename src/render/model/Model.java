@@ -34,6 +34,8 @@ public class Model {
 
 	private Material material;
 
+	private boolean init = false;
+	
 	private int vao;
 	private int triangles;
 
@@ -48,6 +50,8 @@ public class Model {
 	private float[] vertices;
 	private float[] uvs;
 	private float[] normals;
+	
+	private String shaderFolder;
 
 	public Model(float[] vertices, float[] uvs, float[] normals, int triangles, Material material) {
 		this.triangles = triangles;
@@ -55,14 +59,22 @@ public class Model {
 		this.uvs = uvs;
 		this.normals = normals;
 		this.material = material;
-		initMatrixes();
 	}
+
+	private void init() {
+
+		initShader(shaderFolder);
+		initMatrixes();
+		bindModel();
+		init = true;
+		afterInit();
+	}
+	
+	public void afterInit() {}
 
 	public Model(Model model) {
 		this.material = model.material;
-
 		this.triangles = model.triangles;
-
 		this.program = model.program;
 
 		this.modelMatrix = model.modelMatrix;
@@ -74,12 +86,12 @@ public class Model {
 		this.normals = model.normals;
 
 	}
-
+	
 	private void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
 	}
 
-	public void initShader(String shaderFolder) {
+	private void initShader(String shaderFolder) {
 
 		program = new ShaderProgram(shaderFolder);
 		ModelUtils.createUniform(program, uniforms, "modelMatrix");
@@ -100,7 +112,7 @@ public class Model {
 
 	}
 
-	public void bindModel() {
+	private void bindModel() {
 
 		float[] colors = new float[vertices.length];
 
@@ -173,7 +185,9 @@ public class Model {
 	}
 
 	public void render() {
-
+		if(!init){
+			init();
+		}
 		{
 
 			glUseProgram(program.getProgramID());
@@ -210,6 +224,10 @@ public class Model {
 		return normals;
 	}
 
+	public void setShaderFolder(String shaderFolder) {
+		this.shaderFolder = shaderFolder;
+	}
+	
 	public void dispose() {
 
 		glDeleteVertexArrays(vao);
