@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import glm.vec._4.Vec4;
 import gui.Engine_Main;
 import render.model.Model;
+import render.passes.TerrainPass;
 import render.passes.standard.RectanglePass;
 import render.passes.standard.TrianglePass;
 import render.passes.texture.TexturePass;
@@ -45,6 +46,8 @@ public class Renderer {
 
 	private MousePicker mousePicker;
 	
+	private TerrainPass terrain;
+	
 
 	public Renderer() {
 		
@@ -73,6 +76,8 @@ public class Renderer {
 		compass = new Compass();
 		
 		mousePicker = new MousePicker(camera);
+		
+		terrain = new TerrainPass();
 	}
 
 	public void render() {
@@ -95,9 +100,10 @@ public class Renderer {
 		cottage.render();
 //		model.render();
 		
-		compass.render();
-
-		lightSourcePass.render();
+//		compass.render();
+//
+//		lightSourcePass.render();
+		terrain.render();
 
 	}
 

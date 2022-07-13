@@ -2,13 +2,27 @@ package utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import glm.vec._4.Vec4;
 import shader.ShaderProgram;
 
 public class ModelUtils {
 	public static float[] flattenArrays(float[] vertices, float[] colors, float[] uvs, float[] normals) {
-		float[] output = new float[vertices.length + colors.length + uvs.length + normals.length];
+		int count = 0;
+		if (vertices != null)
+			count += vertices.length;
+		if (colors != null)
+			count += colors.length;
+		if (uvs != null)
+			count += uvs.length;
+		if (normals != null)
+			count += normals.length;
+		float[] output = new float[count];
 		ArrayList<Float> list = new ArrayList<Float>();
 		for (int i = 0; i < vertices.length; i += 4) {
 			if (vertices != null) {
@@ -37,7 +51,7 @@ public class ModelUtils {
 		}
 		return output;
 	}
-	
+
 	public static float[] createNormals(float[] vertices, float[] normals) {
 		float[] output = new float[vertices.length + normals.length];
 		ArrayList<Float> list = new ArrayList<Float>();
@@ -55,7 +69,18 @@ public class ModelUtils {
 		}
 		return output;
 	}
-	
+
+	public static float[] flattenListOfListsStream(ArrayList<ArrayList<Vec4>> arrayList) {
+		List<Vec4> list = arrayList.stream().flatMap(Collection::stream).collect(Collectors.toList());
+		float[] array = new float[list.size() * 4];
+		for (int i = 0; i < list.size(); i++) {
+			array[i * 4 + 0] = list.get(i).x;
+			array[i * 4 + 1] = list.get(i).y;
+			array[i * 4 + 2] = list.get(i).z;
+			array[i * 4 + 3] = list.get(i).w;
+		}
+		return array;
+	}
 
 	public static void createUniform(ShaderProgram program, HashMap<String, Integer> uniforms, String name) {
 		if (program == null) {
@@ -64,5 +89,5 @@ public class ModelUtils {
 		int id = program.getUniformLocation(name);
 		uniforms.put(name, id);
 	}
-	
+
 }

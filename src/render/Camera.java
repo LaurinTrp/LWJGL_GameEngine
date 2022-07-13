@@ -18,7 +18,7 @@ import glm.vec._3.Vec3;
 import gui.Engine_Main;
 
 public class Camera {
-	private Vec3 cameraPosition = new Vec3(0.0f, 0.0f, 3.0f);
+	private Vec3 cameraPosition = new Vec3(0.0f, 2.0f, 3.0f);
 	private Vec3 cameraFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 cameraUp = new Vec3(0.0f, 1.0f, 0.0f);
 	private Vec3 cameraRight = new Vec3(1.0f, 0.0f, 0.0f);
@@ -95,8 +95,8 @@ public class Camera {
 		
 		updateProjectionMatrix();
 		
-		rotationKeys();
-//		rotation();
+//		rotationKeys();
+		rotation();
 		translation();
 		
 		view = Glm.lookAt_(cameraPosition, utils.Glm.add(cameraPosition, cameraFront), cameraUp);
