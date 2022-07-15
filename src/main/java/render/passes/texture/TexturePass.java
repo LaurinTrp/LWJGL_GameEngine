@@ -29,7 +29,6 @@ import org.lwjgl.BufferUtils;
 import glm.glm.mat._4.Mat4;
 import main.java.shader.ShaderProgram;
 import main.java.utils.loaders.ImageLoader;
-import resources.ResourceLoader;
 
 public class TexturePass {
 

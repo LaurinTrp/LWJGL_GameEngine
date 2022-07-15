@@ -3,9 +3,15 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-15">
 		<attributes>
 			<attribute name="module" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" output="target/classes" path="src">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" path="res"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl.jar" sourcepath="/home/laurin/.m2/repository/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-glfw.jar"/>
@@ -32,5 +38,5 @@
 	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-tests.jar"/>
 	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-test-sources.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

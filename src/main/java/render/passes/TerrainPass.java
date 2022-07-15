@@ -33,6 +33,7 @@ import main.java.render.Renderer;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 import main.java.utils.loaders.ImageLoader;
+import main.java.utils.math.ImprovedNoise;
 
 public class TerrainPass {
 
@@ -52,7 +53,8 @@ public class TerrainPass {
 	private float[] verticesBuffer;
 	private float[] uvs;
 	int[] indicesArray;
-	private final int width = 100, height = 100, density = 1;
+	private final int width = 100, height = 100;
+	private final float density = 0.5f;
 
 	private void init() {
 		generateMesh();
@@ -79,7 +81,8 @@ public class TerrainPass {
 			vertexRow.add(new Vec4((width/2), 0, (height/2) - i * density, 1.0f));
 			uvs.add(new Vec4(0%2, i%2, 0.0f, 1.0f));
 			for (int j = 1; j <= width / density; j++) {
-				vertexRow.add(new Vec4((width/2) - j * density, Math.random()-1, (height/2) - i * density, 1.0f));
+//				System.out.println(main.java.utils.Glm.ImprovedNoise.noise(j/10f, 10, i/10f));
+				vertexRow.add(new Vec4((width/2) - j * density, ImprovedNoise.noise(j/10f, 1.0, i/10f), (height/2) - i * density, 1.0f));
 
 				uvs.add(new Vec4(j%2, i%2, 0.0f, 1.0f));
 

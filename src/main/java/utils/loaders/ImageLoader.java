@@ -25,10 +25,7 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
-
-import main.java.gui.Engine_Main;
 import resources.ResourceLoader;
-
 public class ImageLoader {
 	public static int loadTextureFromMemory(String path) throws Exception {
 		int width, height;

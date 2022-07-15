@@ -32,32 +32,32 @@ public class Camera {
 	private final float cameraSpeed = 0.05f;
 
 	public Camera() {
-		view = Glm.lookAt_(cameraPosition, main.java.utils.Glm.add(cameraPosition, cameraFront), cameraUp);
+		view = Glm.lookAt_(cameraPosition, main.java.utils.math.Glm.add(cameraPosition, cameraFront), cameraUp);
 		projectionMatrix = Glm.perspective_(45.0f, (float)Engine_Main.windowWidth/(float)Engine_Main.windowHeight, 0.1f, 100.0f);
 	}
 	
 	private void translation() {
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
-			cameraPosition = main.java.utils.Glm.add(cameraPosition, (main.java.utils.Glm.times(cameraFront, cameraSpeed)));
+			cameraPosition = main.java.utils.math.Glm.add(cameraPosition, (main.java.utils.math.Glm.times(cameraFront, cameraSpeed)));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_S)) {
-			cameraPosition = main.java.utils.Glm.subtract(cameraPosition, (main.java.utils.Glm.times(cameraFront, cameraSpeed)));
+			cameraPosition = main.java.utils.math.Glm.subtract(cameraPosition, (main.java.utils.math.Glm.times(cameraFront, cameraSpeed)));
 		}
 
-		cameraRight = main.java.utils.Glm.cross(cameraFront, cameraUp);
+		cameraRight = main.java.utils.math.Glm.cross(cameraFront, cameraUp);
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_A)) {
-			cameraPosition = main.java.utils.Glm.subtract(cameraPosition, (main.java.utils.Glm.times(cameraRight, cameraSpeed)));
+			cameraPosition = main.java.utils.math.Glm.subtract(cameraPosition, (main.java.utils.math.Glm.times(cameraRight, cameraSpeed)));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_D)) {
-			cameraPosition = main.java.utils.Glm.add(cameraPosition, (main.java.utils.Glm.times(cameraRight, cameraSpeed)));
+			cameraPosition = main.java.utils.math.Glm.add(cameraPosition, (main.java.utils.math.Glm.times(cameraRight, cameraSpeed)));
 		}
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_Q)) {
-			cameraPosition = main.java.utils.Glm.add(cameraPosition, (main.java.utils.Glm.times(cameraUp, cameraSpeed)));
+			cameraPosition = main.java.utils.math.Glm.add(cameraPosition, (main.java.utils.math.Glm.times(cameraUp, cameraSpeed)));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_X)) {
-			cameraPosition = main.java.utils.Glm.subtract(cameraPosition, (main.java.utils.Glm.times(cameraUp, cameraSpeed)));
+			cameraPosition = main.java.utils.math.Glm.subtract(cameraPosition, (main.java.utils.math.Glm.times(cameraUp, cameraSpeed)));
 		}
 	}
 	
@@ -97,7 +97,7 @@ public class Camera {
 		rotation();
 		translation();
 		
-		view = Glm.lookAt_(cameraPosition, main.java.utils.Glm.add(cameraPosition, cameraFront), cameraUp);
+		view = Glm.lookAt_(cameraPosition, main.java.utils.math.Glm.add(cameraPosition, cameraFront), cameraUp);
 	}
 	
 	private void updateProjectionMatrix() {
