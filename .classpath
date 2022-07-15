@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-15">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="res"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl.jar" sourcepath="/home/laurin/.m2/repository/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-glfw.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-glfw-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-glfw-natives-linux.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-glfw-sources.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-opengl.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-opengles.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-opengles-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-opengles-natives-linux.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-opengles-sources.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-opengl-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-opengl-natives-linux.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-opengl-sources.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-natives-linux.jar"/>
+	<classpathentry kind="lib" path="lib/math/GLM.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-stb.jar" sourcepath="/home/laurin/.m2/repository/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-stb-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-stb-natives-linux.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-stb-sources.jar"/>
+	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0.jar"/>
+	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-tests.jar"/>
+	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-test-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
