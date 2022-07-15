@@ -28,6 +28,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
 
 import glm.glm.mat._4.Mat4;
+import glm.glm.vec._3.Vec3;
 import glm.glm.vec._4.Vec4;
 import main.java.render.Renderer;
 import main.java.shader.ShaderProgram;
@@ -53,8 +54,8 @@ public class TerrainPass {
 	private float[] verticesBuffer;
 	private float[] uvs;
 	int[] indicesArray;
-	private final int width = 100, height = 100;
-	private final float density = 0.5f;
+	private final int width = 20, height = 20;
+	private final float density = 0.1f;
 
 	private void init() {
 		generateMesh();
@@ -81,8 +82,9 @@ public class TerrainPass {
 			vertexRow.add(new Vec4((width/2), 0, (height/2) - i * density, 1.0f));
 			uvs.add(new Vec4(0%2, i%2, 0.0f, 1.0f));
 			for (int j = 1; j <= width / density; j++) {
-//				System.out.println(main.java.utils.Glm.ImprovedNoise.noise(j/10f, 10, i/10f));
-				vertexRow.add(new Vec4((width/2) - j * density, ImprovedNoise.noise(j/10f, 1.0, i/10f), (height/2) - i * density, 1.0f));
+				double noise = ImprovedNoise.noise(j/15f, 1.0, i/15f);
+				
+				vertexRow.add(new Vec4((width/2) - j * density, noise, (height/2) - i * density, 1.0f));
 
 				uvs.add(new Vec4(j%2, i%2, 0.0f, 1.0f));
 
@@ -182,6 +184,7 @@ public class TerrainPass {
 
 	private void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
+//		modelMatrix = modelMatrix.scale(new Vec3(10, 10, 10));
 	}
 
 	private void initShader() {

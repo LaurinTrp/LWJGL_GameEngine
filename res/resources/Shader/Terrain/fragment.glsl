@@ -62,12 +62,17 @@ Light calculateLight(){
 	}
 	return light;
 }
-
 void main()
 {
-	norm = normalize(normal);
-	Light light = calculateLight();
-	vec4 texColor = texture(tex, uvCoord.xy);
-	fragColor = texColor * (light.ambient + light.diffuse + light.specular);
+//	norm = normalize(normal);
+//	Light light = calculateLight();
+//	vec4 texColor = texture(tex, uvCoord.xy);
+//	fragColor = texColor * (light.ambient + light.diffuse + light.specular);
+//	if(fragPos.y > 0){
+//		fragColor = vec4(0.0, 0.5, 0.0, 1.0);
+//	}else{
+//		fragColor = vec4(0.8, 0.5, 0.0, 1.0);
+//	}
+	fragColor = color;
 }
 
