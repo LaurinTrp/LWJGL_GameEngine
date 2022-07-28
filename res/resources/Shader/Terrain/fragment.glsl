@@ -11,6 +11,7 @@ vec4 lightColor = vec4(0.6, 0.6, 0.5, 1.0);
 out vec4 fragColor;
 
 uniform vec4 cameraPos;
+uniform float valueForIntersect;
 
 vec4 norm = vec4(1.0);
 vec4 lightDir = vec4(1.0);
@@ -64,14 +65,20 @@ Light calculateLight(){
 }
 void main()
 {
-//	norm = normalize(normal);
-//	Light light = calculateLight();
+	norm = normalize(normal);
+	Light light = calculateLight();
 //	vec4 texColor = texture(tex, uvCoord.xy);
 //	fragColor = texColor * (light.ambient + light.diffuse + light.specular);
 //	if(fragPos.y > 0){
 //		fragColor = vec4(0.0, 0.5, 0.0, 1.0);
 //	}else{
 //		fragColor = vec4(0.8, 0.5, 0.0, 1.0);
+//	}
+
+//	if(fragPos.y < valueForIntersect){
+//		fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+//	}else{
+//		fragColor = vec4(0.0, 1.0, 0.0, 1.0);
 //	}
 	fragColor = color;
 }

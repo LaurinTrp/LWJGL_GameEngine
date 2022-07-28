@@ -11,9 +11,9 @@ public class Cottage extends Model {
 	private final static String model = "/media/laurin/Laurin Festplatte/Blender/Models/Cottage/cottageWithCube.obj";
 	
 	public Cottage() {
-		super(ModelLoader.loadModel(model));
+		super(ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
 		setShaderFolder("Transformation");
-		getMaterial().setTexture(ModelLoader.loadMaterial(model));
+		getMaterial().setTexture(ModelLoader.loadMaterialFromResource("Cottage", "cottage.mtl"));
 		
 	}
 	

@@ -26,7 +26,6 @@ public class ResourceLoader {
 	static ResourceLoader rl = new ResourceLoader();
 
 	public static Image loadImage(String imageName) {
-		System.out.println(rl.getClass().getResource("images/" + imageName));
 		return Toolkit.getDefaultToolkit().getImage(rl.getClass().getResource("images/" + imageName));
 	}
 
@@ -53,15 +52,35 @@ public class ResourceLoader {
 			e.printStackTrace();
 			return null;
 		}
-//		try {
-//			URL url = rl.getClass().getResource("Textures/" + fileName);
-//			URI uri = url.toURI();
-//			File file = new File(uri);
-//			return file;
-//		} catch (URISyntaxException e) {
-//			e.printStackTrace();
-//			return null;
-//		}
+	}
+	
+	public static ArrayList<String> loadObjFile(String parentFolder, String fileName){
+		InputStream modelFile = ResourceLoader.class.getResourceAsStream("Models/" + parentFolder + "/" + fileName);
+		try {
+			String content = new String(modelFile.readAllBytes());
+			ArrayList<String> list = new ArrayList<>();
+			for (String line : content.split("\n")) {
+				list.add(line);
+			}
+			return list;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public static ArrayList<String> loadMaterialFile(String parentFolder, String fileName){
+		InputStream modelFile = ResourceLoader.class.getResourceAsStream("Models/" + parentFolder + "/" + fileName);
+		try {
+			String content = new String(modelFile.readAllBytes());
+			ArrayList<String> list = new ArrayList<>();
+			for (String line : content.split("\n")) {
+				list.add(line);
+			}
+			return list;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static void main(String[] args) {

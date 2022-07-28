@@ -16,6 +16,7 @@ import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
@@ -55,7 +56,7 @@ public class TerrainPass {
 	private float[] uvs;
 	int[] indicesArray;
 	private final int width = 20, height = 20;
-	private final float density = 0.1f;
+	private final float density = 0.5f;
 
 	private void init() {
 		generateMesh();
@@ -83,7 +84,7 @@ public class TerrainPass {
 			uvs.add(new Vec4(0%2, i%2, 0.0f, 1.0f));
 			for (int j = 1; j <= width / density; j++) {
 				double noise = ImprovedNoise.noise(j/15f, 1.0, i/15f);
-				
+//				noise = 0;
 				vertexRow.add(new Vec4((width/2) - j * density, noise, (height/2) - i * density, 1.0f));
 
 				uvs.add(new Vec4(j%2, i%2, 0.0f, 1.0f));
@@ -196,7 +197,7 @@ public class TerrainPass {
 		lightPosID = glGetUniformLocation(program.getProgramID(), "lightPos");
 	}
 
-
+	int angle = 0;
 	public void render() {
 
 		if (!init) {
@@ -221,13 +222,12 @@ public class TerrainPass {
 //					glUniform1f(xID, Math.sin(Math.toRadians(x)));
 
 					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
+					
+					glUniform1f(program.getUniformLocation("valueForIntersect"), (float)Math.sin(Math.toRadians((angle++)%360) * 0.5 + 0.5));
 //						glUniform4fv(lightPosID, lightsourcePositions.get(i).toFA_());
 
-//						glDrawArrays(GL_TRIANGLES, 0, Shapes.Cube.triangleCount);	
 //						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-//						glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
 					GL15.glDrawElements(GL_TRIANGLES, indicesArray.length, GL11.GL_UNSIGNED_INT, 0);
-//						glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 //						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 
 				}
