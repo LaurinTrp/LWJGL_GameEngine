@@ -36,6 +36,7 @@ import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.math.ImprovedNoise;
+import main.java.utils.math.SimplexNoise;
 
 public class TerrainPass {
 
@@ -83,7 +84,7 @@ public class TerrainPass {
 			vertexRow.add(new Vec4((width/2), 0, (height/2) - i * density, 1.0f));
 			uvs.add(new Vec4(0%2, i%2, 0.0f, 1.0f));
 			for (int j = 1; j <= width / density; j++) {
-				double noise = ImprovedNoise.noise(j/15f, 1.0, i/15f);
+				double noise = SimplexNoise.noise(i/15f, j/15f);
 //				noise = 0;
 				vertexRow.add(new Vec4((width/2) - j * density, noise, (height/2) - i * density, 1.0f));
 
