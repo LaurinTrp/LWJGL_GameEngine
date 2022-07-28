@@ -108,7 +108,7 @@ public class TerrainPass {
 			uvs.add(new Vec4(0 % 2, i % 2, 0.0f, 1.0f));
 
 			for (int j = 1; j <= width / density; j++) {
-				double noise = SimplexNoise.noise(i, j);
+				double noise = SimplexNoise.noise(i / 15f, j / 15f);
 				
 				vertexRow.add(new Vec4((width / 2) - j * density, noise, (height / 2) - i * density, 1.0f));
 
@@ -344,13 +344,8 @@ public class TerrainPass {
 					glUniformMatrix4fv(viewID, false, Renderer.camera.getView().toFa_());
 					glUniformMatrix4fv(projID, false, Renderer.camera.getProjectionMatrix().toFa_());
 
-//					lightPosition.set(Math.sin(Math.toRadians(x)), lightPosition.y, lightPosition.z, lightPosition.w);
-//					glUniform1f(xID, Math.sin(Math.toRadians(x)));
-
 					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
 
-					glUniform1f(program.getUniformLocation("valueForIntersect"),
-							(float) Math.sin(Math.toRadians((angle++) % 360) * 0.5 + 0.5));
 //						glUniform4fv(lightPosID, lightsourcePositions.get(i).toFA_());
 
 //						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
@@ -361,7 +356,7 @@ public class TerrainPass {
 				glBindVertexArray(0);
 			}
 			glUseProgram(0);
-			normalDrawing.render();
+//			normalDrawing.render();
 		}
 	}
 

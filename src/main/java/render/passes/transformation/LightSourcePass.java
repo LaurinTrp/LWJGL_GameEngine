@@ -151,6 +151,9 @@ public class LightSourcePass {
 		this.lightsourcePositions = lightsourcePositions;
 	}
 	
+	public ArrayList<Mat4> getModelMatrices() {
+		return modelMatrices;
+	}
 	
 //	public Vec4 getLightPosition() {
 //		return lightPosition;

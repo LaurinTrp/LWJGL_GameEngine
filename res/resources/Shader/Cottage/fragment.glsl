@@ -22,12 +22,10 @@ struct Material {
 	int hasTexture;
 };
 
-float lightIntensity;
-
 out vec4 fragColor;
 
 vec3 calculateLight() {
-	float a = 0.2f, d = 0.3f, s = 0.8f;
+	float a = 0.2, d = 0.3, s = 0.8;
 	//  ---------------------------
 
 	vec3 color = color.rgb;

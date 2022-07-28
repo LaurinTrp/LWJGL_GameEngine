@@ -4,6 +4,11 @@ import static org.lwjgl.opengl.GL30.glDeleteFramebuffers;
 
 import java.util.ArrayList;
 
+import org.lwjgl.glfw.GLFW;
+
+import glm.glm.Glm;
+import glm.glm.mat._4.Mat4;
+import glm.glm.vec._3.Vec3;
 import glm.glm.vec._4.Vec4;
 import main.java.render.passes.TerrainPass;
 import main.java.render.passes.standard.RectanglePass;
@@ -60,6 +65,7 @@ public class Renderer {
 
 		lightSourcePositions.add(new Vec4(1.2f, 1.0f, 2.0f, 1.0f));
 		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
+		lightSourcePositions.add(new Vec4(0f, 10.0f, 0.0f, 1.0f));
 		
 		lightSourcePass = new LightSourcePass();
 
@@ -80,9 +86,10 @@ public class Renderer {
 
 		camera.moveCamera();
 		mousePicker.update();
-//		lightSourcePositions.get(0).add(0.01f);
-		lightSourcePass.setLightsourcePositions(lightSourcePositions);
 
+		terrain.render();
+		lightSourcePass.render();
+		
 //		trianglePass.render();
 //		rectanglePass.render();
 
@@ -94,12 +101,10 @@ public class Renderer {
 //		transformationPass.render();
 
 		cottage.render();
-		model.render();
+//		model.render();
 		
 //		compass.render();
 //
-		lightSourcePass.render();
-//		terrain.render();
 
 	}
 

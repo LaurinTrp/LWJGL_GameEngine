@@ -2,84 +2,66 @@
 
 uniform sampler2D tex;
 
-const int MAX_LIGHTS = 10;
-uniform int numOfLights;
-uniform vec4 lightsources[MAX_LIGHTS];
-
-vec4 lightColor = vec4(0.6, 0.6, 0.5, 1.0);
-
-out vec4 fragColor;
-
 uniform vec4 cameraPos;
-uniform float valueForIntersect;
-
-vec4 norm = vec4(1.0);
-vec4 lightDir = vec4(1.0);
 
 in vec4 fragPos;
 in vec4 color;
 in vec4 uvCoord;
 in vec4 normal;
 
-struct Light{
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-};
+const int MAX_LIGHTS = 10;
+uniform int numOfLights;
+uniform vec4 lightsources[MAX_LIGHTS];
+vec4 lightsource = vec4(1.0);
 
-vec4 calculateAmbient(){
-    float ambientStrength = 1.0;
-    vec4 ambient = ambientStrength * lightColor;
-    return ambient;
+
+out vec4 fragColor;
+
+vec3 calculateLight() {
+	float a = 0.2, d = 0.5, s = 0.8;
+	//  ---------------------------
+
+	vec3 color = color.rgb;
+	color = texture(tex, uvCoord.st).rgb;
+
+	//  vector light to fragment
+	vec3 fragmentToLight = normalize(lightsource.xyz - fragPos.xyz);
+
+	//  ambient ----------------------------------------------------------------
+	vec3 ambientColor = color;
+
+	//  diffuse ----------------------------------------------------------------
+	float diffuse = dot(normalize(normal.xyz), fragmentToLight);
+
+	diffuse = max(diffuse, 0.0f);
+	vec3 diffuseColor = color * diffuse;
+
+	//  specular ---------------------------------------------------------------
+	vec3 reflection = reflect(-fragmentToLight, normalize(normal.xyz));
+	vec3 fragmentTocameraPos = normalize(cameraPos.xyz - fragPos.xyz);
+
+	float specular = dot(reflection, fragmentTocameraPos);
+	specular = max(specular, 0.0f); //  0.0 ... 1.0
+
+	specular = pow(specular, 16.0f);
+
+	vec3 specularColor = color * specular;
+
+	return (ambientColor * a) + (diffuseColor * d) + (specularColor * s);
 }
 
-vec4 calculateDiffuse(){
-	float diff = max(dot(norm, lightDir), 0.0);
-	vec4 diffuse = diff * lightColor;
-	return diffuse;
-}
+void main() {
+	lightsource = vec4(0.0, 10.0, 0.0, 1.0);
 
-vec4 calculateSpecular(){
-	float specularStrength = 0.5;
+	vec3 color = color.rgb;
+	color = texture(tex, uvCoord.st).rgb;
 
-	vec4 viewDir = normalize(cameraPos - fragPos);
-	vec4 reflectDir = reflect(-lightDir, norm);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-	vec4 specular = specularStrength * spec * lightColor;
-
-	return specular;
-}
-
-Light calculateLight(){
-	Light light;
-	light.ambient = calculateAmbient();
-
-	light.diffuse = vec4(0.0);
-	light.specular = vec4(0.0);
-	for(int i = 0; i < numOfLights; i++){
-		lightDir = normalize(lightsources[i] - fragPos);
-		light.diffuse += calculateDiffuse();
-		light.specular += calculateSpecular();
-	}
-	return light;
-}
-void main()
-{
-	norm = normalize(normal);
-	Light light = calculateLight();
-	vec4 texColor = texture(tex, uvCoord.xy);
-//	fragColor = texColor * (light.ambient + light.diffuse + light.specular);
-//	if(fragPos.y > 0){
-//		fragColor = vec4(0.0, 0.5, 0.0, 1.0);
-//	}else{
-//		fragColor = vec4(0.8, 0.5, 0.0, 1.0);
+	vec4 colorWithLight = vec4(0.0);
+//	for (int i = 0; i < numOfLights; i++) {
+//		lightsource = lightsources[i];
+		colorWithLight += vec4(calculateLight(), 1.0);
 //	}
 
-//	if(fragPos.y < valueForIntersect){
-//		fragColor = vec4(1.0, 0.0, 0.0, 1.0);
-//	}else{
-//		fragColor = vec4(0.0, 1.0, 0.0, 1.0);
-//	}
-	fragColor = color * texColor;
+	fragColor = colorWithLight;
 }
 
