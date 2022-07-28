@@ -8,11 +8,9 @@ import main.java.utils.loaders.ModelLoader;
 
 public class Cottage extends Model {
 
-	private final static String model = "/media/laurin/Laurin Festplatte/Blender/Models/Cottage/cottageWithCube.obj";
-	
 	public Cottage() {
 		super(ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
-		setShaderFolder("Transformation");
+		setShaderFolder("Cottage");
 		getMaterial().setTexture(ModelLoader.loadMaterialFromResource("Cottage", "cottage.mtl"));
 		
 	}

@@ -229,6 +229,10 @@ public class Model {
 		this.shaderFolder = shaderFolder;
 	}
 	
+	public ShaderProgram getProgram() {
+		return program;
+	}
+	
 	public void dispose() {
 
 		glDeleteVertexArrays(vao);

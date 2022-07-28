@@ -94,12 +94,12 @@ public class Renderer {
 //		transformationPass.render();
 
 		cottage.render();
-//		model.render();
+		model.render();
 		
 //		compass.render();
 //
 		lightSourcePass.render();
-		terrain.render();
+//		terrain.render();
 
 	}
 

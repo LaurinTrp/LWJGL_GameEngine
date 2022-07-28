@@ -2,10 +2,17 @@
 
 uniform sampler2D tex;
 
+uniform vec4 cameraPos;
+
 in vec4 fragPos;
 in vec4 color;
 in vec4 uvCoord;
 in vec4 normal;
+
+const int MAX_LIGHTS = 10;
+uniform int numOfLights;
+uniform vec4 lightsources[MAX_LIGHTS];
+vec4 lightsource = vec4(1.0);
 
 struct Material {
 	float ambient;
@@ -15,35 +22,56 @@ struct Material {
 	int hasTexture;
 };
 
-vec4 ambientC;
-vec4 diffuseC;
-vec4 specularC;
-
-uniform Material material;
-uniform vec4 cameraPos;
-uniform vec4 ambientColor;
-
-vec4 lightPos;
+float lightIntensity;
 
 out vec4 fragColor;
 
-void setupColors(Material material){
-	ambientC = ambientColor * material.ambient;
-//	diffuceC = diffuseColor * material.diffuse;
-//	specularC = specularColor * material.specular;
+vec3 calculateLight() {
+	float a = 0.2f, d = 0.3f, s = 0.8f;
+	//  ---------------------------
+
+	vec3 color = color.rgb;
+	color = texture(tex, uvCoord.st).rgb;
+
+	//  vector light to fragment
+	vec3 fragmentToLight = normalize(lightsource.xyz - fragPos.xyz);
+
+	//  ambient ----------------------------------------------------------------
+	vec3 ambientColor = color;
+
+	//  diffuse ----------------------------------------------------------------
+	float diffuse = dot(normalize(normal.xyz), fragmentToLight);
+
+	diffuse = max(diffuse, 0.0f);
+	vec3 diffuseColor = color * diffuse;
+
+	//  specular ---------------------------------------------------------------
+	vec3 reflection = reflect(-fragmentToLight, normalize(normal.xyz));
+	vec3 fragmentTocameraPos = normalize(cameraPos.xyz - fragPos.xyz);
+
+	float specular = dot(reflection, fragmentTocameraPos);
+	specular = max(specular, 0.0f); //  0.0 ... 1.0
+
+	specular = pow(specular, 32.0f);
+
+	vec3 specularColor = color * specular;
+
+	return (ambientColor * a) + (diffuseColor * d) + (specularColor * s);
 }
 
 void main() {
-	setupColors(material);
 
-	lightPos = vec4(10.0, 0.0, 10.0, 1.0);
+	lightsource = vec4(0.0, 10.0, 10.0, 1.0);
 
-	vec4 norm = normalize(normal);
-	vec4 lightDir = normalize(lightPos - fragPos);
-	float diff = max(dot(norm, lightDir), 0.0);
-	vec4 diffuse = diff * ambientColor;
+	vec3 color = color.rgb;
+	color = texture(tex, uvCoord.st).rgb;
 
-//	fragColor = texture(tex, uvCoord.xy) * (ambientC + diffuse);
-	fragColor = diffuse;
+	vec4 colorWithLight = vec4(0.0);
+	for(int i = 0; i < numOfLights; i++){
+		lightsource = lightsources[i];
+		colorWithLight += vec4(calculateLight(), 1.0);
+	}
+
+	fragColor = colorWithLight;
 }
 
