@@ -13,7 +13,6 @@ import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1f;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
@@ -43,6 +42,7 @@ import main.java.render.model.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 import main.java.utils.loaders.ImageLoader;
+import main.java.utils.math.MathFunctions;
 import main.java.utils.math.SimplexNoise;
 
 public class TerrainPass {
@@ -54,18 +54,21 @@ public class TerrainPass {
 	private int viewID;
 	private int projID;
 	private int lightPosID;
+	
+	private double minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
 
 	private ShaderProgram program;
 
 	private Mat4 modelMatrix;
 
 	private ArrayList<ArrayList<Vec4>> vertices = new ArrayList<>();
+	private ArrayList<Vec4> normalsList = new ArrayList<>();
 	private float[] verticesBuffer;
 	private float[] uvs;
 	private float[] normals;
 	int[] indicesArray;
 	private final int width = 100, height = 100;
-	private final float density = 1f;
+	private final float density = 0.8f;
 
 	private NormalDrawing normalDrawing;
 
@@ -78,6 +81,13 @@ public class TerrainPass {
 
 		normalDrawing = new NormalDrawing(verticesBuffer, normals, modelMatrix);
 
+		try {
+			ImageIO.write(createHeightMap(), "png", new File("heightMap.png"));
+			ImageIO.write(createNormalMap(), "png", new File("normalMap.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		init = true;
 	}
 
@@ -99,7 +109,6 @@ public class TerrainPass {
 		vertices.clear();
 
 		ArrayList<Vec4> uvs = new ArrayList<>();
-		ArrayList<Vec4> normals = new ArrayList<>();
 
 		for (int i = 0; i <= height / density; i++) {
 			ArrayList<Vec4> vertexRow = new ArrayList<>();
@@ -109,37 +118,27 @@ public class TerrainPass {
 
 			for (int j = 1; j <= width / density; j++) {
 				double noise = SimplexNoise.noise(i / 15f, j / 15f);
-				
+				if(noise < minY) {
+					minY = noise;
+				}
+				if(noise > maxY) {
+					maxY = noise;
+				}
 				vertexRow.add(new Vec4((width / 2) - j * density, noise, (height / 2) - i * density, 1.0f));
 
 				uvs.add(new Vec4(j % 2, i % 2, 0.0f, 1.0f));
 			}
 			vertices.add(vertexRow);
 		}
-		System.out.println(vertices.size());
 		for (int i = 0; i < vertices.size(); i++) {
 			for (int j = 0; j < vertices.get(i).size(); j++) {
 				Triangle t = getTriangle(i, j);
 				Vec4 normal = calculateNormal(t).toVec4_();
-				normals.add(normal);
+				normalsList.add(normal);
 			}
 		}
-		for (int i = normals.size(); i < vertices.size() * vertices.get(0).size(); i++) {
-			normals.add(new Vec4(1.0f));
-		}
-
-		BufferedImage image = new BufferedImage(vertices.size(), vertices.get(0).size(), BufferedImage.TYPE_4BYTE_ABGR);
-		for (int i = 0; i < image.getWidth(); i++) {
-			for (int j = 0; j < image.getHeight(); j++) {
-				Vec4 normal = new Vec4(normals.get(i * image.getWidth() + j)).mul_(0.5f).add_(0.5f);
-				Color color = new Color(normal.x, normal.y, normal.z);
-				image.setRGB(i, j, color.getRGB());
-			}
-		}
-		try {
-			ImageIO.write(image, "png", new File("image.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
+		for (int i = normalsList.size(); i < vertices.size() * vertices.get(0).size(); i++) {
+			normalsList.add(new Vec4(1.0f));
 		}
 
 		verticesBuffer = ModelUtils.flattenListOfListsStream(vertices);
@@ -177,12 +176,12 @@ public class TerrainPass {
 			this.uvs[i * 4 + 3] = uvs.get(i).w;
 		}
 
-		this.normals = new float[normals.size() * 4];
-		for (int i = 0; i < normals.size(); i++) {
-			this.normals[i * 4 + 0] = normals.get(i).x;
-			this.normals[i * 4 + 1] = normals.get(i).y;
-			this.normals[i * 4 + 2] = normals.get(i).z;
-			this.normals[i * 4 + 3] = normals.get(i).w;
+		this.normals = new float[normalsList.size() * 4];
+		for (int i = 0; i < normalsList.size(); i++) {
+			this.normals[i * 4 + 0] = normalsList.get(i).x;
+			this.normals[i * 4 + 1] = normalsList.get(i).y;
+			this.normals[i * 4 + 2] = normalsList.get(i).z;
+			this.normals[i * 4 + 3] = normalsList.get(i).w;
 		}
 
 //		System.out.println(vertices.size() * vertices.get(0).size());
@@ -358,6 +357,30 @@ public class TerrainPass {
 			glUseProgram(0);
 //			normalDrawing.render();
 		}
+	}
+	
+	public BufferedImage createHeightMap() {
+		BufferedImage image = new BufferedImage(vertices.size(), vertices.get(0).size(), BufferedImage.TYPE_4BYTE_ABGR);
+		for (int i = 0; i < image.getWidth(); i++) {
+			for (int j = 0; j < image.getHeight(); j++) {
+				
+				float height = MathFunctions.map(vertices.get(i).get(j).y, (float)minY, (float)maxY, 0.0f, 1.0f);
+				Color color = new Color(height, height, height);
+				image.setRGB(i, j, color.getRGB());
+			}
+		}
+		return image;
+	}
+	public BufferedImage createNormalMap() {
+		BufferedImage image = new BufferedImage(vertices.size(), vertices.get(0).size(), BufferedImage.TYPE_4BYTE_ABGR);
+		for (int i = 0; i < image.getWidth(); i++) {
+			for (int j = 0; j < image.getHeight(); j++) {
+				Vec4 normal = new Vec4(normalsList.get(i * image.getWidth() + j)).mul_(0.5f).add_(0.5f);
+				Color color = new Color(normal.x, normal.y, normal.z);
+				image.setRGB(i, j, color.getRGB());
+			}
+		}
+		return image;
 	}
 
 	public void dispose() {
