@@ -38,20 +38,32 @@ public class NormalDrawing {
 	private Mat4 modelMatrix = new Mat4(1.0f);
 
 	public NormalDrawing(Model model) {
-			this.vertices = model.getVertices();
-			this.normals = model.getNormals();
+		this.vertices = model.getVertices();
+		this.normals = model.getNormals();
 
-			data = ModelUtils.createNormals(vertices, normals);
+		data = ModelUtils.createNormals(vertices, normals);
 
-			this.modelMatrix = model.modelMatrix;
-			
-			bind();
-			initShader();
-		}
+		this.modelMatrix = model.modelMatrix;
+
+		bind();
+		initShader();
+	}
+	
+	public NormalDrawing(float[] vertices, float[] normals, Mat4 modelMatrix) {
+		this.vertices = vertices;
+		this.normals = normals;
+		
+		data = ModelUtils.createNormals(vertices, normals);
+
+		this.modelMatrix = modelMatrix;
+
+		bind();
+		initShader();
+	}
+
 
 	private void bind() {
-		
-		
+
 		vao = glGenVertexArrays();
 
 		vbo = glGenBuffers();
@@ -103,13 +115,13 @@ public class NormalDrawing {
 
 		glDeleteVertexArrays(vao);
 		glDeleteBuffers(vbo);
-		
+
 		if (program != null) {
 			program.dispose();
 		}
 
 		vao = 0;
 		vbo = 0;
-		
+
 	}
 }

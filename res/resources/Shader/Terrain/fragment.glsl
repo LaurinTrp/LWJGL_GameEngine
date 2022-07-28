@@ -67,7 +67,7 @@ void main()
 {
 	norm = normalize(normal);
 	Light light = calculateLight();
-//	vec4 texColor = texture(tex, uvCoord.xy);
+	vec4 texColor = texture(tex, uvCoord.xy);
 //	fragColor = texColor * (light.ambient + light.diffuse + light.specular);
 //	if(fragPos.y > 0){
 //		fragColor = vec4(0.0, 0.5, 0.0, 1.0);
@@ -80,6 +80,6 @@ void main()
 //	}else{
 //		fragColor = vec4(0.0, 1.0, 0.0, 1.0);
 //	}
-	fragColor = color;
+	fragColor = color * texColor;
 }
 

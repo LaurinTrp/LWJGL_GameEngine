@@ -13,29 +13,36 @@ import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
+import static org.lwjgl.opengl.GL20.glUniform1f;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
 
+import glm.glm.Glm;
 import glm.glm.mat._4.Mat4;
 import glm.glm.vec._3.Vec3;
 import glm.glm.vec._4.Vec4;
 import main.java.render.Renderer;
+import main.java.render.model.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 import main.java.utils.loaders.ImageLoader;
-import main.java.utils.math.ImprovedNoise;
 import main.java.utils.math.SimplexNoise;
 
 public class TerrainPass {
@@ -55,9 +62,12 @@ public class TerrainPass {
 	private ArrayList<ArrayList<Vec4>> vertices = new ArrayList<>();
 	private float[] verticesBuffer;
 	private float[] uvs;
+	private float[] normals;
 	int[] indicesArray;
-	private final int width = 20, height = 20;
-	private final float density = 0.5f;
+	private final int width = 100, height = 100;
+	private final float density = 1f;
+
+	private NormalDrawing normalDrawing;
 
 	private void init() {
 		generateMesh();
@@ -65,6 +75,9 @@ public class TerrainPass {
 		initShader();
 		initMatrixes();
 		initTextures();
+
+		normalDrawing = new NormalDrawing(verticesBuffer, normals, modelMatrix);
+
 		init = true;
 	}
 
@@ -72,51 +85,84 @@ public class TerrainPass {
 		int point1;
 		int point2;
 		int point3;
+
+		Vec4 vertex1;
+		Vec4 vertex2;
+		Vec4 vertex3;
+
+		public void print() {
+			System.out.println("TRIANGLE: " + vertex1 + "\t" + vertex2 + "\t" + vertex3);
+		}
 	}
 
 	public void generateMesh() {
 		vertices.clear();
 
 		ArrayList<Vec4> uvs = new ArrayList<>();
+		ArrayList<Vec4> normals = new ArrayList<>();
 
 		for (int i = 0; i <= height / density; i++) {
 			ArrayList<Vec4> vertexRow = new ArrayList<>();
-			vertexRow.add(new Vec4((width/2), 0, (height/2) - i * density, 1.0f));
-			uvs.add(new Vec4(0%2, i%2, 0.0f, 1.0f));
+			vertexRow.add(new Vec4((width / 2), 0, (height / 2) - i * density, 1.0f));
+
+			uvs.add(new Vec4(0 % 2, i % 2, 0.0f, 1.0f));
+
 			for (int j = 1; j <= width / density; j++) {
-				double noise = SimplexNoise.noise(i/15f, j/15f);
-//				noise = 0;
-				vertexRow.add(new Vec4((width/2) - j * density, noise, (height/2) - i * density, 1.0f));
+				double noise = SimplexNoise.noise(i, j);
+				
+				vertexRow.add(new Vec4((width / 2) - j * density, noise, (height / 2) - i * density, 1.0f));
 
-				uvs.add(new Vec4(j%2, i%2, 0.0f, 1.0f));
-
+				uvs.add(new Vec4(j % 2, i % 2, 0.0f, 1.0f));
 			}
 			vertices.add(vertexRow);
 		}
+		System.out.println(vertices.size());
+		for (int i = 0; i < vertices.size(); i++) {
+			for (int j = 0; j < vertices.get(i).size(); j++) {
+				Triangle t = getTriangle(i, j);
+				Vec4 normal = calculateNormal(t).toVec4_();
+				normals.add(normal);
+			}
+		}
+		for (int i = normals.size(); i < vertices.size() * vertices.get(0).size(); i++) {
+			normals.add(new Vec4(1.0f));
+		}
+
+		BufferedImage image = new BufferedImage(vertices.size(), vertices.get(0).size(), BufferedImage.TYPE_4BYTE_ABGR);
+		for (int i = 0; i < image.getWidth(); i++) {
+			for (int j = 0; j < image.getHeight(); j++) {
+				Vec4 normal = new Vec4(normals.get(i * image.getWidth() + j)).mul_(0.5f).add_(0.5f);
+				Color color = new Color(normal.x, normal.y, normal.z);
+				image.setRGB(i, j, color.getRGB());
+			}
+		}
+		try {
+			ImageIO.write(image, "png", new File("image.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		verticesBuffer = ModelUtils.flattenListOfListsStream(vertices);
-
+		ArrayList<Vec4> normalsFromIndices = new ArrayList<>();
 		ArrayList<Integer> indices = new ArrayList<>();
 		for (int i = 0; i < vertices.size() - 1; i++) {
 			for (int j = 0; j < vertices.get(i).size() - 1; j++) {
-				Triangle t = new Triangle();
-				t.point1 = i * vertices.size() + j;
-				t.point2 = i * vertices.size() + j + 1;
-				t.point3 = (i + 1) * vertices.size() + j;
+				Triangle t1 = getTriangle(i, j, true);
+				normalsFromIndices.add(calculateNormal(t1).toVec4_());
 
-				Triangle t2 = new Triangle();
-				t2.point1 = (i + 1) * vertices.size() + j;
-				t2.point2 = i * vertices.size() + j + 1;
-				t2.point3 = (i + 1) * vertices.size() + j + 1;
+				Triangle t2 = getTriangle(i, j, false);
+				normalsFromIndices.add(calculateNormal(t2).toVec4_());
 
-				indices.add(t.point1);
-				indices.add(t.point2);
-				indices.add(t.point3);
+				indices.add(t1.point1);
+				indices.add(t1.point2);
+				indices.add(t1.point3);
 				indices.add(t2.point1);
 				indices.add(t2.point2);
 				indices.add(t2.point3);
 			}
 		}
+
+//		System.out.println(normalsFromIndices.size());
 
 		indicesArray = new int[indices.size()];
 		for (int i = 0; i < indices.size(); i++) {
@@ -131,6 +177,81 @@ public class TerrainPass {
 			this.uvs[i * 4 + 3] = uvs.get(i).w;
 		}
 
+		this.normals = new float[normals.size() * 4];
+		for (int i = 0; i < normals.size(); i++) {
+			this.normals[i * 4 + 0] = normals.get(i).x;
+			this.normals[i * 4 + 1] = normals.get(i).y;
+			this.normals[i * 4 + 2] = normals.get(i).z;
+			this.normals[i * 4 + 3] = normals.get(i).w;
+		}
+
+//		System.out.println(vertices.size() * vertices.get(0).size());
+//		System.out.println(uvs.size());
+//		System.out.println(normals.size());
+
+	}
+
+	private Triangle getTriangle(int i, int j) {
+		Triangle t = new Triangle();
+		if (i < vertices.size() - 1 && j < vertices.get(0).size() - 1) {
+			t.vertex1 = vertices.get(i).get(j);
+			t.vertex2 = vertices.get(i + 1).get(j);
+			t.vertex3 = vertices.get(i).get(j + 1);
+		} else if (i >= vertices.size() - 1 && j < vertices.get(0).size() - 1) {
+			t.vertex1 = vertices.get(i).get(j);
+			t.vertex2 = vertices.get(i - 1).get(j + 1);
+			t.vertex3 = vertices.get(i - 1).get(j);
+		} else if (i < vertices.size() - 1 && j >= vertices.get(0).size() - 1) {
+			t.vertex1 = vertices.get(i).get(j);
+			t.vertex2 = vertices.get(i).get(j - 1);
+			t.vertex3 = vertices.get(i + 1).get(j - 1);
+		} else if (i >= vertices.size() - 1 && j >= vertices.get(0).size() - 1) {
+			t.vertex1 = vertices.get(i).get(j);
+			t.vertex2 = vertices.get(i - 1).get(j);
+			t.vertex3 = vertices.get(i).get(j - 1);
+		}
+		return t;
+	}
+
+	private Triangle getTriangle(int i, int j, boolean upperLeft) {
+		Triangle t = new Triangle();
+		if (upperLeft) {
+			t.point1 = i * vertices.size() + j;
+			t.point2 = i * vertices.size() + j + 1;
+			t.point3 = (i + 1) * vertices.size() + j;
+
+			t.vertex1 = vertices.get(i).get(j);
+			t.vertex2 = vertices.get(i).get(j + 1);
+			t.vertex3 = vertices.get(i + 1).get(j);
+		} else {
+			t.point1 = (i + 1) * vertices.size() + j;
+			t.point2 = i * vertices.size() + j + 1;
+			t.point3 = (i + 1) * vertices.size() + j + 1;
+
+			t.vertex1 = vertices.get(i + 1).get(j);
+			t.vertex2 = vertices.get(i).get(j + 1);
+			t.vertex3 = vertices.get(i + 1).get(j + 1);
+		}
+
+		return t;
+	}
+
+	private Vec3 calculateNormal(Triangle triangle) {
+		Vec3 a = triangle.vertex1.toVec3_();
+		Vec3 b = triangle.vertex2.toVec3_();
+		Vec3 c = triangle.vertex3.toVec3_();
+
+		Vec3 bToA = new Vec3(b).sub(a);
+		Vec3 cToA = new Vec3(c).sub(a);
+
+		Vec3 normal = Glm.cross_(bToA, cToA);
+		if (normal.y < 0) {
+			normal.y *= -1;
+		}
+		if (!(normal.x == 0 && normal.y == 0 && normal.z == 0)) {
+			return normal.normalize();
+		}
+		return normal;
 	}
 
 	private void initTextures() {
@@ -144,8 +265,8 @@ public class TerrainPass {
 	}
 
 	private void initVAOs() {
-
-		float[] dataBuffer = ModelUtils.flattenArrays(verticesBuffer, null, uvs, null);
+//		System.out.println(verticesBuffer.length + "\t" + uvs.length + "\t" + normals.length);
+		float[] dataBuffer = ModelUtils.flattenArrays(verticesBuffer, null, uvs, normals);
 
 		// create VAO
 		IntBuffer buffer = MemoryUtil.memAllocInt(1);
@@ -168,10 +289,13 @@ public class TerrainPass {
 
 			// define Vertex Attributes
 			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 4, GL_FLOAT, false, 8 * 4, 0 * 4);
+			glVertexAttribPointer(0, 4, GL_FLOAT, false, 12 * 4, 0 * 4);
 
 			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 4, GL_FLOAT, false, 8 * 4, 4 * 4);
+			glVertexAttribPointer(1, 4, GL_FLOAT, false, 12 * 4, 4 * 4);
+
+			glEnableVertexAttribArray(3);
+			glVertexAttribPointer(3, 4, GL_FLOAT, false, 12 * 4, 8 * 4);
 
 //			glEnableVertexAttribArray(1);
 //			glVertexAttribPointer(1, 4, GL_FLOAT, false, 12 * 4, 4 * 4);
@@ -199,6 +323,7 @@ public class TerrainPass {
 	}
 
 	int angle = 0;
+
 	public void render() {
 
 		if (!init) {
@@ -223,8 +348,9 @@ public class TerrainPass {
 //					glUniform1f(xID, Math.sin(Math.toRadians(x)));
 
 					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
-					
-					glUniform1f(program.getUniformLocation("valueForIntersect"), (float)Math.sin(Math.toRadians((angle++)%360) * 0.5 + 0.5));
+
+					glUniform1f(program.getUniformLocation("valueForIntersect"),
+							(float) Math.sin(Math.toRadians((angle++) % 360) * 0.5 + 0.5));
 //						glUniform4fv(lightPosID, lightsourcePositions.get(i).toFA_());
 
 //						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
@@ -234,6 +360,8 @@ public class TerrainPass {
 				}
 				glBindVertexArray(0);
 			}
+			glUseProgram(0);
+			normalDrawing.render();
 		}
 	}
 
@@ -250,6 +378,8 @@ public class TerrainPass {
 		vao = 0;
 		vbo = 0;
 		tex = 0;
+
+		normalDrawing.dispose();
 
 		init = false;
 	}
