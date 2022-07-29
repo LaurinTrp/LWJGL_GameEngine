@@ -65,6 +65,10 @@ public class Camera {
 		
 		updateProjectionMatrix();
 		
+		if(distanceFromPlayer <= 10 && distanceFromPlayer >= 2) {
+			distanceFromPlayer = Math.min(10, Math.max(2, distanceFromPlayer - Engine_Main.mouseHandler.getScrollY() * 0.4f));
+		}
+		
 		rotation();
 		
 		view = Glm.lookAt_(cameraPosition, main.java.utils.math.Glm.add(player.getPosition(), cameraFront), cameraUp);

@@ -14,7 +14,7 @@ public class Inputs {
 		
 		private double mouseX, mouseY;
 		
-		private double fov = 45.0f;
+		private float scrollY;
 		
 		GLFWCursorPosCallback cursorPosCallback = new GLFWCursorPosCallback() {
 			@Override
@@ -46,15 +46,7 @@ public class Inputs {
 		GLFWScrollCallback scrollCallback = new GLFWScrollCallback() {
 			@Override
 			public void invoke(long window, double xoffset, double yoffset) {
-				fov -= yoffset;
-				if(fov < 0.1) {
-					fov = 0.1;
-				}
-				if(fov > 45) {
-					fov = 45;
-				}
-//				System.out.println(fov);
-//				System.out.println(yoffset);
+				scrollY = (float) yoffset;
 			}
 		};
 		
@@ -66,9 +58,11 @@ public class Inputs {
 			return yoffset;
 		}
 		
-		public double getFov() {
-			return fov;
-		}
+		public float getScrollY() {
+	        float value = scrollY;
+	        scrollY = 0.0f;
+	        return value;
+	    }
 
 		public GLFWCursorPosCallback getCursorPosCallback() {
 			return cursorPosCallback;

@@ -29,19 +29,19 @@ public class Player extends Model {
 		
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
 //			position = Glm.subtract(cameraRight, cameraFront)
-			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
+			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_S)) {
-			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
+			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
 		}
 
 		cameraRight = main.java.utils.math.Glm.cross(cameraFront, cameraUp);
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_A)) {
-			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraRight, speed)));
+			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraRight, speed)));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_D)) {
-			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraRight, speed)));
+			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraRight, speed)));
 		}
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_Q)) {
