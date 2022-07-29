@@ -1,4 +1,4 @@
-package main.java.render.passes.transformation;
+package main.java.render.passes;
 
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;

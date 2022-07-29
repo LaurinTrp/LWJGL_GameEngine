@@ -4,19 +4,15 @@ import static org.lwjgl.opengl.GL30.glDeleteFramebuffers;
 
 import java.util.ArrayList;
 
-import org.lwjgl.glfw.GLFW;
-
-import glm.glm.Glm;
-import glm.glm.mat._4.Mat4;
-import glm.glm.vec._3.Vec3;
 import glm.glm.vec._4.Vec4;
+import main.java.render.passes.Cottage;
+import main.java.render.passes.LightSourcePass;
+import main.java.render.passes.Player;
 import main.java.render.passes.TerrainPass;
 import main.java.render.passes.standard.RectanglePass;
 import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.texture.TexturePass;
 import main.java.render.passes.transformation.Compass;
-import main.java.render.passes.transformation.Cottage;
-import main.java.render.passes.transformation.LightSourcePass;
 import main.java.render.passes.transformation.MyModel;
 import main.java.render.passes.transformation.TransformationPass;
 
@@ -49,12 +45,13 @@ public class Renderer {
 	
 	private TerrainPass terrain;
 	
+	private Player player;
+	
 
 	public Renderer() {
 		
 		ambientColor = new Vec4(1.0f);
 
-		camera = new Camera();
 
 		trianglePass = new TrianglePass();
 
@@ -77,15 +74,17 @@ public class Renderer {
 		
 		compass = new Compass();
 		
-		mousePicker = new MousePicker(camera);
+		player = new Player();
+		
 		
 		terrain = new TerrainPass();
+
+		camera = new Camera(player);
+		mousePicker = new MousePicker(camera);
 	}
 
 	public void render() {
 
-		camera.moveCamera();
-		mousePicker.update();
 
 		terrain.render();
 		lightSourcePass.render();
@@ -101,6 +100,12 @@ public class Renderer {
 //		transformationPass.render();
 
 		cottage.render();
+		
+		player.render();
+
+		camera.moveCamera();
+		mousePicker.update();
+		
 //		model.render();
 		
 //		compass.render();
@@ -120,6 +125,8 @@ public class Renderer {
 
 		cottage.dispose();
 		model.dispose();
+		
+		player.dispose();
 		
 		compass.dispose();
 	}

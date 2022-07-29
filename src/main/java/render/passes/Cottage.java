@@ -1,4 +1,4 @@
-package main.java.render.passes.transformation;
+package main.java.render.passes;
 
 import org.lwjgl.glfw.GLFW;
 

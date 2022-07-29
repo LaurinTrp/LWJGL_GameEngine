@@ -24,7 +24,7 @@ public class MousePicker {
 	public void update() {
 		this.viewMatrix = new Mat4(camera.getView());
 		currentRay = calculateMouseRay();
-		System.err.println(currentRay);
+//		System.err.println(currentRay);
 	}
 	
 	private Vec4 calculateMouseRay() {
