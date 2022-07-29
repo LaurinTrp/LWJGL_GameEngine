@@ -6,6 +6,7 @@ import glm.glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ModelLoader;
+import main.java.utils.math.Glm;
 
 public class Player extends Model {
 
@@ -17,9 +18,9 @@ public class Player extends Model {
 	private Vec3 cameraRight = new Vec3(1.0f, 0.0f, 0.0f);
 	
 	public Player() {
-		super(ModelLoader.loadModelFromResource("Cube", "cube.obj"));
+		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
 		setShaderFolder("Transformation");
-		getMaterial().setTexture(ModelLoader.loadMaterialFromResource("Cube", "cube.mtl"));
+		getMaterial().setTexture(ModelLoader.loadMaterialFromResource("AmongUs", "AmongUs.mtl"));
 	}
 	
 	@Override
@@ -27,19 +28,20 @@ public class Player extends Model {
 		super.renderProcess();
 		
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
-			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
+//			position = Glm.subtract(cameraRight, cameraFront)
+			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_S)) {
-			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
+			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
 		}
 
 		cameraRight = main.java.utils.math.Glm.cross(cameraFront, cameraUp);
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_A)) {
-			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraRight, speed)));
+			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraRight, speed)));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_D)) {
-			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraRight, speed)));
+			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraRight, speed)));
 		}
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_Q)) {
@@ -50,7 +52,7 @@ public class Player extends Model {
 		}
 		
 		modelMatrix.cleanTranslation();
-		modelMatrix.translate(position);
+		modelMatrix.translate(new Vec3(position).div(0.01f));
 	}
 
 	@Override
@@ -58,6 +60,7 @@ public class Player extends Model {
 		super.afterInit();
 
 		position = new Vec3(0f, 5f, 0f);
+		modelMatrix.scale(0.01f);
 		modelMatrix.translate(position);
 	}
 	
