@@ -35,6 +35,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import glm.glm.Glm;
 import glm.glm.mat._4.Mat4;
+import glm.glm.vec._2.Vec2;
 import glm.glm.vec._3.Vec3;
 import glm.glm.vec._4.Vec4;
 import main.java.render.Renderer;
@@ -68,7 +69,9 @@ public class TerrainPass {
 	private float[] normals;
 	int[] indicesArray;
 	private final int width = 100, height = 100;
-	private final float density = 0.8f;
+	private final float density = 0.5f;
+	
+	private float startX, startZ;
 
 	private NormalDrawing normalDrawing;
 
@@ -82,8 +85,8 @@ public class TerrainPass {
 		normalDrawing = new NormalDrawing(verticesBuffer, normals, modelMatrix);
 
 		try {
-			ImageIO.write(createHeightMap(), "png", new File("heightMap.png"));
-			ImageIO.write(createNormalMap(), "png", new File("normalMap.png"));
+			ImageIO.write(createHeightMap(), "png", new File("imageOutputs/heightMap.png"));
+			ImageIO.write(createNormalMap(), "png", new File("imageOutputs/normalMap.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -109,10 +112,13 @@ public class TerrainPass {
 		vertices.clear();
 
 		ArrayList<Vec4> uvs = new ArrayList<>();
+		
+		startX = -width/2;
+		startZ = -height/2;
 
 		for (int i = 0; i <= height / density; i++) {
 			ArrayList<Vec4> vertexRow = new ArrayList<>();
-			vertexRow.add(new Vec4((width / 2), 0, (height / 2) - i * density, 1.0f));
+			vertexRow.add(new Vec4((-width / 2), 0, (-height / 2) + i * density, 1.0f));
 
 			uvs.add(new Vec4(0 % 2, i % 2, 0.0f, 1.0f));
 
@@ -124,7 +130,7 @@ public class TerrainPass {
 				if(noise > maxY) {
 					maxY = noise;
 				}
-				vertexRow.add(new Vec4((width / 2) - j * density, noise, (height / 2) - i * density, 1.0f));
+				vertexRow.add(new Vec4((-width / 2) + j * density, noise, (-height / 2) + i * density, 1.0f));
 
 				uvs.add(new Vec4(j % 2, i % 2, 0.0f, 1.0f));
 			}
@@ -381,6 +387,47 @@ public class TerrainPass {
 			}
 		}
 		return image;
+	}
+	
+	public float heightAtPosition(Vec3 position) {
+		float xPositionOnTerrain = position.x - getStartX();
+		int xGridPosition = (int) Math.floor(xPositionOnTerrain / getDensity());
+		float zPositionOnTerrain = position.z - getStartZ();
+		int zGridPosition = (int) Math.floor(zPositionOnTerrain / getDensity());
+		
+		float xCoord = (xPositionOnTerrain%getDensity()) / getDensity();
+		float zCoord = (zPositionOnTerrain%getDensity()) / getDensity();
+		float currentTerrainHeight = 0;
+		if (xCoord <= (1-zCoord)) {
+			currentTerrainHeight = MathFunctions.barryCentric(new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition).y, 0),
+					new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition).y, 0), 
+					new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1), new Vec2(xCoord, zCoord));
+		} else {
+			currentTerrainHeight = MathFunctions.barryCentric(new Vec3(1, getVertices().get(zGridPosition+1).get(xGridPosition).y, 0), 
+					new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition + 1).y, 1), 
+					new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1), new Vec2(xCoord, zCoord));
+		}
+		return currentTerrainHeight;
+	}
+	
+	public ArrayList<ArrayList<Vec4>> getVertices() {
+		return vertices;
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+	public int getHeight() {
+		return height;
+	}
+	public float getDensity() {
+		return density;
+	}
+	public float getStartX() {
+		return startX;
+	}
+	public float getStartZ() {
+		return startZ;
 	}
 
 	public void dispose() {

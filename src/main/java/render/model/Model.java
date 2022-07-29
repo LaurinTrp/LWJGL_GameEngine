@@ -206,7 +206,7 @@ public class Model {
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
 	
-	private void updateMinmax() {
+	protected void updateMinmax() {
 		translation = new Vec4(modelMatrix.mul(new Vec4(0.0f, 0.0f, 0.0f, 1.0f)));
 		minmax[0] = (startMinmax[0]*scale) + translation.x;
 		minmax[1] = (startMinmax[1]*scale) + translation.x;
@@ -229,8 +229,8 @@ public class Model {
 				}
 				glBindVertexArray(vao);
 				{
-					renderProcess();
 					updateMinmax();
+					renderProcess();
 					
 					uploadMaterial();
 					uploadLighting();

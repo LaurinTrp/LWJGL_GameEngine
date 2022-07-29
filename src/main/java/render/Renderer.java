@@ -43,7 +43,7 @@ public class Renderer {
 
 	private MousePicker mousePicker;
 	
-	private TerrainPass terrain;
+	public static TerrainPass terrain;
 	
 	private Player player;
 	
