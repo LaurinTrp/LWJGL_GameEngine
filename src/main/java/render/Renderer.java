@@ -65,7 +65,6 @@ public class Renderer {
 		lightSourcePositions.add(new Vec4(0f, 10.0f, 0.0f, 1.0f));
 		
 		lightSourcePass = new LightSourcePass();
-
 		lightSourcePass.setLightsourcePositions(lightSourcePositions);
 		
 
@@ -87,7 +86,7 @@ public class Renderer {
 
 
 		terrain.render();
-		lightSourcePass.render();
+//		lightSourcePass.render();
 		
 //		trianglePass.render();
 //		rectanglePass.render();
@@ -99,12 +98,12 @@ public class Renderer {
 //		compass.render();
 //		transformationPass.render();
 
-		cottage.render();
+//		cottage.render();
 		
 		player.render();
 
 		camera.moveCamera();
-		mousePicker.update();
+//		mousePicker.update();
 		
 //		model.render();
 		

@@ -23,6 +23,7 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import glm.glm.mat._4.Mat4;
@@ -52,20 +53,47 @@ public class Model {
 	private float[] uvs;
 	private float[] normals;
 	
+	// min x, max x, min y, max y, min z, max z
+	protected float[] startMinmax = new float[6];
+	protected float[] minmax = new float[6];
+	
+	private float scale = 1.0f;
+	
 	private String shaderFolder;
 	
 	private NormalDrawing normalDrawing;
 	
 	private boolean showNormals;
+	
+	private Vec4 translation;
 
-	public Model(float[] vertices, float[] uvs, float[] normals, int triangles, Material material) {
+	public Model(float[] vertices, float[] uvs, float[] normals, int triangles, Material material, float[] minmax) {
 		this.triangles = triangles;
 		this.vertices = vertices;
 		this.uvs = uvs;
 		this.normals = normals;
 		this.material = material;
+//		this.minmax = minmax;
+		this.startMinmax = minmax;
 	}
 
+	public Model(Model model) {
+		this.material = model.material;
+		this.triangles = model.triangles;
+		this.program = model.program;
+
+		this.modelMatrix = model.modelMatrix;
+
+		this.uniforms = model.uniforms;
+
+		this.vertices = model.vertices;
+		this.uvs = model.uvs;
+		this.normals = model.normals;
+		
+//		this.minmax = model.minmax;
+		this.startMinmax = model.startMinmax;
+	}
+	
 	private void init() {
 
 		initShader(shaderFolder);
@@ -80,20 +108,6 @@ public class Model {
 	
 	public void afterInit() {}
 
-	public Model(Model model) {
-		this.material = model.material;
-		this.triangles = model.triangles;
-		this.program = model.program;
-
-		this.modelMatrix = model.modelMatrix;
-
-		this.uniforms = model.uniforms;
-
-		this.vertices = model.vertices;
-		this.uvs = model.uvs;
-		this.normals = model.normals;
-
-	}
 	
 	private void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
@@ -191,6 +205,16 @@ public class Model {
 		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
+	
+	private void updateMinmax() {
+		translation = new Vec4(modelMatrix.mul(new Vec4(0.0f, 0.0f, 0.0f, 1.0f)));
+		minmax[0] = (startMinmax[0]*scale) + translation.x;
+		minmax[1] = (startMinmax[1]*scale) + translation.x;
+		minmax[2] = (startMinmax[2]*scale) + translation.y;
+		minmax[3] = (startMinmax[3]*scale) + translation.y;
+		minmax[4] = (startMinmax[4]*scale) + translation.z;
+		minmax[5] = (startMinmax[5]*scale) + translation.z;
+	}
 
 	public void render() {
 		if(!init){
@@ -206,7 +230,8 @@ public class Model {
 				glBindVertexArray(vao);
 				{
 					renderProcess();
-
+					updateMinmax();
+					
 					uploadMaterial();
 					uploadLighting();
 					uploadMatrixes();
@@ -222,7 +247,7 @@ public class Model {
 			normalDrawing.render();
 		}
 	}
-
+	
 	public Material getMaterial() {
 		return material;
 	}
@@ -245,6 +270,18 @@ public class Model {
 	
 	public void setShowNormals(boolean showNormals) {
 		this.showNormals = showNormals;
+	}
+	
+	public float getScale() {
+		return scale;
+	}
+	
+	public void setScale(float scale) {
+		for (int i = 0; i < minmax.length; i++) {
+			minmax[i] *= scale;
+		}
+		this.scale = scale;
+		modelMatrix.scale(scale);
 	}
 	
 	public void dispose() {

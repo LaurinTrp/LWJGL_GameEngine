@@ -1,12 +1,18 @@
 package main.java.render.passes;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
+
+import java.util.Arrays;
 
 import glm.glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ModelLoader;
-import main.java.utils.math.Glm;
 
 public class Player extends Model {
 
@@ -28,7 +34,6 @@ public class Player extends Model {
 		super.renderProcess();
 		
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
-//			position = Glm.subtract(cameraRight, cameraFront)
 			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_S)) {
@@ -52,18 +57,19 @@ public class Player extends Model {
 		}
 		
 		modelMatrix.cleanTranslation();
-		modelMatrix.translate(new Vec3(position).div(0.01f));
+		modelMatrix.translate(new Vec3(position).div(getScale()));
+		System.out.println("PLAYER: " + Arrays.toString(minmax));
 	}
 
 	@Override
 	public void afterInit() {
 		super.afterInit();
 
+		setScale(0.01f);
+		
 		position = new Vec3(0f, 5f, 0f);
-		modelMatrix.scale(0.01f);
 		modelMatrix.translate(position);
 		
-		setShowNormals(true);
 	}
 	
 	public Vec3 getPosition() {

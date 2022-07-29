@@ -3,6 +3,7 @@ package main.java.utils.loaders;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import main.java.gui.Engine_Main;
@@ -26,10 +27,14 @@ public class ModelLoader {
 	private static int triangleCount = 0;
 
 	private static File file;
+	
 
 	private static ArrayList<Model> models = new ArrayList<Model>();
 	private static HashMap<String, Integer> materials = new HashMap<String, Integer>();
 
+	public ModelLoader() {
+	}
+	
 	public static float[][] loadObj(String path) {
 		file = new File(path);
 		try {
@@ -42,6 +47,13 @@ public class ModelLoader {
 	}
 
 	public static float[][] loadObj(ArrayList<String> lines, String path) {
+		float[] minmax = new float[6];
+		minmax[0] = Float.MAX_VALUE;
+		minmax[1] = -Float.MAX_VALUE;
+		minmax[2] = Float.MAX_VALUE;
+		minmax[3] = -Float.MAX_VALUE;
+		minmax[4] = Float.MAX_VALUE;
+		minmax[5] = -Float.MAX_VALUE;
 		clear();
 		file = new File(path);
 		lines.parallelStream().filter(s -> s.startsWith("#"));
@@ -53,6 +65,12 @@ public class ModelLoader {
 				Double[] verticesVec = new Double[] { Double.parseDouble(splitted[1]), Double.parseDouble(splitted[2]),
 						Double.parseDouble(splitted[3]), 1.0 };
 				vertices.add(verticesVec);
+				minmax[0] = (float)Math.min(minmax[0], verticesVec[0]);
+				minmax[1] = (float)Math.max(minmax[1], verticesVec[0]);
+				minmax[2] = (float)Math.min(minmax[2], verticesVec[1]);
+				minmax[3] = (float)Math.max(minmax[3], verticesVec[1]);
+				minmax[4] = (float)Math.min(minmax[4], verticesVec[2]);
+				minmax[5] = (float)Math.max(minmax[5], verticesVec[2]);
 				break;
 			case "vt":
 				Double[] texVec = new Double[] { Double.parseDouble(splitted[1]), 1 - Double.parseDouble(splitted[2]),
@@ -77,20 +95,18 @@ public class ModelLoader {
 			}
 		}
 
-		return new float[][] { getVertices(), getTextures(), getNormals(), };
+		return new float[][] { getVertices(), getTextures(), getNormals(), minmax};
 	}
 
 	public static Model loadModel(String path) {
 		float[][] data = loadObj(path);
-		Model model = new Model(data[0], data[1], data[2], triangleCount, new Material());
-
+		Model model = new Model(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
 		return model;
 	}
 
 	public static Model loadModelFromResource(String parent, String file) {
 		float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + "/" + file);
-		Model model = new Model(data[0], data[1], data[2], triangleCount, new Material());
-
+		Model model = new Model(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
 		return model;
 	}
 
