@@ -53,6 +53,10 @@ public class Model {
 	private float[] normals;
 	
 	private String shaderFolder;
+	
+	private NormalDrawing normalDrawing;
+	
+	private boolean showNormals;
 
 	public Model(float[] vertices, float[] uvs, float[] normals, int triangles, Material material) {
 		this.triangles = triangles;
@@ -67,8 +71,11 @@ public class Model {
 		initShader(shaderFolder);
 		initMatrixes();
 		bindModel();
-		init = true;
 		afterInit();
+		
+		normalDrawing = new NormalDrawing(this);
+		
+		init = true;
 	}
 	
 	public void afterInit() {}
@@ -211,6 +218,9 @@ public class Model {
 			}
 			glUseProgram(0);
 		}
+		if(showNormals) {
+			normalDrawing.render();
+		}
 	}
 
 	public Material getMaterial() {
@@ -233,6 +243,10 @@ public class Model {
 		return program;
 	}
 	
+	public void setShowNormals(boolean showNormals) {
+		this.showNormals = showNormals;
+	}
+	
 	public void dispose() {
 
 		glDeleteVertexArrays(vao);
@@ -248,6 +262,12 @@ public class Model {
 		}
 
 		vao = 0;
+		
+		if(normalDrawing != null) {
+			normalDrawing.dispose();
+		}
+		
+		init = false;
 	}
 
 }

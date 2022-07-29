@@ -26,16 +26,18 @@ import main.java.utils.ModelUtils;
 
 public class NormalDrawing {
 
-	float[] vertices;
-	float[] normals;
+	private float[] vertices;
+	private float[] normals;
 
 	private HashMap<String, Integer> uniforms = new HashMap<String, Integer>();
 
-	float[] data;
-	ShaderProgram program;
-	int vao = 0, vbo = 0;
+	private float[] data;
+	private ShaderProgram program;
+	private int vao = 0, vbo = 0;
 
 	private Mat4 modelMatrix = new Mat4(1.0f);
+	
+	private boolean init = false;
 
 	public NormalDrawing(Model model) {
 		this.vertices = model.getVertices();
@@ -52,15 +54,17 @@ public class NormalDrawing {
 	public NormalDrawing(float[] vertices, float[] normals, Mat4 modelMatrix) {
 		this.vertices = vertices;
 		this.normals = normals;
-		
-		data = ModelUtils.createNormals(vertices, normals);
-
 		this.modelMatrix = modelMatrix;
+	}
+
+	private void init() {
+		data = ModelUtils.createNormals(vertices, normals);
 
 		bind();
 		initShader();
+		
+		init = true;
 	}
-
 
 	private void bind() {
 
@@ -95,6 +99,9 @@ public class NormalDrawing {
 	}
 
 	public void render() {
+		if(!init){
+			init();
+		}
 		{
 			glUseProgram(program.getProgramID());
 			{
@@ -123,5 +130,6 @@ public class NormalDrawing {
 		vao = 0;
 		vbo = 0;
 
+		init = false;
 	}
 }

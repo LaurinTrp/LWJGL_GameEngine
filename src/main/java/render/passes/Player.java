@@ -62,6 +62,8 @@ public class Player extends Model {
 		position = new Vec3(0f, 5f, 0f);
 		modelMatrix.scale(0.01f);
 		modelMatrix.translate(position);
+		
+		setShowNormals(true);
 	}
 	
 	public Vec3 getPosition() {
