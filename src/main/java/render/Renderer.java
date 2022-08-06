@@ -94,8 +94,6 @@ public class Renderer {
 		trees = new Trees();
 		tree_1 = new Tree_1();
 		
-		ModelUtils.compareModels(trees.getModels().get(1), tree_1);
-		
 		cubes = new Cubes();
 	}
 

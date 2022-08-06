@@ -7,12 +7,12 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 
+import glm.glm.vec._2.Vec2;
 import glm.glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ModelLoader;
-import main.java.utils.math.Glm;
 
 public class Player extends Model {
 
@@ -85,7 +85,7 @@ public class Player extends Model {
 	public void terrainCollision(TerrainPass terrain) {
 		if(minmax[0] > -terrain.getWidth()/2f && minmax[1] < terrain.getWidth()/2f
 				&& minmax[4] > -terrain.getHeight()/2f && minmax[5] < terrain.getHeight()/2f) {
-			currentTerrainHeight = terrain.heightAtPosition(position);
+			currentTerrainHeight = terrain.heightAtPosition(new Vec2(position.x, position.z));
 		}
 	}
 

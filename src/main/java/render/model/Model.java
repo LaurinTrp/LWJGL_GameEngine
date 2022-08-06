@@ -22,6 +22,7 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -281,6 +282,17 @@ public class Model {
 	
 	public float getScale() {
 		return scale;
+	}
+	
+	public Mat4 getModelMatrix() {
+		return modelMatrix;
+	}
+	public void setModelMatrix(Mat4 modelMatrix) {
+		this.modelMatrix = modelMatrix;
+	}
+	
+	public Float[] getMinmax() {
+		return minmax;
 	}
 	
 	public void setScale(float scale) {

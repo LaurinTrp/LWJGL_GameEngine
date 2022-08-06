@@ -14,7 +14,7 @@
 	</classpathentry>
 	<classpathentry kind="src" path="res"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl.jar" sourcepath="/home/laurin/.m2/repository/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-glfw.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-glfw.jar" sourcepath="/home/laurin/.m2/repository/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-glfw-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-glfw-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-glfw-sources.jar"/>

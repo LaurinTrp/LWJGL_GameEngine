@@ -124,12 +124,9 @@ public class TerrainPass {
 
 			for (int j = 1; j <= width / density; j++) {
 				double noise = SimplexNoise.noise(i / 15f, j / 15f);
-				if(noise < minY) {
-					minY = noise;
-				}
-				if(noise > maxY) {
-					maxY = noise;
-				}
+				minY = Math.min(noise, minY);
+				maxY = Math.max(noise, maxY);
+//				noise = 0;
 				vertexRow.add(new Vec4((-width / 2) + j * density, noise, (-height / 2) + i * density, 1.0f));
 
 				uvs.add(new Vec4(j % 2, i % 2, 0.0f, 1.0f));
@@ -389,10 +386,10 @@ public class TerrainPass {
 		return image;
 	}
 	
-	public float heightAtPosition(Vec3 position) {
+	public float heightAtPosition(Vec2 position) {
 		float xPositionOnTerrain = position.x - getStartX();
 		int xGridPosition = (int) Math.floor(xPositionOnTerrain / getDensity());
-		float zPositionOnTerrain = position.z - getStartZ();
+		float zPositionOnTerrain = position.y - getStartZ();
 		int zGridPosition = (int) Math.floor(zPositionOnTerrain / getDensity());
 		
 		float xCoord = (xPositionOnTerrain%getDensity()) / getDensity();
