@@ -64,9 +64,9 @@ public class TerrainPass {
 
 	private ArrayList<ArrayList<Vec4>> vertices = new ArrayList<>();
 	private ArrayList<Vec4> normalsList = new ArrayList<>();
-	private float[] verticesBuffer;
-	private float[] uvs;
-	private float[] normals;
+	private Float[] verticesBuffer;
+	private Float[] uvs;
+	private Float[] normals;
 	int[] indicesArray;
 	private final int width = 100, height = 100;
 	private final float density = 0.5f;
@@ -174,7 +174,7 @@ public class TerrainPass {
 			indicesArray[i] = indices.get(i);
 		}
 
-		this.uvs = new float[uvs.size() * 4];
+		this.uvs = new Float[uvs.size() * 4];
 		for (int i = 0; i < uvs.size(); i++) {
 			this.uvs[i * 4 + 0] = uvs.get(i).x;
 			this.uvs[i * 4 + 1] = uvs.get(i).y;
@@ -182,7 +182,7 @@ public class TerrainPass {
 			this.uvs[i * 4 + 3] = uvs.get(i).w;
 		}
 
-		this.normals = new float[normalsList.size() * 4];
+		this.normals = new Float[normalsList.size() * 4];
 		for (int i = 0; i < normalsList.size(); i++) {
 			this.normals[i * 4 + 0] = normalsList.get(i).x;
 			this.normals[i * 4 + 1] = normalsList.get(i).y;

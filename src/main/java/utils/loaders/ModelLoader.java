@@ -34,8 +34,48 @@ public class ModelLoader {
 
 	public ModelLoader() {
 	}
+
+	public static ArrayList<Model> loadMultipleModelsFromObj(String path) {
+		ArrayList<Model> models = new ArrayList<>();
+		ArrayList<Float[][]> objects = loadMultipleFromObj(path);
+		for (Float[][] floats : objects) {
+			Model model = new Model(floats[0], floats[1], floats[2], floats[4][0].intValue(), new Material(), floats[3]);
+			models.add(model);
+		}
+		return models;
+	}
 	
-	public static float[][] loadObj(String path) {
+	public static ArrayList<Float[][]> loadMultipleFromObj(String path) {
+		clear();
+		file = new File(path);
+		try {
+			String lines = FileUtils.getFileContentAsString(file);
+			ArrayList<Float[][]> output = new ArrayList<>();
+			// Regex to match a line that indicates the start of an object
+			String[] content = lines.split("[o] .*");
+			content = Arrays.copyOfRange(content, 1, content.length);
+			System.err.println(content.length);
+			Arrays.stream(content).filter(l -> l.isBlank());
+			for (String string : content) {
+				clearFinalLists();
+				triangleCount = 0;
+				ArrayList<String> object = new ArrayList<>(Arrays.asList(string.split("\n")));
+				Float[][] data = loadObj(object, path);
+				Float[][] newData = new Float[][] {
+					data[0], data[1], data[2], data[3], new Float[] {(float) triangleCount}
+				};
+				output.add(newData);
+			}
+			
+			return output;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static Float[][] loadObj(String path) {
+		clear();
 		file = new File(path);
 		try {
 			ArrayList<String> lines = FileUtils.getFileContent(file);
@@ -45,18 +85,17 @@ public class ModelLoader {
 		}
 		return null;
 	}
-
-	public static float[][] loadObj(ArrayList<String> lines, String path) {
-		float[] minmax = new float[6];
+	
+	private static Float[][] loadObj(ArrayList<String> lines, String path) {
+		Float[] minmax = new Float[6];
 		minmax[0] = Float.MAX_VALUE;
 		minmax[1] = -Float.MAX_VALUE;
 		minmax[2] = Float.MAX_VALUE;
 		minmax[3] = -Float.MAX_VALUE;
 		minmax[4] = Float.MAX_VALUE;
 		minmax[5] = -Float.MAX_VALUE;
-		clear();
 		file = new File(path);
-		lines.parallelStream().filter(s -> s.startsWith("#"));
+		lines.parallelStream().filter(s -> s.startsWith("#")).filter(s -> s.isBlank());
 
 		for (String line : lines) {
 			String[] splitted = line.split(" ");
@@ -95,17 +134,20 @@ public class ModelLoader {
 			}
 		}
 
-		return new float[][] { getVertices(), getTextures(), getNormals(), minmax};
+		
+		
+		return new Float[][] { getVertices(), getTextures(), getNormals(), minmax};
 	}
 
 	public static Model loadModel(String path) {
-		float[][] data = loadObj(path);
+		Float[][] data = loadObj(path);
 		Model model = new Model(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
 		return model;
 	}
 
 	public static Model loadModelFromResource(String parent, String file) {
-		float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + "/" + file);
+		clear();
+		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + "/" + file);
 		Model model = new Model(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
 		return model;
 	}
@@ -117,6 +159,11 @@ public class ModelLoader {
 		verticesFinal.clear();
 		normalsFinal.clear();
 		texturesFinal.clear();
+	}
+	private static void clearFinalLists() {
+		verticesFinal.clear();
+		texturesFinal.clear();
+		normalsFinal.clear();
 	}
 
 	public ArrayList<Model> getModels() {
@@ -215,24 +262,24 @@ public class ModelLoader {
 		return "";
 	}
 
-	public static float[] getVertices() {
-		float[] vertices = new float[verticesFinal.size()];
+	public static Float[] getVertices() {
+		Float[] vertices = new Float[verticesFinal.size()];
 		for (int i = 0; i < verticesFinal.size(); i++) {
 			vertices[i] = verticesFinal.get(i);
 		}
 		return vertices;
 	}
 
-	public static float[] getTextures() {
-		float[] textures = new float[texturesFinal.size()];
+	public static Float[] getTextures() {
+		Float[] textures = new Float[texturesFinal.size()];
 		for (int i = 0; i < texturesFinal.size(); i++) {
 			textures[i] = texturesFinal.get(i);
 		}
 		return textures;
 	}
 
-	public static float[] getNormals() {
-		float[] normals = new float[normalsFinal.size()];
+	public static Float[] getNormals() {
+		Float[] normals = new Float[normalsFinal.size()];
 		for (int i = 0; i < normalsFinal.size(); i++) {
 			normals[i] = normalsFinal.get(i);
 		}

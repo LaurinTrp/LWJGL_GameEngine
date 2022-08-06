@@ -25,7 +25,6 @@ public class Material {
 		reflectance = 1.0f;
 		this.texture = texture;
 	}
-
 	
 	public int getTexture() {
 		return texture;

@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 
 import main.java.gui.Engine_Main;
 import main.java.render.model.Model;
+import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
 public class Cottage extends Model {
@@ -11,7 +12,7 @@ public class Cottage extends Model {
 	public Cottage() {
 		super(ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
 		setShaderFolder("Cottage");
-		getMaterial().setTexture(ModelLoader.loadMaterialFromResource("Cottage", "cottage.mtl"));
+		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage_diffuse.png"));
 		
 	}
 	

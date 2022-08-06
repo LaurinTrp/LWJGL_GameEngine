@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import glm.glm.vec._4.Vec4;
 import main.java.render.passes.Cottage;
+import main.java.render.passes.Cubes;
 import main.java.render.passes.LightSourcePass;
 import main.java.render.passes.Player;
 import main.java.render.passes.TerrainPass;
@@ -15,6 +16,9 @@ import main.java.render.passes.texture.TexturePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.passes.transformation.MyModel;
 import main.java.render.passes.transformation.TransformationPass;
+import main.java.render.passes.trees.Tree_1;
+import main.java.render.passes.trees.Trees;
+import main.java.utils.ModelUtils;
 
 public class Renderer {
 	
@@ -46,6 +50,12 @@ public class Renderer {
 	public static TerrainPass terrain;
 	
 	private Player player;
+	
+	private Trees trees;
+	
+	private Tree_1 tree_1;
+	
+	private Cubes cubes;
 	
 
 	public Renderer() {
@@ -80,13 +90,20 @@ public class Renderer {
 
 		camera = new Camera(player);
 		mousePicker = new MousePicker(camera);
+		
+		trees = new Trees();
+		tree_1 = new Tree_1();
+		
+		ModelUtils.compareModels(trees.getModels().get(1), tree_1);
+		
+		cubes = new Cubes();
 	}
 
 	public void render() {
 
 
 		terrain.render();
-//		lightSourcePass.render();
+		lightSourcePass.render();
 		
 //		trianglePass.render();
 //		rectanglePass.render();
@@ -100,15 +117,19 @@ public class Renderer {
 
 //		cottage.render();
 		
+//		cubes.render();
+		
 		player.render();
 
 		camera.moveCamera();
 //		mousePicker.update();
 		
 //		model.render();
-		
 //		compass.render();
-//
+
+		tree_1.render();
+		
+		trees.render();
 
 	}
 
@@ -128,6 +149,10 @@ public class Renderer {
 		player.dispose();
 		
 		compass.dispose();
+		trees.dispose();
+		tree_1.dispose();
+		
+		cubes.dispose();
 	}
 
 }

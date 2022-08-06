@@ -49,13 +49,13 @@ public class Model {
 
 	private int[] vbos = new int[4];
 
-	private float[] vertices;
-	private float[] uvs;
-	private float[] normals;
+	private Float[] vertices;
+	private Float[] uvs;
+	private Float[] normals;
 	
 	// min x, max x, min y, max y, min z, max z
-	protected float[] startMinmax = new float[6];
-	protected float[] minmax = new float[6];
+	protected Float[] startMinmax = new Float[6];
+	protected Float[] minmax = new Float[6];
 	
 	private float scale = 1.0f;
 	
@@ -67,7 +67,7 @@ public class Model {
 	
 	private Vec4 translation;
 
-	public Model(float[] vertices, float[] uvs, float[] normals, int triangles, Material material, float[] minmax) {
+	public Model(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax) {
 		this.triangles = triangles;
 		this.vertices = vertices;
 		this.uvs = uvs;
@@ -99,6 +99,9 @@ public class Model {
 		initShader(shaderFolder);
 		initMatrixes();
 		bindModel();
+		
+		updateMinmax();
+		
 		afterInit();
 		
 		normalDrawing = new NormalDrawing(this);
@@ -136,7 +139,7 @@ public class Model {
 
 	private void bindModel() {
 
-		float[] colors = new float[vertices.length];
+		Float[] colors = new Float[vertices.length];
 
 		for (int i = 0; i < colors.length; i += 4) {
 			colors[i] = 1.0f;
@@ -252,12 +255,16 @@ public class Model {
 		return material;
 	}
 
-	public float[] getVertices() {
+	public Float[] getVertices() {
 		return vertices;
 	}
 
-	public float[] getNormals() {
+	public Float[] getNormals() {
 		return normals;
+	}
+	
+	public Float[] getUvs() {
+		return uvs;
 	}
 
 	public void setShaderFolder(String shaderFolder) {

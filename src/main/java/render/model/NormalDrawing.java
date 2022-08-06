@@ -26,8 +26,8 @@ import main.java.utils.ModelUtils;
 
 public class NormalDrawing {
 
-	private float[] vertices;
-	private float[] normals;
+	private Float[] vertices;
+	private Float[] normals;
 
 	private HashMap<String, Integer> uniforms = new HashMap<String, Integer>();
 
@@ -51,7 +51,7 @@ public class NormalDrawing {
 		initShader();
 	}
 	
-	public NormalDrawing(float[] vertices, float[] normals, Mat4 modelMatrix) {
+	public NormalDrawing(Float[] vertices, Float[] normals, Mat4 modelMatrix) {
 		this.vertices = vertices;
 		this.normals = normals;
 		this.modelMatrix = modelMatrix;

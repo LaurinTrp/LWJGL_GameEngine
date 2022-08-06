@@ -67,6 +67,7 @@ public class Player extends Model {
 //		}else {
 //		}
 		float yDiff = position.y - minmax[2];
+//		yDiff = 0;
 		position.y = currentTerrainHeight + yDiff;
 	}
 	
