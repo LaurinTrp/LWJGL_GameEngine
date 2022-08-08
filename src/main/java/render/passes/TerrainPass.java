@@ -398,11 +398,11 @@ public class TerrainPass {
 		if (xCoord <= (1-zCoord)) {
 			currentTerrainHeight = MathFunctions.barryCentric(new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition).y, 0),
 					new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition).y, 0), 
-					new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1), new Vec2(xCoord, zCoord));
+					new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1), new Vec2(zCoord, xCoord));
 		} else {
 			currentTerrainHeight = MathFunctions.barryCentric(new Vec3(1, getVertices().get(zGridPosition+1).get(xGridPosition).y, 0), 
 					new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition + 1).y, 1), 
-					new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1), new Vec2(xCoord, zCoord));
+					new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1), new Vec2(zCoord, xCoord));
 		}
 		return currentTerrainHeight;
 	}

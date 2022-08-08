@@ -23,8 +23,6 @@ public class Player extends Model {
 	private Vec3 cameraUp = new Vec3(0.0f, 1.0f, 0.0f);
 	private Vec3 cameraRight = new Vec3(1.0f, 0.0f, 0.0f);
 	
-	private float currentTerrainHeight;
-	
 	public Player() {
 		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
 		setShaderFolder("Transformation");
@@ -54,21 +52,16 @@ public class Player extends Model {
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_X)) {
 			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraUp, speed)));
 		}
-		
-		
-		modelMatrix.cleanTranslation();
-		modelMatrix.translate(new Vec3(position).div(getScale()));
 	}
 	
 	private void gravity() {
-		
-//		if(minmax[2]-speed > currentTerrainHeight) {
-//			position = Glm.subtract(position, Glm.times(cameraUp, speed));
-//		}else {
-//		}
-		float yDiff = position.y - minmax[2];
-//		yDiff = 0;
-		position.y = currentTerrainHeight + yDiff;
+		if(position.x > Renderer.terrain.getStartX() && position.x < Renderer.terrain.getStartX() + Renderer.terrain.getWidth()
+			&& position.z > Renderer.terrain.getStartZ() && position.z < Renderer.terrain.getStartZ() + Renderer.terrain.getHeight()) {
+			float yDiff = position.y - minmax[2];
+			position.y = Renderer.terrain.heightAtPosition(new Vec2(position.x, position.z)) + yDiff;
+		}else {
+			position.y -= speed;
+		}
 	}
 	
 	@Override
@@ -77,18 +70,13 @@ public class Player extends Model {
 
 		movement();
 		updateMinmax();
-		terrainCollision(Renderer.terrain);
 		gravity();
+
+		modelMatrix.cleanTranslation();
+		modelMatrix.translate(new Vec3(position).div(getScale()));
 		
 	}
 	
-	public void terrainCollision(TerrainPass terrain) {
-		if(minmax[0] > -terrain.getWidth()/2f && minmax[1] < terrain.getWidth()/2f
-				&& minmax[4] > -terrain.getHeight()/2f && minmax[5] < terrain.getHeight()/2f) {
-			currentTerrainHeight = terrain.heightAtPosition(new Vec2(position.x, position.z));
-		}
-	}
-
 	@Override
 	public void afterInit() {
 		super.afterInit();
