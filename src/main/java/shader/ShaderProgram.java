@@ -21,7 +21,6 @@ public class ShaderProgram {
 	private int textureID = 0;
 	
 	public ShaderProgram(String path) {
-//		path = Engine_Main.PATHS.SHADER_PATH + path + "/";
 		vertexID = loadShader(ResourceLoader.loadShader(path, "vertex.glsl"), GL20.GL_VERTEX_SHADER);
 		fragmentID = loadShader(ResourceLoader.loadShader(path, "fragment.glsl"), GL20.GL_FRAGMENT_SHADER);
 		

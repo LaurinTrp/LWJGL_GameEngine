@@ -29,6 +29,29 @@ public class Player extends Model {
 		getMaterial().setTexture(ModelLoader.loadMaterialFromResource("AmongUs", "AmongUs.mtl"));
 	}
 	
+	@Override
+	protected void renderProcess() {
+		super.renderProcess();
+
+		movement();
+		updateMinmax();
+		gravity();
+
+		modelMatrix.cleanTranslation();
+		modelMatrix.translate(new Vec3(position).div(getScale()));
+		
+	}
+	
+	@Override
+	public void afterInit() {
+		super.afterInit();
+
+		setScale(0.01f);
+		
+		position = new Vec3(0f, 5f, 0f);
+		modelMatrix.translate(position);
+	}
+	
 	private void movement() {
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
 			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
@@ -62,30 +85,6 @@ public class Player extends Model {
 		}else {
 			position.y -= speed;
 		}
-	}
-	
-	@Override
-	protected void renderProcess() {
-		super.renderProcess();
-
-		movement();
-		updateMinmax();
-		gravity();
-
-		modelMatrix.cleanTranslation();
-		modelMatrix.translate(new Vec3(position).div(getScale()));
-		
-	}
-	
-	@Override
-	public void afterInit() {
-		super.afterInit();
-
-		setScale(0.01f);
-		
-		position = new Vec3(0f, 5f, 0f);
-		modelMatrix.translate(position);
-		
 	}
 	
 	public Vec3 getPosition() {

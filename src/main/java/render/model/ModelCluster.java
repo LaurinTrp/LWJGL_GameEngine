@@ -1,6 +1,7 @@
 package main.java.render.model;
 
 import java.util.ArrayList;
+import static org.lwjgl.opengl.GL11.*;
 
 public class ModelCluster {
 	
@@ -20,10 +21,16 @@ public class ModelCluster {
 	public void afterInit() {}
 	
 	public void render() {
+
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+//		glFrontFace(GL_CCW); 
 		models.forEach(m -> m.render());
 		if(!init) {
 			init();
 		}
+
+		glDisable(GL_CULL_FACE);
 	}
 	
 	public void dispose() {

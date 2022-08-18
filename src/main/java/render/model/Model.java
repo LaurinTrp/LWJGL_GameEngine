@@ -74,7 +74,6 @@ public class Model {
 		this.uvs = uvs;
 		this.normals = normals;
 		this.material = material;
-//		this.minmax = minmax;
 		this.startMinmax = minmax;
 	}
 
@@ -91,7 +90,6 @@ public class Model {
 		this.uvs = model.uvs;
 		this.normals = model.normals;
 		
-//		this.minmax = model.minmax;
 		this.startMinmax = model.startMinmax;
 	}
 	
