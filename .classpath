@@ -28,7 +28,6 @@
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-opengl-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-opengl-sources.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-natives-linux.jar"/>
-	<classpathentry kind="lib" path="lib/math/GLM.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-stb.jar" sourcepath="/home/laurin/.m2/repository/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-stb-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-stb-natives-linux.jar"/>
@@ -38,5 +37,6 @@
 	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-tests.jar"/>
 	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-test-sources.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/GLM"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
