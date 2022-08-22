@@ -24,37 +24,41 @@ struct Material {
 
 out vec4 fragColor;
 
-vec3 calculateLight() {
-	float a = 0.2, d = 0.3, s = 0.5;
-	//  ---------------------------
+float a = 0.2, d = 0.8, s = 0.5;
 
-	vec3 color = color.rgb;
-	color = texture(tex, uvCoord.st).rgb;
+#include <Utils/lighting.glsl>
 
-	//  vector light to fragment
-	vec3 fragmentToLight = normalize(lightsource.xyz - fragPos.xyz);
-
-	//  ambient ----------------------------------------------------------------
-	vec3 ambientColor = color;
-
-	//  diffuse ----------------------------------------------------------------
-	float diffuse = dot(normalize(normal.xyz), fragmentToLight);
-
-	diffuse = max(diffuse, 0.0f);
-	vec3 diffuseColor = color * diffuse;
-
-	//  specular ---------------------------------------------------------------
-	vec3 reflection = reflect(-fragmentToLight, normalize(normal.xyz));
-	vec3 fragmentTocameraPos = normalize(cameraPos.xyz - fragPos.xyz);
-
-	float specular = dot(reflection, fragmentTocameraPos);
-	specular = max(specular, 0.0f); //  0.0 ... 1.0
-	specular = pow(specular, 32.0f);
-
-	vec3 specularColor = color * specular;
-
-	return (ambientColor * a) + (diffuseColor * d) + (specularColor * s);
-}
+//vec3 calculateLight() {
+//	float a = 0.2, d = 0.3, s = 0.5;
+//	//  ---------------------------
+//
+//	vec3 color = color.rgb;
+//	color = texture(tex, uvCoord.st).rgb;
+//
+//	//  vector light to fragment
+//	vec3 fragmentToLight = normalize(lightsource.xyz - fragPos.xyz);
+//
+//	//  ambient ----------------------------------------------------------------
+//	vec3 ambientColor = color;
+//
+//	//  diffuse ----------------------------------------------------------------
+//	float diffuse = dot(normalize(normal.xyz), fragmentToLight);
+//
+//	diffuse = max(diffuse, 0.0f);
+//	vec3 diffuseColor = color * diffuse;
+//
+//	//  specular ---------------------------------------------------------------
+//	vec3 reflection = reflect(-fragmentToLight, normalize(normal.xyz));
+//	vec3 fragmentTocameraPos = normalize(cameraPos.xyz - fragPos.xyz);
+//
+//	float specular = dot(reflection, fragmentTocameraPos);
+//	specular = max(specular, 0.0f); //  0.0 ... 1.0
+//	specular = pow(specular, 32.0f);
+//
+//	vec3 specularColor = color * specular;
+//
+//	return (ambientColor * a) + (diffuseColor * d) + (specularColor * s);
+//}
 
 void main() {
 

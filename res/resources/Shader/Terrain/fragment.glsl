@@ -1,5 +1,6 @@
 #version 430 core
 
+
 uniform sampler2D tex;
 
 uniform vec4 cameraPos;
@@ -14,41 +15,11 @@ uniform int numOfLights;
 uniform vec4 lightsources[MAX_LIGHTS];
 vec4 lightsource = vec4(1.0);
 
-
 out vec4 fragColor;
 
-vec3 calculateLight() {
-	float a = 0.2, d = 0.5, s = 0.8;
-	//  ---------------------------
+float a = 0.2, d = 0.1, s = 0.1;
 
-	vec3 color = color.rgb;
-	color = texture(tex, uvCoord.st).rgb;
-
-	//  vector light to fragment
-	vec3 fragmentToLight = normalize(lightsource.xyz - fragPos.xyz);
-
-	//  ambient ----------------------------------------------------------------
-	vec3 ambientColor = color;
-
-	//  diffuse ----------------------------------------------------------------
-	float diffuse = dot(normalize(normal.xyz), fragmentToLight);
-
-	diffuse = max(diffuse, 0.0f);
-	vec3 diffuseColor = color * diffuse;
-
-	//  specular ---------------------------------------------------------------
-	vec3 reflection = reflect(-fragmentToLight, normalize(normal.xyz));
-	vec3 fragmentTocameraPos = normalize(cameraPos.xyz - fragPos.xyz);
-
-	float specular = dot(reflection, fragmentTocameraPos);
-	specular = max(specular, 0.0f); //  0.0 ... 1.0
-
-	specular = pow(specular, 16.0f);
-
-	vec3 specularColor = color * specular;
-
-	return (ambientColor * a) + (diffuseColor * d) + (specularColor * s);
-}
+#include <Utils/lighting.glsl>
 
 void main() {
 	lightsource = vec4(0.0, 10.0, 0.0, 1.0);
@@ -57,10 +28,10 @@ void main() {
 	color = texture(tex, uvCoord.st).rgb;
 
 	vec4 colorWithLight = vec4(0.0);
-//	for (int i = 0; i < numOfLights; i++) {
-//		lightsource = lightsources[i];
+	for(int i = 0; i < numOfLights; i++){
+		lightsource = lightsources[i];
 		colorWithLight += vec4(calculateLight(), 1.0);
-//	}
+	}
 
 	fragColor = colorWithLight;
 }
