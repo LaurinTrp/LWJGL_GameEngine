@@ -113,7 +113,7 @@ public class Renderer {
 //		compass.render();
 //		transformationPass.render();
 
-//		cottage.render();
+		cottage.render();
 		
 //		cubes.render();
 		

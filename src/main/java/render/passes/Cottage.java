@@ -11,7 +11,7 @@ public class Cottage extends Model {
 
 	public Cottage() {
 		super(ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
-		setShaderFolder("Cottage");
+		setShaderFolder("Transformation");
 		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage_diffuse.png"));
 		
 	}

@@ -13,6 +13,8 @@ import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
+import static org.lwjgl.opengl.GL20.glUniform1i;
+import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
@@ -55,6 +57,8 @@ public class TerrainPass {
 	private int viewID;
 	private int projID;
 	private int lightPosID;
+	private int lightSources;
+	private int numOfLights;
 	
 	private double minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
 
@@ -312,7 +316,6 @@ public class TerrainPass {
 
 	private void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
-//		modelMatrix = modelMatrix.scale(new Vec3(10, 10, 10));
 	}
 
 	private void initShader() {
@@ -322,6 +325,10 @@ public class TerrainPass {
 		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
 		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
 		lightPosID = glGetUniformLocation(program.getProgramID(), "lightPos");
+		
+		lightSources = glGetUniformLocation(program.getProgramID(), "lightsources");
+		numOfLights = glGetUniformLocation(program.getProgramID(), "numOfLights");
+		
 	}
 
 	int angle = 0;
@@ -348,7 +355,7 @@ public class TerrainPass {
 
 					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
 
-//						glUniform4fv(lightPosID, lightsourcePositions.get(i).toFA_());
+					uploadLighting();
 
 //						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 					GL15.glDrawElements(GL_TRIANGLES, indicesArray.length, GL11.GL_UNSIGNED_INT, 0);
@@ -360,6 +367,20 @@ public class TerrainPass {
 			glUseProgram(0);
 //			normalDrawing.render();
 		}
+	}
+	
+	protected void uploadLighting() {
+
+		ArrayList<Vec4> lights = Renderer.lightSourcePositions;
+		float[] lightsources = new float[lights.size() * 4];
+		for (int i = 0; i < lights.size(); i++) {
+			lightsources[i * 4 + 0] = lights.get(i).x;
+			lightsources[i * 4 + 1] = lights.get(i).y;
+			lightsources[i * 4 + 2] = lights.get(i).z;
+			lightsources[i * 4 + 3] = lights.get(i).w;
+		}
+		glUniform4fv(lightSources, lightsources);
+		glUniform1i(numOfLights, lights.size());
 	}
 	
 	public BufferedImage createHeightMap() {
