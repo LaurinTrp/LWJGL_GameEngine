@@ -38,6 +38,15 @@ public class ResourceLoader {
 		InputStream is = rl.getClass().getResourceAsStream("Shader/" + parent + "/" + fileName);
 		return is;
 	}
+	
+	public static String loadShaderAsString(String parent, String fileName) {
+		try {
+			return new String(loadShader(parent, fileName).readAllBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	public static ByteBuffer loadTexture(String fileName) {
 		InputStream imageFile = ResourceLoader.class.getResourceAsStream("Textures/" + fileName);

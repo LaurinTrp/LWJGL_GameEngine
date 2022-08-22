@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -20,7 +22,11 @@ public class ShaderProgram {
 	private int fragmentID = 0;
 	private int textureID = 0;
 	
+	private String path;
+	
 	public ShaderProgram(String path) {
+		this.path = path;
+		
 		vertexID = loadShader(ResourceLoader.loadShader(path, "vertex.glsl"), GL20.GL_VERTEX_SHADER);
 		fragmentID = loadShader(ResourceLoader.loadShader(path, "fragment.glsl"), GL20.GL_FRAGMENT_SHADER);
 		
@@ -33,28 +39,16 @@ public class ShaderProgram {
 	}
 
 	private int loadShader(InputStream stream, int type) {
-//		StringBuilder shaderSource = new StringBuilder();
-//		System.out.println(file.exists());
-//        try{
-//            BufferedReader reader = new BufferedReader(new FileReader(file));
-//            String line;
-//            while((line = reader.readLine())!=null){
-//                shaderSource.append(line).append(System.getProperty("line.separator"));
-//            }
-//            System.out.println(line);
-////        	String content
-//           
-//            reader.close();
-//        }catch(IOException e){
-//            e.printStackTrace();
-//            System.exit(-1);
-//        }
 		String shaderSource = "";
 		try {
 			shaderSource = new String(stream.readAllBytes());
+			shaderSource = shaderSource.replaceAll("\\/\\/.*", "");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		shaderSource = replacedIncludes(shaderSource);
+		
         int shaderID = GL20.glCreateShader(type);
         GL20.glShaderSource(shaderID, shaderSource);
         GL20.glCompileShader(shaderID);
@@ -65,6 +59,34 @@ public class ShaderProgram {
         }
         
         return shaderID;			
+	}
+	
+	private String replacedIncludes(String shaderSource) {
+		String[] lines = shaderSource.split("\n");
+		for (int i = 0; i < lines.length; i++) {
+			if(lines[i].contains("#include")) {
+				String line = lines[i];
+				line = line.replaceAll("[<|>]", "").replace("#include", "");
+				line = line.strip();
+				String folder = path;
+				if(line.contains("/")) {
+					int last = line.lastIndexOf("/");
+					folder = line.substring(0, last);
+					line = line.replace(folder+"/", "");
+				}
+				String shader = line;
+				
+				String loadedShader = ResourceLoader.loadShaderAsString(folder, shader);
+				loadedShader = loadedShader.replaceAll("#version.*", "");
+				lines[i] = loadedShader;
+			}
+		}
+		String newShaderCode = "";
+		for (String string : lines) {
+			newShaderCode+=string + "\n";
+		}
+		
+		return newShaderCode;
 	}
 	
 	public int getUniformLocation(String uniformName) {
