@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import glm.glm.vec._4.Vec4;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.Cubes;
-import main.java.render.passes.LightSourcePass;
 import main.java.render.passes.Player;
 import main.java.render.passes.TerrainPass;
+import main.java.render.passes.lighting.LightSourcePass;
+import main.java.render.passes.lighting.SunPass;
 import main.java.render.passes.standard.RectanglePass;
 import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.texture.TexturePass;
@@ -33,6 +34,7 @@ public class Renderer {
 	private TransformationPass transformationPass;
 
 	private LightSourcePass lightSourcePass;
+	private SunPass sun;
 
 	public static Camera camera;
 
@@ -70,12 +72,14 @@ public class Renderer {
 
 		transformationPass = new TransformationPass();
 
-		lightSourcePositions.add(new Vec4(1.2f, 1.0f, 2.0f, 1.0f));
-		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
-		lightSourcePositions.add(new Vec4(0f, 10.0f, 0.0f, 1.0f));
+//		lightSourcePositions.add(new Vec4(1.2f, 1.0f, 2.0f, 1.0f));
+//		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
+//		lightSourcePositions.add(new Vec4(0f, 10.0f, 0.0f, 1.0f));
 		
 		lightSourcePass = new LightSourcePass();
 		lightSourcePass.setLightsourcePositions(lightSourcePositions);
+		
+		sun = new SunPass();
 		
 
 		cottage = new Cottage();
@@ -101,7 +105,8 @@ public class Renderer {
 
 
 		terrain.render();
-		lightSourcePass.render();
+//		lightSourcePass.render();
+		sun.render();
 		
 //		trianglePass.render();
 //		rectanglePass.render();
@@ -113,7 +118,7 @@ public class Renderer {
 //		compass.render();
 //		transformationPass.render();
 
-		cottage.render();
+//		cottage.render();
 		
 //		cubes.render();
 		
@@ -125,9 +130,9 @@ public class Renderer {
 //		model.render();
 //		compass.render();
 
-		tree_1.render();
+//		tree_1.render();
 		
-		trees.render();
+//		trees.render();
 
 	}
 

@@ -1,4 +1,4 @@
-package main.java.render.passes;
+package main.java.render.passes.lighting;
 
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;

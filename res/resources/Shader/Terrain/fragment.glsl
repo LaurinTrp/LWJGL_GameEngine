@@ -24,15 +24,16 @@ float a = 0.2, d = 0.1, s = 0.1;
 void main() {
 	lightsource = vec4(0.0, 10.0, 0.0, 1.0);
 
-	vec3 color = color.rgb;
-	color = texture(tex, uvCoord.st).rgb;
-
-	vec4 colorWithLight = vec4(0.0);
-	for(int i = 0; i < numOfLights; i++){
-		lightsource = lightsources[i];
-		colorWithLight += vec4(calculateLight(), 1.0);
+	vec3 color = texture(tex, uvCoord.st).rgb;
+	if (numOfLights == 0) {
+		fragColor = vec4(color, 1.0);
+	} else {
+		vec4 colorWithLight = vec4(0.0);
+		for (int i = 0; i < numOfLights; i++) {
+			lightsource = lightsources[i];
+			colorWithLight += vec4(calculateLight(), 1.0);
+		}
+		fragColor = colorWithLight;
 	}
-
-	fragColor = colorWithLight;
 }
 

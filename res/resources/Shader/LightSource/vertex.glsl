@@ -8,15 +8,13 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
-uniform float x;
-
 out vec4 color;
 
 void main()
 {
 	color = aColor;
 
-	vec4 myPos = vec4(position.x + x * 2, position.yzw);
+	vec4 myPos = position;
 
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * myPos;
 }

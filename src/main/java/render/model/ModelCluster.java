@@ -1,6 +1,7 @@
 package main.java.render.model;
 
 import java.util.ArrayList;
+
 import static org.lwjgl.opengl.GL11.*;
 
 public class ModelCluster {
