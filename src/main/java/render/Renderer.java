@@ -34,7 +34,7 @@ public class Renderer {
 	private TransformationPass transformationPass;
 
 	private LightSourcePass lightSourcePass;
-	private SunPass sun;
+	public static SunPass sun;
 
 	public static Camera camera;
 
@@ -73,7 +73,7 @@ public class Renderer {
 		transformationPass = new TransformationPass();
 
 //		lightSourcePositions.add(new Vec4(1.2f, 1.0f, 2.0f, 1.0f));
-//		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
+		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
 //		lightSourcePositions.add(new Vec4(0f, 10.0f, 0.0f, 1.0f));
 		
 		lightSourcePass = new LightSourcePass();

@@ -38,14 +38,12 @@ public class SunPass {
 
 	private boolean init = false;
 
-	private Vec4 lightPosition = new Vec4(0.0, 1.0, 0.0, 0.0);
+	private Vec4 lightPosition = new Vec4(0.0, 5.0, 0.0, 0.0);
 
 	private int vao = 0, vbo = 0;
 	private int modelID;
 	private int viewID;
 	private int projID;
-	private int lightPosID;
-	
 	private float angle = 0.0f;
 
 	private ShaderProgram program;
@@ -57,8 +55,6 @@ public class SunPass {
 		initShader();
 		initMatrixes();
 		init = true;
-		
-//		rotateSun();
 	}
 
 	private void initVAOs() {
@@ -104,7 +100,6 @@ public class SunPass {
 		modelID = glGetUniformLocation(program.getProgramID(), "modelMatrix");
 		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
 		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
-		lightPosID = glGetUniformLocation(program.getProgramID(), "lightPos");
 	}
 
 	private void rotateSun() {
@@ -112,8 +107,6 @@ public class SunPass {
 		modelMatrix.rotateX(Math.toRadians(1));
 		modelMatrix.translate(new Vec3(lightPosition).toFa_());
 		angle += Math.toRadians(1);
-		
-		
 	}
 	
 	
@@ -137,7 +130,6 @@ public class SunPass {
 					glUniformMatrix4fv(projID, false, Renderer.camera.getProjectionMatrix().toFa_());
 
 					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
-//					glUniform4fv(lightPosID, lightPosition.toFA_());
 
 					glDrawArrays(GL_TRIANGLES, 0, Shapes.Cube.triangleCount);
 					
@@ -149,7 +141,7 @@ public class SunPass {
 	}
 
 	public Vec4 getLightPosition() {
-		return lightPosition;
+		return new Vec4(lightPosition).mul(modelMatrix);
 	}
 
 	public void dispose() {

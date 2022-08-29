@@ -16,7 +16,7 @@ public class MyModel extends Model{
 	public MyModel() {
 		super(ModelLoader.loadModelFromResource("Cube", "cube.obj"));
 		setShaderFolder("Transformation");
-		getMaterial().setTexture(ModelLoader.loadMaterialFromResource("Cube", "cube.mtl"));
+		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("Cube", "cube.mtl"));
 		
 //		normalDrawing = new NormalDrawing(this);
 	}

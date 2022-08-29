@@ -59,6 +59,7 @@ public class TerrainPass {
 	private int lightPosID;
 	private int lightSources;
 	private int numOfLights;
+	private int sunPosition;
 	
 	private double minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
 
@@ -191,10 +192,6 @@ public class TerrainPass {
 			this.normals[i * 4 + 3] = normalsList.get(i).w;
 		}
 
-//		System.out.println(vertices.size() * vertices.get(0).size());
-//		System.out.println(uvs.size());
-//		System.out.println(normals.size());
-
 	}
 
 	private Triangle getTriangle(int i, int j) {
@@ -271,7 +268,6 @@ public class TerrainPass {
 	}
 
 	private void initVAOs() {
-//		System.out.println(verticesBuffer.length + "\t" + uvs.length + "\t" + normals.length);
 		float[] dataBuffer = ModelUtils.flattenArrays(verticesBuffer, null, uvs, normals);
 
 		// create VAO
@@ -303,12 +299,6 @@ public class TerrainPass {
 			glEnableVertexAttribArray(3);
 			glVertexAttribPointer(3, 4, GL_FLOAT, false, 12 * 4, 8 * 4);
 
-//			glEnableVertexAttribArray(1);
-//			glVertexAttribPointer(1, 4, GL_FLOAT, false, 12 * 4, 4 * 4);
-//
-//			glEnableVertexAttribArray(2);
-//			glVertexAttribPointer(2, 4, GL_FLOAT, false, 12 * 4, 8 * 4);
-
 		}
 		glBindVertexArray(0);
 
@@ -328,6 +318,8 @@ public class TerrainPass {
 		
 		lightSources = glGetUniformLocation(program.getProgramID(), "lightsources");
 		numOfLights = glGetUniformLocation(program.getProgramID(), "numOfLights");
+		
+		sunPosition = glGetUniformLocation(program.getProgramID(), "sunPosition");
 		
 	}
 

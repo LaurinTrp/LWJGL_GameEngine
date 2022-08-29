@@ -15,6 +15,8 @@ uniform int numOfLights;
 uniform vec4 lightsources[MAX_LIGHTS];
 vec4 lightsource = vec4(1.0);
 
+uniform vec4 sunPosition;
+
 out vec4 fragColor;
 
 float a = 0.2, d = 0.1, s = 0.1;
@@ -24,15 +26,20 @@ float a = 0.2, d = 0.1, s = 0.1;
 void main() {
 	lightsource = vec4(0.0, 10.0, 0.0, 1.0);
 
-	vec3 color = texture(tex, uvCoord.st).rgb;
+	vec3 color = vec3(0.0);
+
+	lightsource = sunPosition;
+	color += calculateSunLight();
+
 	if (numOfLights == 0) {
 		fragColor = vec4(color, 1.0);
 	} else {
-		vec4 colorWithLight = vec4(0.0);
+		vec4 colorWithLight = vec4(color, 1.0);
 		for (int i = 0; i < numOfLights; i++) {
 			lightsource = lightsources[i];
 			colorWithLight += vec4(calculateLight(), 1.0);
 		}
+
 		fragColor = colorWithLight;
 	}
 }

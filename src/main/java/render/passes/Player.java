@@ -26,7 +26,7 @@ public class Player extends Model {
 	public Player() {
 		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
 		setShaderFolder("Transformation");
-		getMaterial().setTexture(ModelLoader.loadMaterialFromResource("AmongUs", "AmongUs.mtl"));
+		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
 	}
 	
 	@Override

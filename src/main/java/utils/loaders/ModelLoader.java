@@ -209,7 +209,7 @@ public class ModelLoader {
 		return 0;
 	}
 	
-	public static int loadMaterialFromResource(String parentFile, String fileName) {
+	public static int loadMaterialFileFromResource(String parentFile, String fileName) {
 		return loadMaterial(ResourceLoader.loadMaterialFile(parentFile, fileName));
 	}
 

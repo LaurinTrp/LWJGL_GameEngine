@@ -133,6 +133,8 @@ public class Model {
 
 		ModelUtils.createUniform(program, uniforms, "lightsources");
 		ModelUtils.createUniform(program, uniforms, "numOfLights");
+		
+		ModelUtils.createUniform(program, uniforms, "sunPosition");
 
 	}
 
@@ -199,6 +201,8 @@ public class Model {
 		}
 		glUniform4fv(uniforms.get("lightsources"), lightsources);
 		glUniform1i(uniforms.get("numOfLights"), lights.size());
+		
+		glUniform4fv(uniforms.get("sunPosition"), Renderer.sun.getLightPosition().toFA_());
 	}
 
 	protected void uploadMatrixes() {
