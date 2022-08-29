@@ -56,10 +56,10 @@ public class TerrainPass {
 	private int modelID;
 	private int viewID;
 	private int projID;
-	private int lightPosID;
 	private int lightSources;
 	private int numOfLights;
 	private int sunPosition;
+	private int sunColor;
 	
 	private double minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
 
@@ -260,7 +260,7 @@ public class TerrainPass {
 	private void initTextures() {
 
 		try {
-			tex = ImageLoader.loadTextureFromResource("Terrain.png");
+			tex = ImageLoader.loadTextureFromResource("Terrain/Terrain.png");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -314,12 +314,12 @@ public class TerrainPass {
 		modelID = glGetUniformLocation(program.getProgramID(), "modelMatrix");
 		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
 		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
-		lightPosID = glGetUniformLocation(program.getProgramID(), "lightPos");
 		
 		lightSources = glGetUniformLocation(program.getProgramID(), "lightsources");
 		numOfLights = glGetUniformLocation(program.getProgramID(), "numOfLights");
 		
 		sunPosition = glGetUniformLocation(program.getProgramID(), "sunPosition");
+		sunColor = glGetUniformLocation(program.getProgramID(), "sunColor");
 		
 	}
 
@@ -373,6 +373,9 @@ public class TerrainPass {
 		}
 		glUniform4fv(lightSources, lightsources);
 		glUniform1i(numOfLights, lights.size());
+		
+		glUniform4fv(sunPosition, Renderer.sun.getLightPosition().toFA_());
+		glUniform4fv(sunColor, Renderer.sun.getColor().toFA_());
 	}
 	
 	public BufferedImage createHeightMap() {

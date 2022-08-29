@@ -105,22 +105,10 @@ public class Renderer {
 
 
 		terrain.render();
-//		lightSourcePass.render();
-		sun.render();
+		lightSourcePass.render();
+		sun.update();
 		
-//		trianglePass.render();
-//		rectanglePass.render();
-
-//		metaBall.render();
-
-//		texturePass.render();
-
-//		compass.render();
-//		transformationPass.render();
-
-//		cottage.render();
-		
-//		cubes.render();
+		cottage.render();
 		
 		player.render();
 
@@ -129,10 +117,8 @@ public class Renderer {
 		
 //		model.render();
 //		compass.render();
-
-//		tree_1.render();
 		
-//		trees.render();
+		trees.render();
 
 	}
 

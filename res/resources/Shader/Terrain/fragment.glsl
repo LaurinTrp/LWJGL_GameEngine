@@ -16,6 +16,7 @@ uniform vec4 lightsources[MAX_LIGHTS];
 vec4 lightsource = vec4(1.0);
 
 uniform vec4 sunPosition;
+uniform vec4 sunColor;
 
 out vec4 fragColor;
 
@@ -29,7 +30,7 @@ void main() {
 	vec3 color = vec3(0.0);
 
 	lightsource = sunPosition;
-	color += calculateSunLight();
+	color += calculateSunLight(sunColor);
 
 	if (numOfLights == 0) {
 		fragColor = vec4(color, 1.0);

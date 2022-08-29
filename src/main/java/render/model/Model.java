@@ -15,7 +15,7 @@ import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glUniform1f;
 import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
@@ -134,7 +134,8 @@ public class Model {
 		ModelUtils.createUniform(program, uniforms, "lightsources");
 		ModelUtils.createUniform(program, uniforms, "numOfLights");
 		
-		ModelUtils.createUniform(program, uniforms, "sunPosition");
+		ModelUtils.createUniform(program, uniforms, "sunPosition");		
+		ModelUtils.createUniform(program, uniforms, "sunColor");
 
 	}
 
@@ -203,6 +204,8 @@ public class Model {
 		glUniform1i(uniforms.get("numOfLights"), lights.size());
 		
 		glUniform4fv(uniforms.get("sunPosition"), Renderer.sun.getLightPosition().toFA_());
+		glUniform4fv(uniforms.get("sunColor"), Renderer.sun.getColor().toFA_());
+		
 	}
 
 	protected void uploadMatrixes() {

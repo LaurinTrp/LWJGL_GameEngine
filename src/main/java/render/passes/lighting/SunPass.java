@@ -1,38 +1,8 @@
 package main.java.render.passes.lighting;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glDeleteTextures;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_DYNAMIC_READ;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform4fv;
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
-import static org.lwjgl.opengl.GL20.glUseProgram;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-
-import org.lwjgl.system.MemoryUtil;
-
 import glm.glm.mat._4.Mat4;
 import glm.glm.vec._3.Vec3;
 import glm.glm.vec._4.Vec4;
-import main.java.render.Renderer;
-import main.java.shader.ShaderProgram;
-import main.java.utils.Shapes;
 
 public class SunPass {
 
@@ -40,53 +10,15 @@ public class SunPass {
 
 	private Vec4 lightPosition = new Vec4(0.0, 5.0, 0.0, 0.0);
 
-	private int vao = 0, vbo = 0;
-	private int modelID;
-	private int viewID;
-	private int projID;
-	private float angle = 0.0f;
+	private Vec4 color = new Vec4(1.0, 1.0, 1.0, 1.0);
 
-	private ShaderProgram program;
+	private float angle = 0.0f;
 
 	private Mat4 modelMatrix;
 
 	private void init() {
-		initVAOs();
-		initShader();
 		initMatrixes();
 		init = true;
-	}
-
-	private void initVAOs() {
-
-		// create vertex array
-		float[] vertices = Shapes.Cube.buffer;
-
-		// create VAO
-		IntBuffer buffer = MemoryUtil.memAllocInt(1);
-		glGenVertexArrays(buffer);
-		vao = buffer.get(0);
-		glGenBuffers(buffer);
-		vbo = buffer.get(0);
-		MemoryUtil.memFree(buffer);
-
-		glBindVertexArray(vao);
-		{
-			// upload VBO
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glBufferData(GL_ARRAY_BUFFER, vertices, GL_DYNAMIC_READ);
-
-			// define Vertex Attributes
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 4, GL_FLOAT, false, 12 * 4, 0 * 4);
-
-			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 4, GL_FLOAT, false, 12 * 4, 4 * 4);
-
-			glEnableVertexAttribArray(2);
-			glVertexAttribPointer(2, 4, GL_FLOAT, false, 12 * 4, 8 * 4);
-		}
-		glBindVertexArray(0);
 	}
 
 	private void initMatrixes() {
@@ -94,23 +26,14 @@ public class SunPass {
 		modelMatrix.translate(new Vec3(lightPosition.x, lightPosition.y, lightPosition.z));
 	}
 
-	private void initShader() {
-
-		program = new ShaderProgram("LightSource");
-		modelID = glGetUniformLocation(program.getProgramID(), "modelMatrix");
-		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
-		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
-	}
-
 	private void rotateSun() {
 		modelMatrix.translate(new Vec3(lightPosition).negate().toFa_());
-		modelMatrix.rotateX(Math.toRadians(1));
+		modelMatrix.rotateX(Math.toRadians(.3));
 		modelMatrix.translate(new Vec3(lightPosition).toFa_());
-		angle += Math.toRadians(1);
+		angle += Math.toRadians(.3);
 	}
-	
-	
-	public void render() {
+
+	public void update() {
 
 		if (!init) {
 			init();
@@ -120,43 +43,57 @@ public class SunPass {
 			return;
 		}
 
-		{
-			glUseProgram(program.getProgramID());
-			{
-				glBindVertexArray(vao);
-				{
-
-					glUniformMatrix4fv(viewID, false, Renderer.camera.getView().toFa_());
-					glUniformMatrix4fv(projID, false, Renderer.camera.getProjectionMatrix().toFa_());
-
-					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
-
-					glDrawArrays(GL_TRIANGLES, 0, Shapes.Cube.triangleCount);
-					
-					rotateSun();
-				}
-				glBindVertexArray(0);
-			}
-		}
+		rotateSun();
+		angle %= Math.PI * 2;
+		calculateLightColor();
 	}
 
 	public Vec4 getLightPosition() {
-		return new Vec4(lightPosition).mul(modelMatrix);
+		if (modelMatrix != null) {
+			return new Vec4(lightPosition).mul(modelMatrix);
+		}
+		return lightPosition;
 	}
 
-	public void dispose() {
+	public void calculateLightColor() {
+		double r = 0, g = 0, b = 0;
+		color = new Vec4();
+		if (angle < Math.PI / 2f) {
+			r = -0.2326f * Math.pow(angle*4, 4) + 2.0523 * Math.pow(angle*4, 3) - 5.7 * Math.pow(angle*4, 2)
+					+ 4.767 * angle*4*4 + 255;
+			r = Math.max(0, Math.min(255, r));
+			
+			g = 0.263 * Math.pow(angle*4, 4) - 4.14 * Math.pow(angle*4, 3) + 16.338 * Math.pow(angle*4, 2) - 34.866 * angle*4 + 255;
+			g = Math.max(0, Math.min(255, g));
 
-		glDeleteVertexArrays(vao);
-		glDeleteBuffers(vbo);
+			b = 0.552 * Math.pow(angle*4, 4) - 7.051 * Math.pow(angle*4, 3) + 36.55 * Math.pow(angle*4, 2) - 127.293 * angle*4 + 255;
+			b = Math.max(0, Math.min(255, b));
+			
 
-		if (program != null) {
-			program.dispose();
 		}
-
-		vao = 0;
-		vbo = 0;
-
-		init = false;
+		else if(angle > Math.PI * 2 - Math.PI / 2f) {
+			float tempAngle = (float) (angle - Math.PI * 1.5);
+			System.out.println("ANGLE: " + (angle - Math.PI * 1.5));
+			r = -0.2329f * Math.pow(tempAngle, 4) + 3.788 * Math.pow(tempAngle, 3) - 21.936 * Math.pow(tempAngle, 2)
+					+ 53.392 * tempAngle + 209;
+			r = Math.max(0, Math.min(255, r));
+			
+			g = -0.0063 * Math.pow(tempAngle, 4) + 1.1766 * Math.pow(tempAngle, 3) - 15.165 * Math.pow(tempAngle, 2) +80.80 * tempAngle + 64;
+			g = Math.max(0, Math.min(255, g));
+			
+			b = 0.187 * Math.pow(tempAngle, 4)
+					- 2.577 * Math.pow(tempAngle, 3)
+					+ 19.567 * Math.pow(tempAngle, 2) - 28.446 * angle - Math.PI * 2
+					- Math.PI / 2f + 9;
+			b = Math.max(0, Math.min(255, b));
+		} 
+		color = new Vec4(r/255f, g/255f, b/255f, 1.0);
+		
+//		color.print();
+	}
+	
+	public Vec4 getColor() {
+		return color;
 	}
 
 }

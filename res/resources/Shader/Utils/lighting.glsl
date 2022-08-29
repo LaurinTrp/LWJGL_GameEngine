@@ -31,7 +31,7 @@ vec3 calculateLight() {
 	return (ambientColor * a) + (diffuseColor * d) + (specularColor * s);
 }
 
-vec3 calculateSunLight() {
+vec3 calculateSunLight(vec4 sunColor) {
 	//  ---------------------------
 
 	vec3 color = texture(tex, uvCoord.st).rgb;
@@ -40,13 +40,13 @@ vec3 calculateSunLight() {
 	vec3 fragmentToLight = normalize(lightsource.xyz);
 
 	//  ambient ----------------------------------------------------------------
-	vec3 ambientColor = color;
+	vec3 ambientColor = sunColor.rgb;
 
 	//  diffuse ----------------------------------------------------------------
 	float diffuse = dot(normalize(normal.xyz), fragmentToLight);
 
 	diffuse = max(diffuse, 0.0f);
-	vec3 diffuseColor = color * diffuse;
+	vec3 diffuseColor = sunColor.rgb * diffuse;
 
 	//  specular ---------------------------------------------------------------
 	vec3 reflection = reflect(-fragmentToLight, normalize(normal.xyz));
@@ -57,7 +57,7 @@ vec3 calculateSunLight() {
 
 	specular = pow(specular, 16.0f);
 
-	vec3 specularColor = color * specular;
+	vec3 specularColor = sunColor.rgb * specular;
 
-	return (ambientColor * 0.2) + (diffuseColor * 0.2) + (specularColor * 0.4);
+	return (ambientColor * 0.1) + (diffuseColor * 0.1) + (specularColor * 0.1);
 }

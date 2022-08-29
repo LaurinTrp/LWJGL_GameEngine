@@ -56,6 +56,7 @@ public class ResourceLoader {
 			ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
 			imageBuffer.put(imageData);
 			imageBuffer.flip();
+			System.out.println(imageBuffer);
 			return imageBuffer;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -100,7 +101,7 @@ public class ResourceLoader {
 			IntBuffer h = stack.mallocInt(1);
 			IntBuffer c = stack.mallocInt(1);
 			
-			ByteBuffer imageBuffer = ResourceLoader.loadTexture("Tex.png");
+			ByteBuffer imageBuffer = ResourceLoader.loadTexture("Player/Player.png");
 
 			buffer = STBImage.stbi_load_from_memory(imageBuffer, w, h, c, 0);
 			if (buffer == null) {
@@ -109,7 +110,7 @@ public class ResourceLoader {
 
 			width = w.get();
 			height = h.get();
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
