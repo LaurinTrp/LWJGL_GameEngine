@@ -58,40 +58,30 @@ public class SunPass {
 	public void calculateLightColor() {
 		double r = 0, g = 0, b = 0;
 		color = new Vec4();
-		if (angle < Math.PI / 2f) {
-			r = -0.2326f * Math.pow(angle*4, 4) + 2.0523 * Math.pow(angle*4, 3) - 5.7 * Math.pow(angle*4, 2)
-					+ 4.767 * angle*4*4 + 255;
+
+		double tempAngle = angle;
+		if (Math.toDegrees(angle) < 90  || Math.toDegrees(angle) > 270) {
+			if(Math.toDegrees(angle) > 270) {
+				tempAngle = Math.PI*2 - angle;
+			}
+			r = -653.553 * Math.pow(tempAngle, 5) + 2476.668 * Math.pow(tempAngle, 4) - 3329.971 * Math.pow(tempAngle, 3)
+					+ 1731.326 * Math.pow(tempAngle, 2) - 285.683 * tempAngle + 255;
 			r = Math.max(0, Math.min(255, r));
 			
-			g = 0.263 * Math.pow(angle*4, 4) - 4.14 * Math.pow(angle*4, 3) + 16.338 * Math.pow(angle*4, 2) - 34.866 * angle*4 + 255;
-			g = Math.max(0, Math.min(255, g));
-
-			b = 0.552 * Math.pow(angle*4, 4) - 7.051 * Math.pow(angle*4, 3) + 36.55 * Math.pow(angle*4, 2) - 127.293 * angle*4 + 255;
-			b = Math.max(0, Math.min(255, b));
 			
-
+			g = 68.078 * Math.pow(tempAngle, 5) - 81.272 * Math.pow(tempAngle, 4) - 192.165 * Math.pow(tempAngle, 3)
+					+ 220.796 * Math.pow(tempAngle, 2) - 124.486 * tempAngle + 255;
+			g = Math.max(0, Math.min(255, g));
+			
+			b = -381.239 * Math.pow(tempAngle, 5) + 1360.243 * Math.pow(tempAngle, 4) - 1682.455 * Math.pow(tempAngle, 3)
+					+ 1036.009 * Math.pow(tempAngle, 2) - 589.404 * tempAngle + 255;
+			b = Math.max(0, Math.min(255, b));
 		}
-		else if(angle > Math.PI * 2 - Math.PI / 2f) {
-			float tempAngle = (float) (angle - Math.PI * 1.5);
-			System.out.println("ANGLE: " + (angle - Math.PI * 1.5));
-			r = -0.2329f * Math.pow(tempAngle, 4) + 3.788 * Math.pow(tempAngle, 3) - 21.936 * Math.pow(tempAngle, 2)
-					+ 53.392 * tempAngle + 209;
-			r = Math.max(0, Math.min(255, r));
-			
-			g = -0.0063 * Math.pow(tempAngle, 4) + 1.1766 * Math.pow(tempAngle, 3) - 15.165 * Math.pow(tempAngle, 2) +80.80 * tempAngle + 64;
-			g = Math.max(0, Math.min(255, g));
-			
-			b = 0.187 * Math.pow(tempAngle, 4)
-					- 2.577 * Math.pow(tempAngle, 3)
-					+ 19.567 * Math.pow(tempAngle, 2) - 28.446 * angle - Math.PI * 2
-					- Math.PI / 2f + 9;
-			b = Math.max(0, Math.min(255, b));
-		} 
-		color = new Vec4(r/255f, g/255f, b/255f, 1.0);
-		
-//		color.print();
+
+		color = new Vec4(r / 255f, g / 255f, b / 255f, 1.0);
+
 	}
-	
+
 	public Vec4 getColor() {
 		return color;
 	}
