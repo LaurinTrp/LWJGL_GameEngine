@@ -12,7 +12,9 @@ import glm.glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
+import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
+import resources.ResourceLoader;
 
 public class Player extends Model {
 
@@ -26,7 +28,14 @@ public class Player extends Model {
 	public Player() {
 		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
 		setShaderFolder("Transformation");
-		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
+		try {
+//			getMaterial().setTexture(ImageLoader.loadTextureFromMemory("/media/laurin/Laurin Festplatte/Blender/Models/among_us_obj/Plastic_4K_Reflect.jpg"));
+			getMaterial().setTexture(ResourceLoader.loadTexture("player/Plastic_4K_Diffuse.jpg"));
+			getMaterial().setReflectionTexture(ResourceLoader.loadTexture("player/Plastic_4K_Reflect.jpg"));
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

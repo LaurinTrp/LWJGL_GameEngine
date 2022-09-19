@@ -1,7 +1,8 @@
 #version 430 core
 
 
-uniform sampler2D tex;
+uniform sampler2D texDiffuse;
+uniform sampler2D texReflectance;
 
 uniform vec4 cameraPos;
 

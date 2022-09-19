@@ -15,7 +15,24 @@ import org.lwjgl.system.MemoryStack;
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_BORDER_COLOR;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
+import static org.lwjgl.opengl.GL11.glTexParameterfv;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL12.*;
+import static org.lwjgl.opengl.GL14.GL_MIRRORED_REPEAT;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.stb.STBImageResize.*;
 import static org.lwjgl.system.MemoryStack.*;
@@ -48,7 +65,7 @@ public class ResourceLoader {
 		return null;
 	}
 
-	public static ByteBuffer loadTexture(String fileName) {
+	public static int loadTexture(String fileName) throws Exception{
 		InputStream imageFile = ResourceLoader.class.getResourceAsStream("Textures/" + fileName);
 		byte[] imageData;
 		try {
@@ -56,11 +73,43 @@ public class ResourceLoader {
 			ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
 			imageBuffer.put(imageData);
 			imageBuffer.flip();
-			System.out.println(imageBuffer);
-			return imageBuffer;
+			
+			int width, height;
+			ByteBuffer buffer;
+			try(MemoryStack stack = MemoryStack.stackPush()){
+				IntBuffer w = stack.mallocInt(1);
+				IntBuffer h = stack.mallocInt(1);
+				IntBuffer c = stack.mallocInt(1);
+				
+				buffer = STBImage.stbi_load_from_memory(imageBuffer, w, h, c, 4);
+				if(buffer == null) {
+					throw new Exception("Image File not loaded " + STBImage.stbi_failure_reason());
+				}
+				
+				width = w.get();
+				height = h.get();
+			}
+			int id = glGenTextures();
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+			float[] borderColor = {1.0f, 1.0f, 0.0f, 1.0f};
+			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			
+			glBindTexture(GL_TEXTURE_2D, id);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+			glGenerateMipmap(GL_TEXTURE_2D);
+			
+//			System.out.println(id);
+			
+			return id;
+			
+//			return imageBuffer;
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			return 0;
 		}
 	}
 	
@@ -94,26 +143,26 @@ public class ResourceLoader {
 	}
 
 	public static void main(String[] args) {
-		int width, height;
-		ByteBuffer buffer;
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			IntBuffer w = stack.mallocInt(1);
-			IntBuffer h = stack.mallocInt(1);
-			IntBuffer c = stack.mallocInt(1);
-			
-			ByteBuffer imageBuffer = ResourceLoader.loadTexture("Player/Player.png");
-
-			buffer = STBImage.stbi_load_from_memory(imageBuffer, w, h, c, 0);
-			if (buffer == null) {
-				throw new Exception("Image File not loaded " + STBImage.stbi_failure_reason());
-			}
-
-			width = w.get();
-			height = h.get();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		int width, height;
+//		ByteBuffer buffer;
+//		try (MemoryStack stack = MemoryStack.stackPush()) {
+//			IntBuffer w = stack.mallocInt(1);
+//			IntBuffer h = stack.mallocInt(1);
+//			IntBuffer c = stack.mallocInt(1);
+//			
+//			ByteBuffer imageBuffer = ResourceLoader.loadTexture("Player/Player.png");
+//
+//			buffer = STBImage.stbi_load_from_memory(imageBuffer, w, h, c, 0);
+//			if (buffer == null) {
+//				throw new Exception("Image File not loaded " + STBImage.stbi_failure_reason());
+//			}
+//
+//			width = w.get();
+//			height = h.get();
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 
 
 	}
