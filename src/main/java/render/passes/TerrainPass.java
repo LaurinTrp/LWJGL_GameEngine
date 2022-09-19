@@ -21,6 +21,7 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL20.*;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -338,6 +339,7 @@ public class TerrainPass {
 		{
 			glUseProgram(program.getProgramID());
 			{
+				glActiveTexture(GL_TEXTURE0 + 0);
 				glBindTexture(GL_TEXTURE_2D, tex);
 				glBindVertexArray(vao);
 				{
