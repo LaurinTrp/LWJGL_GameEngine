@@ -32,10 +32,6 @@ vec3 calculateLight() {
 }
 
 vec3 calculateSunLight(vec4 sunColor) {
-	//  ---------------------------
-
-	vec3 color = texture(tex, uvCoord.st).rgb;
-
 	//  vector light to fragment
 	vec3 fragmentToLight = normalize(lightsource.xyz);
 

@@ -1,9 +1,8 @@
 package main.java.render;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_F;
-
 import glm.glm.Glm;
 import glm.glm.mat._4.Mat4;
+import glm.glm.vec._2.Vec2;
 import glm.glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.passes.Player;
@@ -35,10 +34,10 @@ public class Camera {
 	}
 	
 	private void rotation() {
-
+		
 		angleVertical += Engine_Main.mouseHandler.getYoffset();
 		angleHorizontal += Engine_Main.mouseHandler.getXoffset();
-
+		
 		if(angleVertical <= -89f) {
 			angleVertical = -89f;
 		}
@@ -59,6 +58,12 @@ public class Camera {
 		cameraPosition.x = player.getPosition().x - offsetX;
 		cameraPosition.y = player.getPosition().y + verticalDistance;
 		cameraPosition.z = player.getPosition().z - offsetZ;
+		
+
+		float terrainHeight = Renderer.terrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
+		if(cameraPosition.y < terrainHeight + 0.2f) {
+			cameraPosition.y = terrainHeight + 0.2f;
+		}
 	}
 	
 	public void moveCamera() {
@@ -73,7 +78,6 @@ public class Camera {
 		
 		view = Glm.lookAt_(cameraPosition, main.java.utils.math.Glm.add(player.getPosition(), cameraFront), cameraUp);
 		
-//		view = Glm.lookAt_(cameraPosition, main.java.utils.math.Glm.add(cameraPosition, cameraFront), cameraUp);
 	}
 	
 	private void updateProjectionMatrix() {
