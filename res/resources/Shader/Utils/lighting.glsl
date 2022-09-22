@@ -14,7 +14,7 @@ vec3 calculateLight() {
 	//  diffuse ----------------------------------------------------------------
 	float diffuse = dot(normalize(normal.xyz), fragmentToLight);
 
-	diffuse = max(diffuse, 0.0f);
+	diffuse = max(diffuse, 0.0f) * material.reflectance;
 	vec3 diffuseColor = color * diffuse;
 
 	//  specular ---------------------------------------------------------------
@@ -24,7 +24,7 @@ vec3 calculateLight() {
 	float specular = dot(reflection, fragmentTocameraPos);
 	specular = max(specular, 0.0f); //  0.0 ... 1.0
 
-	specular = pow(specular, 16.0f);
+	specular = pow(specular, 16.0f) * material.reflectance;
 
 	vec3 specularColor = color * specular;
 

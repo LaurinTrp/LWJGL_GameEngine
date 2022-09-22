@@ -1,9 +1,16 @@
 package main.java.render;
 
+<<<<<<< Work
 import glm.Glm;
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
+=======
+import glm.glm.Glm;
+import glm.glm.mat._4.Mat4;
+import glm.glm.vec._2.Vec2;
+import glm.glm.vec._3.Vec3;
+>>>>>>> 7bd441a Camera will not move under the terrain
 import main.java.gui.Engine_Main;
 import main.java.render.passes.Player;
 import main.java.render.passes.TerrainModel;
@@ -36,11 +43,10 @@ public class Camera {
 	}
 
 	private void rotation() {
-
+		
 		angleVertical += Engine_Main.mouseHandler.getYoffset();
 		angleHorizontal += Engine_Main.mouseHandler.getXoffset();
-
-		if (angleVertical <= -89f) {
+		if(angleVertical <= -89f) {
 			angleVertical = -89f;
 		}
 		if (angleVertical >= 89f) {
@@ -60,6 +66,7 @@ public class Camera {
 		cameraPosition.x = player.getPosition().x - offsetX;
 		cameraPosition.y = player.getPosition().y + verticalDistance;
 		cameraPosition.z = player.getPosition().z - offsetZ;
+<<<<<<< Work
 
 		TerrainModel terrain = (TerrainModel) Renderer.terrains.get(0);
 		if (terrain.isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
@@ -67,6 +74,22 @@ public class Camera {
 			if (cameraPosition.y < terrainHeight + 0.2f) {
 				cameraPosition.y = terrainHeight + 0.2f;
 			}
+=======
+		
+
+		float terrainHeight = Renderer.terrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
+		if(cameraPosition.y < terrainHeight + 0.2f) {
+			cameraPosition.y = terrainHeight + 0.2f;
+		}
+	}
+	
+	public void moveCamera() {
+		
+		updateProjectionMatrix();
+		
+		if(distanceFromPlayer <= 10 && distanceFromPlayer >= 2) {
+			distanceFromPlayer = Math.min(10, Math.max(2, distanceFromPlayer - Engine_Main.mouseHandler.getScrollY() * 0.4f));
+>>>>>>> 7bd441a Camera will not move under the terrain
 		}
 	}
 
@@ -82,7 +105,11 @@ public class Camera {
 		rotation();
 
 		view = Glm.lookAt_(cameraPosition, main.java.utils.math.Glm.add(player.getPosition(), cameraFront), cameraUp);
+<<<<<<< Work
 
+=======
+		
+>>>>>>> 7bd441a Camera will not move under the terrain
 	}
 
 	private void updateProjectionMatrix() {

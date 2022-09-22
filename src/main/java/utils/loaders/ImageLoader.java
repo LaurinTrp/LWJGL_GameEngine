@@ -61,7 +61,7 @@ public class ImageLoader {
 	 */
 	public static int loadTextureFromResource(String fileName) {
 		try {
-			return ResourceLoader.loadTexture(fileName);
+			return loadTexture(ResourceLoader.loadTexture(fileName));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;

@@ -271,7 +271,6 @@ public class Model {
 		glUniform1f(uniforms.get("material.reflectance"), material.getReflectance());
 		glUniform1i(uniforms.get("material.hasTexture"), material.hasTexture() ? 1 : 0);
 		
-		
 		glUniform1i(uniforms.get("texDiffuse"), 0);
 		glUniform1i(uniforms.get("texReflectance"), 1);
 	}
