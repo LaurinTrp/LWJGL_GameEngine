@@ -3,8 +3,8 @@ package main.java.render.passes.trees;
 import java.util.ArrayList;
 import java.util.Random;
 
-import glm.glm.vec._2.Vec2;
-import glm.glm.vec._3.Vec3;
+import glm.vec._2.Vec2;
+import glm.vec._3.Vec3;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
 import main.java.render.model.ModelCluster;

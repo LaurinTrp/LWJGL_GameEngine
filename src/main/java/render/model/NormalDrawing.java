@@ -19,7 +19,7 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.HashMap;
 
-import glm.glm.mat._4.Mat4;
+import glm.mat._4.Mat4;
 import main.java.render.Renderer;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;

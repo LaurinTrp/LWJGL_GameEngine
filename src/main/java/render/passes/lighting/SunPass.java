@@ -1,8 +1,8 @@
 package main.java.render.passes.lighting;
 
-import glm.glm.mat._4.Mat4;
-import glm.glm.vec._3.Vec3;
-import glm.glm.vec._4.Vec4;
+import glm.mat._4.Mat4;
+import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 
 public class SunPass {
 

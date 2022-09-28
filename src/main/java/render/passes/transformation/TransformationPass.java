@@ -18,8 +18,8 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.glfw.GLFW;
 
-import glm.glm.mat._4.Mat4;
-import glm.glm.vec._4.Vec4;
+import glm.mat._4.Mat4;
+import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.shader.ShaderProgram;

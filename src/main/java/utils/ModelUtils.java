@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import glm.glm.vec._4.Vec4;
+import glm.vec._4.Vec4;
 import main.java.render.model.Material;
 import main.java.render.model.Model;
 import main.java.shader.ShaderProgram;

@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import glm.glm.mat._4.Mat4;
-import glm.glm.vec._4.Vec4;
+import glm.mat._4.Mat4;
+import glm.vec._4.Vec4;
 import main.java.render.Renderer;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;

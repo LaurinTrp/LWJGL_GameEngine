@@ -1,7 +1,7 @@
 package main.java.utils.math;
 
-import glm.glm.vec._2.Vec2;
-import glm.glm.vec._3.Vec3;
+import glm.vec._2.Vec2;
+import glm.vec._3.Vec3;
 
 public class MathFunctions {
 	

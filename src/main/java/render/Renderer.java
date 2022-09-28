@@ -4,7 +4,7 @@ import static org.lwjgl.opengl.GL30.glDeleteFramebuffers;
 
 import java.util.ArrayList;
 
-import glm.glm.vec._4.Vec4;
+import glm.vec._4.Vec4;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.Cubes;
 import main.java.render.passes.Player;

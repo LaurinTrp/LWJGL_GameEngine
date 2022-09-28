@@ -7,8 +7,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 
-import glm.glm.vec._2.Vec2;
-import glm.glm.vec._3.Vec3;
+import glm.vec._2.Vec2;
+import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.model.Model;

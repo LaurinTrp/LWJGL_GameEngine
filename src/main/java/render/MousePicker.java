@@ -1,8 +1,8 @@
 package main.java.render;
 
-import glm.glm.mat._4.Mat4;
-import glm.glm.vec._2.Vec2;
-import glm.glm.vec._4.Vec4;
+import glm.mat._4.Mat4;
+import glm.vec._2.Vec2;
+import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
 
 public class MousePicker {

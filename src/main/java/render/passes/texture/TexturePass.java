@@ -26,7 +26,7 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-import glm.glm.mat._4.Mat4;
+import glm.mat._4.Mat4;
 import main.java.shader.ShaderProgram;
 import main.java.utils.loaders.ImageLoader;
 

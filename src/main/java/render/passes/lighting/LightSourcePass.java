@@ -28,9 +28,9 @@ import java.util.ArrayList;
 
 import org.lwjgl.system.MemoryUtil;
 
-import glm.glm.mat._4.Mat4;
-import glm.glm.vec._3.Vec3;
-import glm.glm.vec._4.Vec4;
+import glm.mat._4.Mat4;
+import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import main.java.render.Renderer;
 import main.java.shader.ShaderProgram;
 import main.java.utils.Shapes;

@@ -36,11 +36,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
 
-import glm.glm.Glm;
-import glm.glm.mat._4.Mat4;
-import glm.glm.vec._2.Vec2;
-import glm.glm.vec._3.Vec3;
-import glm.glm.vec._4.Vec4;
+import glm.Glm;
+import glm.mat._4.Mat4;
+import glm.vec._2.Vec2;
+import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import main.java.render.Renderer;
 import main.java.render.model.NormalDrawing;
 import main.java.shader.ShaderProgram;

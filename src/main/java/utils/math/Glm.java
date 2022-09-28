@@ -1,7 +1,7 @@
 package main.java.utils.math;
 
-import glm.glm.mat._4.Mat4;
-import glm.glm.vec._3.Vec3;
+import glm.mat._4.Mat4;
+import glm.vec._3.Vec3;
 
 public class Glm {
 	public static Vec3 normalize(Vec3 vector) {

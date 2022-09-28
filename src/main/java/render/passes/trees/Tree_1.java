@@ -1,6 +1,6 @@
 package main.java.render.passes.trees;
 
-import glm.glm.vec._3.Vec3;
+import glm.vec._3.Vec3;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;

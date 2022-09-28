@@ -20,7 +20,7 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import glm.glm.mat._4.Mat4;
+import glm.mat._4.Mat4;
 import main.java.render.Renderer;
 import main.java.shader.ShaderProgram;
 
