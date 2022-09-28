@@ -56,7 +56,6 @@ public class ResourceLoader {
 			ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
 			imageBuffer.put(imageData);
 			imageBuffer.flip();
-			System.out.println(imageBuffer);
 			return imageBuffer;
 		} catch (IOException e) {
 			e.printStackTrace();

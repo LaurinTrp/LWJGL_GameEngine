@@ -86,7 +86,10 @@ public class Engine_Main {
 		glfwDefaultWindowHints();
 		
 		PointerBuffer monitors = glfwGetMonitors();
-		long monitor = monitors.get(0);
+		long monitor = 0;
+		try {
+			monitor = monitors.get(0);
+		}catch (IndexOutOfBoundsException e) {}
 		GLFWVidMode mode = glfwGetVideoMode(monitor);
 		 
 		glfwWindowHint(GLFW_RED_BITS, mode.redBits());

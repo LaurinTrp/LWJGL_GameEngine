@@ -151,6 +151,7 @@ public class RectanglePass {
 				}
 				glBindVertexArray(0);
 			}
+			
 		}
 	}
 

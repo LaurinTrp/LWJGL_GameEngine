@@ -230,7 +230,6 @@ public class Model {
 			init();
 		}
 		{
-
 			glUseProgram(program.getProgramID());
 			{
 				if (material != null) {

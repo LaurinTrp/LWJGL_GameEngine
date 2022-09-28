@@ -1,5 +1,7 @@
 package main.java.render;
 
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glDeleteFramebuffers;
 
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import main.java.render.passes.Cottage;
 import main.java.render.passes.Cubes;
 import main.java.render.passes.Player;
 import main.java.render.passes.TerrainPass;
+import main.java.render.passes.framebuffers.Framebuffer;
 import main.java.render.passes.lighting.LightSourcePass;
 import main.java.render.passes.lighting.SunPass;
 import main.java.render.passes.standard.RectanglePass;
@@ -23,6 +26,7 @@ import main.java.utils.ModelUtils;
 
 public class Renderer {
 	
+	public static Framebuffer framebuffer;
 	
 	public static Vec4 ambientColor;
 
@@ -39,8 +43,6 @@ public class Renderer {
 	public static Camera camera;
 
 	public static ArrayList<Vec4> lightSourcePositions = new ArrayList<>();
-
-	private int framebuffer;
 
 	private Cottage cottage;
 	private MyModel model;
@@ -61,6 +63,8 @@ public class Renderer {
 	
 
 	public Renderer() {
+		
+		framebuffer = new Framebuffer();
 		
 		ambientColor = new Vec4(1.0f);
 
@@ -103,7 +107,10 @@ public class Renderer {
 
 	public void render() {
 
+		framebuffer.render();
 
+		glEnable(GL_DEPTH_TEST);
+		
 		terrain.render();
 		lightSourcePass.render();
 		sun.update();
@@ -113,19 +120,22 @@ public class Renderer {
 		player.render();
 
 		camera.moveCamera();
-//		mousePicker.update();
+		mousePicker.update();
 		
-//		model.render();
-//		compass.render();
+		model.render();
+		compass.render();
 		
 		trees.render();
+		glDisable(GL_DEPTH_TEST);
+		
+		framebuffer.renderColorAttachments();
 
 	}
 
 	public void dispose() {
 
-		glDeleteFramebuffers(framebuffer);
-
+		framebuffer.dispose();
+		
 		trianglePass.dispose();
 		rectanglePass.dispose();
 		texturePass.dispose();
