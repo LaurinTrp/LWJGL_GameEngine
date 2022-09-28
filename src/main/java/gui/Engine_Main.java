@@ -117,7 +117,7 @@ public class Engine_Main {
 	private static void initCallbacks() {
 		glfwSetCursorPosCallback(window, mouseHandler.getCursorPosCallback());
 		glfwSetScrollCallback(window, mouseHandler.getScrollCallback());
-
+		glfwSetMouseButtonCallback(window, mouseHandler.getMouseButtonCallback());
 	}
 	
 	private static void loop() {

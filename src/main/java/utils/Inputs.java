@@ -3,7 +3,9 @@ package main.java.utils;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
 
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 
 public class Inputs {
@@ -15,6 +17,9 @@ public class Inputs {
 		private double mouseX, mouseY;
 		
 		private float scrollY;
+		
+		private boolean LMB_Down = false;
+		private boolean RMB_Down = false;
 		
 		GLFWCursorPosCallback cursorPosCallback = new GLFWCursorPosCallback() {
 			@Override
@@ -42,6 +47,10 @@ public class Inputs {
 				
 			}
 		};
+
+		public GLFWCursorPosCallback getCursorPosCallback() {
+			return cursorPosCallback;
+		}
 		
 		GLFWScrollCallback scrollCallback = new GLFWScrollCallback() {
 			@Override
@@ -49,6 +58,28 @@ public class Inputs {
 				scrollY = (float) yoffset;
 			}
 		};
+
+		public GLFWScrollCallback getScrollCallback() {
+			return scrollCallback;
+		}
+		
+		GLFWMouseButtonCallback mouseButtonCallback = new GLFWMouseButtonCallback() {
+			
+			@Override
+			public void invoke(long window, int button, int action, int mods) {
+				if(button == GLFW.GLFW_MOUSE_BUTTON_1) {
+					LMB_Down = action == GLFW.GLFW_PRESS;
+				}
+				if(button == GLFW.GLFW_MOUSE_BUTTON_2) {
+					RMB_Down = action == GLFW.GLFW_PRESS;
+				}
+				System.out.println(button);
+			}
+		};
+
+		public GLFWMouseButtonCallback getMouseButtonCallback() {
+			return mouseButtonCallback;
+		}
 		
 		public double getXoffset() {
 			return xoffset;
@@ -64,19 +95,20 @@ public class Inputs {
 	        return value;
 	    }
 
-		public GLFWCursorPosCallback getCursorPosCallback() {
-			return cursorPosCallback;
-		}
-
-		public GLFWScrollCallback getScrollCallback() {
-			return scrollCallback;
-		}
 		
 		public double getMouseX() {
 			return mouseX;
 		}
 		public double getMouseY() {
 			return mouseY;
+		}
+		
+		public boolean isLMB_Down() {
+			return LMB_Down;
+		}
+		
+		public boolean isRMB_Down() {
+			return RMB_Down;
 		}
 		
 	}

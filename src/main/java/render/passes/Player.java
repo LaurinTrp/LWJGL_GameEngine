@@ -13,6 +13,7 @@ import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ModelLoader;
+import main.java.utils.math.Glm;
 
 public class Player extends Model {
 
@@ -33,6 +34,7 @@ public class Player extends Model {
 	protected void renderProcess() {
 		super.renderProcess();
 
+//		rotation();
 		movement();
 		updateMinmax();
 		gravity();
@@ -49,6 +51,26 @@ public class Player extends Model {
 		setScale(0.01f);
 		
 		position = new Vec3(0f, 5f, 0f);
+		modelMatrix.translate(position);
+	}
+	
+	private void rotation() {
+
+		double offsetX = Engine_Main.mouseHandler.getXoffset();
+		if(!Engine_Main.mouseHandler.isRMB_Down()) {
+			return;
+		}
+		
+		Vec3 position = Glm.matTranslation(modelMatrix);
+		modelMatrix.translate(new Vec3());
+		
+		if(offsetX > 0) {
+			modelMatrix = modelMatrix.rotateY(Math.toRadians(-1d));
+		}
+		if(offsetX < 0) {
+			modelMatrix = modelMatrix.rotateY(Math.toRadians(1d));
+		}
+		
 		modelMatrix.translate(position);
 	}
 	
