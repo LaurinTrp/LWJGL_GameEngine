@@ -6,6 +6,7 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.passes.Player;
+import main.java.render.passes.TerrainPass;
 
 public class Camera {
 
@@ -60,8 +61,9 @@ public class Camera {
 		cameraPosition.y = player.getPosition().y + verticalDistance;
 		cameraPosition.z = player.getPosition().z - offsetZ;
 
-		if (Renderer.terrain.isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
-			float terrainHeight = Renderer.terrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
+		TerrainPass terrain = Renderer.terrains.get(0);
+		if (terrain.isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
+			float terrainHeight =terrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
 			if (cameraPosition.y < terrainHeight + 0.2f) {
 				cameraPosition.y = terrainHeight + 0.2f;
 			}

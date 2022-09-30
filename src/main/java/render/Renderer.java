@@ -5,6 +5,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glDeleteFramebuffers;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import glm.vec._4.Vec4;
 import main.java.render.passes.Cottage;
@@ -51,8 +52,7 @@ public class Renderer {
 
 	private MousePicker mousePicker;
 	
-	public static TerrainPass terrain;
-	public TerrainPass terrain1;
+	public static ArrayList<TerrainPass> terrains;
 	
 	private Player player;
 	
@@ -95,9 +95,10 @@ public class Renderer {
 		player = new Player();
 		
 		
-		terrain = new TerrainPass(0, 0);
-//		System.out.println();
-		terrain1 = new TerrainPass(-TerrainPass.width, 0);
+		terrains = new ArrayList<>();
+		for (int i = 0; i < 4; i++) {
+			terrains.add(new TerrainPass(-(i%2*TerrainPass.width), -((i > 1) ? 1: 0)*TerrainPass.height));
+		}
 
 		camera = new Camera(player);
 		mousePicker = new MousePicker(camera);
@@ -114,8 +115,12 @@ public class Renderer {
 
 		glEnable(GL_DEPTH_TEST);
 		
-		terrain.render();
-		terrain1.render();
+//		terrain.render();
+//		terrain1.render();
+		for (TerrainPass terrainPass : terrains) {
+			terrainPass.render();
+		}
+		
 		lightSourcePass.render();
 		sun.update();
 		
@@ -140,8 +145,11 @@ public class Renderer {
 
 		framebuffer.dispose();
 		
-		terrain.dispose();
-		terrain1.dispose();
+		for (TerrainPass terrainPass : terrains) {
+			terrainPass.dispose();
+		}
+//		terrain.dispose();
+//		terrain1.dispose();
 		
 		trianglePass.dispose();
 		rectanglePass.dispose();
