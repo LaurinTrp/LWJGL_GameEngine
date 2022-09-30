@@ -45,8 +45,8 @@ public class Trees extends ModelCluster {
 			model.getModelMatrix().translate(offset.negate());
 
 			Random random = new Random();
-			float rX = random.nextInt(Renderer.terrain.getWidth()) + Renderer.terrain.getStartX();
-			float rZ = random.nextInt(Renderer.terrain.getHeight()) + Renderer.terrain.getStartZ();
+			float rX = random.nextFloat()*(Renderer.terrain.getWidth()) + Renderer.terrain.getStartX();
+			float rZ = random.nextFloat()*(Renderer.terrain.getHeight()) + Renderer.terrain.getStartZ();
 			model.getModelMatrix().translate(new Vec3(rX, Renderer.terrain.heightAtPosition(new Vec2(rX, rZ)), rZ));
 
 		}

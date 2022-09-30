@@ -59,7 +59,7 @@ public class Engine_Main {
 	
 	public static void main(String[] args) throws IOException {
 
-		new TestClass().start();
+//		new TestClass().start();
 		
 		initWindow();
 		

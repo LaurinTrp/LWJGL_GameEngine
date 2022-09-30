@@ -100,13 +100,13 @@ public class Player extends Model {
 	}
 	
 	private void gravity() {
-		if(position.x > Renderer.terrain.getStartX() && position.x < Renderer.terrain.getStartX() + Renderer.terrain.getWidth()
-			&& position.z > Renderer.terrain.getStartZ() && position.z < Renderer.terrain.getStartZ() + Renderer.terrain.getHeight()) {
-			float yDiff = position.y - minmax[2];
-			position.y = Renderer.terrain.heightAtPosition(new Vec2(position.x, position.z)) + yDiff;
-		}else {
-			position.y -= speed;
-		}
+//		System.out.println(Renderer.terrain.heightAtPosition(new Vec2(position.x, position.z)));
+//		if(Renderer.terrain.isOnTerrain(new Vec2(position.x,position.z))) {
+//			float yDiff = position.y - minmax[2];
+//			position.y = Renderer.terrain.heightAtPosition(new Vec2(position.x, position.z)) + yDiff;
+//		}else {
+//			position.y -= speed;
+//		}
 	}
 	
 	public Vec3 getPosition() {

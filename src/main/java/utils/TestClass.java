@@ -16,24 +16,18 @@ public class TestClass extends Thread implements Runnable {
 	@Override
 	public void run() {
 		super.run();
-		double[] data = new double[20];
-		for(int i = 0; i < 20; i++) {
-			data[i]=SimplexNoise.noise(i*20, 0);
-		}
-		double minValue = data[0], maxValue = data[0];
-	    for (int i = 0; i < data.length; i++) {
-	      minValue = Math.min(data[i], minValue);
-	      maxValue = Math.max(data[i], maxValue);
-	    }
-
-	    int[] pixelData = new int[20];
-	    for (int i = 0; i < data.length; i++) {
-	      pixelData[i] = (int) (255 * (data[i] - minValue) / (maxValue - minValue));
-	    }
-	    System.out.println(Arrays.toString(pixelData));
+		System.out.println(SimplexNoise.noise(0, 20));
+		System.out.println(SimplexNoise.noise(0, 21));
+		System.out.println();
 	}
 	
 	public static void main(String[] args) {
+		new TestClass().start();
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		new TestClass().start();
 	}
 	

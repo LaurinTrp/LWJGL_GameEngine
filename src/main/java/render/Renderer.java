@@ -52,6 +52,7 @@ public class Renderer {
 	private MousePicker mousePicker;
 	
 	public static TerrainPass terrain;
+	public TerrainPass terrain1;
 	
 	private Player player;
 	
@@ -94,7 +95,9 @@ public class Renderer {
 		player = new Player();
 		
 		
-		terrain = new TerrainPass();
+		terrain = new TerrainPass(0, 0);
+//		System.out.println();
+		terrain1 = new TerrainPass(-TerrainPass.width, 0);
 
 		camera = new Camera(player);
 		mousePicker = new MousePicker(camera);
@@ -112,6 +115,7 @@ public class Renderer {
 		glEnable(GL_DEPTH_TEST);
 		
 		terrain.render();
+		terrain1.render();
 		lightSourcePass.render();
 		sun.update();
 		
@@ -120,10 +124,10 @@ public class Renderer {
 		player.render();
 
 		camera.moveCamera();
-		mousePicker.update();
+//		mousePicker.update();
 		
-		model.render();
-		compass.render();
+//		model.render();
+//		compass.render();
 		
 		trees.render();
 		glDisable(GL_DEPTH_TEST);
@@ -135,6 +139,9 @@ public class Renderer {
 	public void dispose() {
 
 		framebuffer.dispose();
+		
+		terrain.dispose();
+		terrain1.dispose();
 		
 		trianglePass.dispose();
 		rectanglePass.dispose();

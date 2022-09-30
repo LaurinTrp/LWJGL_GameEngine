@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -62,7 +63,7 @@ public class TerrainPass {
 	private int numOfLights;
 	private int sunPosition;
 	private int sunColor;
-	
+
 	private double minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
 
 	private ShaderProgram program;
@@ -75,18 +76,23 @@ public class TerrainPass {
 	private Float[] uvs;
 	private Float[] normals;
 	int[] indicesArray;
-	private final int width = 100, height = 100;
-	private final float density = 0.5f;
 	
+	public static final float width = 100, height = 100;
+	public static final float density = .5f;
+
 	private float startX, startZ;
 
 	private NormalDrawing normalDrawing;
-	
+
 	private BufferedImage heightMap;
 
+	public TerrainPass(float startX, float startZ) {
+		this.startX = startX;
+		this.startZ = startZ;
+	}
+
 	private void init() {
-		generateHeightMap();
-		
+
 		generateMesh();
 		initVAOs();
 		initShader();
@@ -94,7 +100,7 @@ public class TerrainPass {
 		initTextures();
 
 		normalDrawing = new NormalDrawing(verticesBuffer, normals, modelMatrix);
-		
+
 		init = true;
 	}
 
@@ -111,59 +117,31 @@ public class TerrainPass {
 			System.out.println("TRIANGLE: " + vertex1 + "\t" + vertex2 + "\t" + vertex3);
 		}
 	}
-	
-	private void generateHeightMap() {
-		int imageWidth = (int)(width/density)+1;
-		int imageHeight = (int)(height/density)+1;
-		
-		BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_BYTE_GRAY);
-		double[] data = new double[imageWidth*imageHeight];
-		for (int y = 0; y <= height / density; y++) {
-		    int off = y * imageWidth;
-			for (int x = 1; x <= width / density; x++) {
-				data[off + x-1] = SimplexNoise.noise(y / 15f, x / 15f);
-			}
-		}
-		
-		double minValue = data[0], maxValue = data[0];
-	    for (int i = 0; i < data.length; i++) {
-	      minValue = Math.min(data[i], minValue);
-	      maxValue = Math.max(data[i], maxValue);
-	    }
-		int[] pixelData = new int[data.length];
-	    for (int i = 0; i < data.length; i++) {
-	      pixelData[i] = (int) (255 * (data[i] - minValue) / (maxValue - minValue));
-	    }
-	    
-	    image.getRaster().setPixels(0, 0, imageWidth, imageHeight, pixelData);
-	    
-	    heightMap = image;
-	    try {
-			ImageIO.write(image, "PNG", new File("imageOutputs/heightMap.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	public void generateMesh() {
 		vertices.clear();
-
+		double noise = 0;
 		ArrayList<Vec4> uvs = new ArrayList<>();
 		
-		startX = -width/2;
-		startZ = -height/2;
-
 		for (int y = 0; y <= height / density; y++) {
+			
 			ArrayList<Vec4> vertexRow = new ArrayList<>();
-			vertexRow.add(new Vec4((-width / 2), 0, (-height / 2) + y * density, 1.0f));
+
+			double worldX = startX;
+			double worldZ = startZ + y * density;
+			noise = SimplexNoise.noise(worldX/5f, worldZ/5f);
+			vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
 
 			uvs.add(new Vec4(0 % 2, y % 2, 0.0f, 1.0f));
 
 			for (int x = 1; x <= width / density; x++) {
-				
-				int heightFromImage = heightMap.getRaster().getSample(x, y, 0);
-				
-				vertexRow.add(new Vec4((-width / 2) + x * density, heightFromImage / 150f, (-height / 2) + y * density, 1.0f));
+
+				worldX = startX + x * density;
+				worldZ = startZ + y * density;
+				System.out.println(worldX + "\t" + worldZ);
+				noise = SimplexNoise.noise(worldX/5f, worldZ/5f);
+
+				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
 
 				uvs.add(new Vec4(x % 2, y % 2, 0.0f, 1.0f));
 			}
@@ -176,11 +154,11 @@ public class TerrainPass {
 				normalsList.add(normal);
 			}
 		}
-//		for (int i = normalsList.size(); i < vertices.size() * vertices.get(0).size(); i++) {
-//			normalsList.add(new Vec4(1.0f));
-//		}
 
 		verticesBuffer = ModelUtils.flattenListOfListsStream(vertices);
+		
+//		System.out.println(Arrays.toString(verticesBuffer));
+		
 		ArrayList<Vec4> normalsFromIndices = new ArrayList<>();
 		ArrayList<Integer> indices = new ArrayList<>();
 		for (int i = 0; i < vertices.size() - 1; i++) {
@@ -199,8 +177,6 @@ public class TerrainPass {
 				indices.add(t2.point3);
 			}
 		}
-
-//		System.out.println(normalsFromIndices.size());
 
 		indicesArray = new int[indices.size()];
 		for (int i = 0; i < indices.size(); i++) {
@@ -222,6 +198,7 @@ public class TerrainPass {
 			this.normals[i * 4 + 2] = normalsList.get(i).z;
 			this.normals[i * 4 + 3] = normalsList.get(i).w;
 		}
+		System.out.println();
 
 	}
 
@@ -301,15 +278,9 @@ public class TerrainPass {
 	private void initVAOs() {
 		float[] dataBuffer = ModelUtils.flattenArrays(verticesBuffer, null, uvs, normals);
 
-		// create VAO
-		IntBuffer buffer = MemoryUtil.memAllocInt(1);
-		glGenVertexArrays(buffer);
-		vao = buffer.get(0);
-		glGenBuffers(buffer);
-		vbo = buffer.get(0);
-		glGenVertexArrays(buffer);
-		ebo = buffer.get(0);
-		MemoryUtil.memFree(buffer);
+		vao = glGenVertexArrays();
+		vbo = glGenBuffers();
+		ebo = glGenBuffers();
 
 		glBindVertexArray(vao);
 		{
@@ -345,13 +316,13 @@ public class TerrainPass {
 		modelID = glGetUniformLocation(program.getProgramID(), "modelMatrix");
 		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
 		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
-		
+
 		lightSources = glGetUniformLocation(program.getProgramID(), "lightsources");
 		numOfLights = glGetUniformLocation(program.getProgramID(), "numOfLights");
-		
+
 		sunPosition = glGetUniformLocation(program.getProgramID(), "sunPosition");
 		sunColor = glGetUniformLocation(program.getProgramID(), "sunColor");
-		
+
 	}
 
 	int angle = 0;
@@ -369,7 +340,7 @@ public class TerrainPass {
 		{
 			glUseProgram(program.getProgramID());
 			{
-				glActiveTexture(GL_TEXTURE0 + 0);
+//				glActiveTexture(GL_TEXTURE0 + 0);
 				glBindTexture(GL_TEXTURE_2D, tex);
 				glBindVertexArray(vao);
 				{
@@ -381,18 +352,19 @@ public class TerrainPass {
 
 					uploadLighting();
 
-//						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 					GL15.glDrawElements(GL_TRIANGLES, indicesArray.length, GL11.GL_UNSIGNED_INT, 0);
-//						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 
 				}
 				glBindVertexArray(0);
+				glBindTexture(GL_TEXTURE_2D, 0);
 			}
 			glUseProgram(0);
 //			normalDrawing.render();
 		}
 	}
-	
+
 	protected void uploadLighting() {
 
 		ArrayList<Vec4> lights = Renderer.lightSourcePositions;
@@ -405,23 +377,24 @@ public class TerrainPass {
 		}
 		glUniform4fv(lightSources, lightsources);
 		glUniform1i(numOfLights, lights.size());
-		
+
 		glUniform4fv(sunPosition, Renderer.sun.getLightPosition().toFA_());
 		glUniform4fv(sunColor, Renderer.sun.getColor().toFA_());
 	}
-	
+
 	public BufferedImage createHeightMap() {
 		BufferedImage image = new BufferedImage(vertices.size(), vertices.get(0).size(), BufferedImage.TYPE_4BYTE_ABGR);
 		for (int i = 0; i < image.getWidth(); i++) {
 			for (int j = 0; j < image.getHeight(); j++) {
-				
-				float height = MathFunctions.map(vertices.get(i).get(j).y, (float)minY, (float)maxY, 0.0f, 1.0f);
+
+				float height = MathFunctions.map(vertices.get(i).get(j).y, (float) minY, (float) maxY, 0.0f, 1.0f);
 				Color color = new Color(height, height, height);
 				image.setRGB(i, j, color.getRGB());
 			}
 		}
 		return image;
 	}
+
 	public BufferedImage createNormalMap() {
 		BufferedImage image = new BufferedImage(vertices.size(), vertices.get(0).size(), BufferedImage.TYPE_4BYTE_ABGR);
 		for (int i = 0; i < image.getWidth(); i++) {
@@ -433,44 +406,62 @@ public class TerrainPass {
 		}
 		return image;
 	}
-	
-	public float heightAtPosition(Vec2 position) {
+
+	public boolean isOnTerrain(Vec2 position) {
 		float xPositionOnTerrain = position.x - getStartX();
-		int xGridPosition = (int) Math.floor(xPositionOnTerrain / getDensity());
 		float zPositionOnTerrain = position.y - getStartZ();
-		int zGridPosition = (int) Math.floor(zPositionOnTerrain / getDensity());
-		
-		float xCoord = (xPositionOnTerrain%getDensity()) / getDensity();
-		float zCoord = (zPositionOnTerrain%getDensity()) / getDensity();
-		float currentTerrainHeight = 0;
-		if (xCoord <= (1-zCoord)) {
-			currentTerrainHeight = MathFunctions.barryCentric(new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition).y, 0),
-					new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition).y, 0), 
-					new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1), new Vec2(zCoord, xCoord));
-		} else {
-			currentTerrainHeight = MathFunctions.barryCentric(new Vec3(1, getVertices().get(zGridPosition+1).get(xGridPosition).y, 0), 
-					new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition + 1).y, 1), 
-					new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1), new Vec2(zCoord, xCoord));
-		}
-		return currentTerrainHeight;
+		return xPositionOnTerrain > 0.0 && zPositionOnTerrain > 0.0 && xPositionOnTerrain < width
+				&& zPositionOnTerrain < height;
 	}
-	
+
+	public float heightAtPosition(Vec2 position) {
+		if (isOnTerrain(position)) {
+			float xPositionOnTerrain = position.x - getStartX();
+			int xGridPosition = (int) Math.floor(xPositionOnTerrain / getDensity());
+			float zPositionOnTerrain = position.y - getStartZ();
+			int zGridPosition = (int) Math.floor(zPositionOnTerrain / getDensity());
+
+			float xCoord = (xPositionOnTerrain % getDensity()) / getDensity();
+			float zCoord = (zPositionOnTerrain % getDensity()) / getDensity();
+			float currentTerrainHeight = 0;
+			if (xCoord <= (1 - zCoord)) {
+				currentTerrainHeight = MathFunctions.barryCentric(
+						new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition).y, 0),
+						new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition).y, 0),
+						new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1),
+						new Vec2(zCoord, xCoord));
+			} else {
+				currentTerrainHeight = MathFunctions.barryCentric(
+						new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition).y, 0),
+						new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition + 1).y, 1),
+						new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1),
+						new Vec2(zCoord, xCoord));
+			}
+			return currentTerrainHeight;
+		}
+		return -20f;
+	}
+
 	public ArrayList<ArrayList<Vec4>> getVertices() {
 		return vertices;
 	}
-	
-	public int getWidth() {
+
+	public float getWidth() {
 		return width;
 	}
-	public int getHeight() {
+
+	public float getHeight() {
 		return height;
 	}
+
 	public float getDensity() {
 		return density;
 	}
+
 	public float getStartX() {
 		return startX;
 	}
+
 	public float getStartZ() {
 		return startZ;
 	}

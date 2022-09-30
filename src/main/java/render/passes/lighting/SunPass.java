@@ -43,7 +43,7 @@ public class SunPass {
 			return;
 		}
 
-		rotateSun();
+//		rotateSun();
 		angle %= Math.PI * 2;
 		calculateLightColor();
 	}
