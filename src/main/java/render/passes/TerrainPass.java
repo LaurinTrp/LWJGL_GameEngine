@@ -127,18 +127,10 @@ public class TerrainPass {
 			
 			ArrayList<Vec4> vertexRow = new ArrayList<>();
 
-			double worldX = startX;
-			double worldZ = startZ + y * density;
-			noise = SimplexNoise.noise(worldX/5f, worldZ/5f);
-			vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
+			for (int x = 0; x <= width / density; x++) {
+				double worldX = startX + x * density;
+				double worldZ = startZ + y * density;
 
-			uvs.add(new Vec4(0 % 2, y % 2, 0.0f, 1.0f));
-
-			for (int x = 1; x <= width / density; x++) {
-
-				worldX = startX + x * density;
-				worldZ = startZ + y * density;
-				System.out.println(worldX + "\t" + worldZ);
 				noise = SimplexNoise.noise(worldX/5f, worldZ/5f);
 
 				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
@@ -156,8 +148,6 @@ public class TerrainPass {
 		}
 
 		verticesBuffer = ModelUtils.flattenListOfListsStream(vertices);
-		
-//		System.out.println(Arrays.toString(verticesBuffer));
 		
 		ArrayList<Vec4> normalsFromIndices = new ArrayList<>();
 		ArrayList<Integer> indices = new ArrayList<>();
@@ -352,9 +342,9 @@ public class TerrainPass {
 
 					uploadLighting();
 
-						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+//						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 					GL15.glDrawElements(GL_TRIANGLES, indicesArray.length, GL11.GL_UNSIGNED_INT, 0);
-						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+//						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 
 				}
 				glBindVertexArray(0);
