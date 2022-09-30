@@ -25,6 +25,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -80,8 +81,12 @@ public class TerrainPass {
 	private float startX, startZ;
 
 	private NormalDrawing normalDrawing;
+	
+	private BufferedImage heightMap;
 
 	private void init() {
+		generateHeightMap();
+		
 		generateMesh();
 		initVAOs();
 		initShader();
@@ -89,13 +94,6 @@ public class TerrainPass {
 		initTextures();
 
 		normalDrawing = new NormalDrawing(verticesBuffer, normals, modelMatrix);
-
-		try {
-			ImageIO.write(createHeightMap(), "png", new File("imageOutputs/heightMap.png"));
-			ImageIO.write(createNormalMap(), "png", new File("imageOutputs/normalMap.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		
 		init = true;
 	}
@@ -113,6 +111,39 @@ public class TerrainPass {
 			System.out.println("TRIANGLE: " + vertex1 + "\t" + vertex2 + "\t" + vertex3);
 		}
 	}
+	
+	private void generateHeightMap() {
+		int imageWidth = (int)(width/density)+1;
+		int imageHeight = (int)(height/density)+1;
+		
+		BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_BYTE_GRAY);
+		double[] data = new double[imageWidth*imageHeight];
+		for (int y = 0; y <= height / density; y++) {
+		    int off = y * imageWidth;
+			for (int x = 1; x <= width / density; x++) {
+				data[off + x-1] = SimplexNoise.noise(y / 15f, x / 15f);
+			}
+		}
+		
+		double minValue = data[0], maxValue = data[0];
+	    for (int i = 0; i < data.length; i++) {
+	      minValue = Math.min(data[i], minValue);
+	      maxValue = Math.max(data[i], maxValue);
+	    }
+		int[] pixelData = new int[data.length];
+	    for (int i = 0; i < data.length; i++) {
+	      pixelData[i] = (int) (255 * (data[i] - minValue) / (maxValue - minValue));
+	    }
+	    
+	    image.getRaster().setPixels(0, 0, imageWidth, imageHeight, pixelData);
+	    
+	    heightMap = image;
+	    try {
+			ImageIO.write(image, "PNG", new File("imageOutputs/heightMap.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void generateMesh() {
 		vertices.clear();
@@ -122,20 +153,19 @@ public class TerrainPass {
 		startX = -width/2;
 		startZ = -height/2;
 
-		for (int i = 0; i <= height / density; i++) {
+		for (int y = 0; y <= height / density; y++) {
 			ArrayList<Vec4> vertexRow = new ArrayList<>();
-			vertexRow.add(new Vec4((-width / 2), 0, (-height / 2) + i * density, 1.0f));
+			vertexRow.add(new Vec4((-width / 2), 0, (-height / 2) + y * density, 1.0f));
 
-			uvs.add(new Vec4(0 % 2, i % 2, 0.0f, 1.0f));
+			uvs.add(new Vec4(0 % 2, y % 2, 0.0f, 1.0f));
 
-			for (int j = 1; j <= width / density; j++) {
-				double noise = SimplexNoise.noise(i / 15f, j / 15f);
-				minY = Math.min(noise, minY);
-				maxY = Math.max(noise, maxY);
-//				noise = 0;
-				vertexRow.add(new Vec4((-width / 2) + j * density, noise, (-height / 2) + i * density, 1.0f));
+			for (int x = 1; x <= width / density; x++) {
+				
+				int heightFromImage = heightMap.getRaster().getSample(x, y, 0);
+				
+				vertexRow.add(new Vec4((-width / 2) + x * density, heightFromImage / 150f, (-height / 2) + y * density, 1.0f));
 
-				uvs.add(new Vec4(j % 2, i % 2, 0.0f, 1.0f));
+				uvs.add(new Vec4(x % 2, y % 2, 0.0f, 1.0f));
 			}
 			vertices.add(vertexRow);
 		}
@@ -146,9 +176,9 @@ public class TerrainPass {
 				normalsList.add(normal);
 			}
 		}
-		for (int i = normalsList.size(); i < vertices.size() * vertices.get(0).size(); i++) {
-			normalsList.add(new Vec4(1.0f));
-		}
+//		for (int i = normalsList.size(); i < vertices.size() * vertices.get(0).size(); i++) {
+//			normalsList.add(new Vec4(1.0f));
+//		}
 
 		verticesBuffer = ModelUtils.flattenListOfListsStream(vertices);
 		ArrayList<Vec4> normalsFromIndices = new ArrayList<>();
