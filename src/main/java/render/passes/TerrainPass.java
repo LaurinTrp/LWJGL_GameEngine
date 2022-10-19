@@ -400,8 +400,8 @@ public class TerrainPass {
 	public boolean isOnTerrain(Vec2 position) {
 		float xPositionOnTerrain = position.x - getStartX();
 		float zPositionOnTerrain = position.y - getStartZ();
-		return xPositionOnTerrain > 0.0 && zPositionOnTerrain > 0.0 && xPositionOnTerrain < width
-				&& zPositionOnTerrain < height;
+		return xPositionOnTerrain >= 0.0 && zPositionOnTerrain >= 0.0 && xPositionOnTerrain <= width
+				&& zPositionOnTerrain <= height;
 	}
 
 	public float heightAtPosition(Vec2 position) {
