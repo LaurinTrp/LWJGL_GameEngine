@@ -60,8 +60,6 @@ public class TrianglePass {
 		vbo = buffer.get(0);
 		MemoryUtil.memFree(buffer);
 
-//		System.out.println(vao);
-		
 		glBindVertexArray(vao);
 		{
 			// upload VBO

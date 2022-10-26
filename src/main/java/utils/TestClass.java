@@ -16,19 +16,6 @@ public class TestClass extends Thread implements Runnable {
 	@Override
 	public void run() {
 		super.run();
-		System.out.println(SimplexNoise.noise(0, 20));
-		System.out.println(SimplexNoise.noise(0, 21));
-		System.out.println();
-	}
-	
-	public static void main(String[] args) {
-		new TestClass().start();
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		new TestClass().start();
 	}
 	
 }

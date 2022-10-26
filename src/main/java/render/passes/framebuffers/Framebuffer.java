@@ -171,8 +171,6 @@ public class Framebuffer {
 			return;
 		}
 		
-		System.out.println("Framebuffer complete");
-		
 		unbindFbo();
 		
 		initVao();

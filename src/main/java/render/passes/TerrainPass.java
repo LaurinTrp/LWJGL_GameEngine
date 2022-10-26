@@ -76,7 +76,7 @@ public class TerrainPass {
 	private Float[] uvs;
 	private Float[] normals;
 	int[] indicesArray;
-	
+
 	public static final float width = 100, height = 100;
 	public static final float density = .5f;
 
@@ -89,6 +89,9 @@ public class TerrainPass {
 	public TerrainPass(float startX, float startZ) {
 		this.startX = startX;
 		this.startZ = startZ;
+
+		triangleVectorIntersection(new Vec4(0.0f, 0.0f, 0.0f, 0.0f), new Vec4(1.0f, 0.5f, 1.0f, 0.0f),
+				new Vec3(1.0f, 1.0f, 1.0f), new Vec3(0.0f, -1f, 0.0f));
 	}
 
 	private void init() {
@@ -122,16 +125,16 @@ public class TerrainPass {
 		vertices.clear();
 		double noise = 0;
 		ArrayList<Vec4> uvs = new ArrayList<>();
-		
+
 		for (int y = 0; y <= height / density; y++) {
-			
+
 			ArrayList<Vec4> vertexRow = new ArrayList<>();
 
 			for (int x = 0; x <= width / density; x++) {
 				double worldX = startX + x * density;
 				double worldZ = startZ + y * density;
 
-				noise = SimplexNoise.noise(worldX/5f, worldZ/5f);
+				noise = SimplexNoise.noise(worldX / 5f, worldZ / 5f);
 
 				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
 
@@ -148,7 +151,7 @@ public class TerrainPass {
 		}
 
 		verticesBuffer = ModelUtils.flattenListOfListsStream(vertices);
-		
+
 		ArrayList<Vec4> normalsFromIndices = new ArrayList<>();
 		ArrayList<Integer> indices = new ArrayList<>();
 		for (int i = 0; i < vertices.size() - 1; i++) {
@@ -188,8 +191,29 @@ public class TerrainPass {
 			this.normals[i * 4 + 2] = normalsList.get(i).z;
 			this.normals[i * 4 + 3] = normalsList.get(i).w;
 		}
-		System.out.println();
+		System.out.println(Arrays.toString(this.normals));
 
+	}
+
+	private Vec3 triangleVectorIntersection(Vec4 triangleStart, Vec4 triangleNormal, Vec3 vectorStart, Vec3 ray) {
+		float d = triangleStart.dot(triangleNormal);
+
+		float r = 0;
+		float f1 = -(vectorStart.x+(d/triangleNormal.x))*ray.x;
+		float f2 = -(vectorStart.y+(d/triangleNormal.y))*ray.y;
+		float f3 = -(vectorStart.z+(d/triangleNormal.z))*ray.z;
+
+		if(!Float.isNaN(f1)) {
+			r = f1;
+		}if(!Float.isNaN(f2)) {
+			r = f2;
+		}if(!Float.isNaN(f3)) {
+			r = f3;
+		}
+		
+		System.out.println(r);
+		
+		return null;
 	}
 
 	private Triangle getTriangle(int i, int j) {

@@ -73,7 +73,6 @@ public class Inputs {
 				if(button == GLFW.GLFW_MOUSE_BUTTON_2) {
 					RMB_Down = action == GLFW.GLFW_PRESS;
 				}
-				System.out.println(button);
 			}
 		};
 
