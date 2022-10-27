@@ -148,6 +148,7 @@ public class ModelLoader {
 	public static Model loadModelFromResource(String parent, String file) {
 		clear();
 		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + "/" + file);
+		System.out.println(file + "\t" + Arrays.toString(data[3]));
 		Model model = new Model(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
 		return model;
 	}

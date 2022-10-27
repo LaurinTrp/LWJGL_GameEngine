@@ -21,22 +21,14 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static org.lwjgl.opengl.GL20.*;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.io.File;
-import java.io.IOException;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.imageio.ImageIO;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.system.MemoryUtil;
 
 import glm.Glm;
 import glm.mat._4.Mat4;
@@ -44,6 +36,8 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
+import main.java.render.model.Material;
+import main.java.render.model.Model;
 import main.java.render.model.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
@@ -53,6 +47,8 @@ import main.java.utils.math.SimplexNoise;
 
 public class TerrainPass {
 
+	private Model terrainModel;	
+	
 	private boolean init = false;
 
 	private int vao = 0, vbo = 0, tex = 0, ebo = 0;
@@ -77,8 +73,8 @@ public class TerrainPass {
 	private Float[] normals;
 	int[] indicesArray;
 
-	public static final float width = 100, height = 100;
-	public static final float density = .5f;
+	public static final float width = 20, height = 20;
+	public static final float density = 1f;
 
 	private float startX, startZ;
 
@@ -104,6 +100,9 @@ public class TerrainPass {
 
 		normalDrawing = new NormalDrawing(verticesBuffer, normals, modelMatrix);
 
+		terrainModel = new Model(verticesBuffer, uvs, normals, indicesArray, indicesArray.length, new Material(tex), new Float[] {startX, startX+width, (float) minY, (float) maxY, startZ, startZ+height});
+		terrainModel.setShaderFolder("Terrain");
+		
 		init = true;
 	}
 
@@ -135,7 +134,7 @@ public class TerrainPass {
 				double worldZ = startZ + y * density;
 
 				noise = SimplexNoise.noise(worldX / 5f, worldZ / 5f);
-
+				
 				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
 
 				uvs.add(new Vec4(x % 2, y % 2, 0.0f, 1.0f));
@@ -191,7 +190,6 @@ public class TerrainPass {
 			this.normals[i * 4 + 2] = normalsList.get(i).z;
 			this.normals[i * 4 + 3] = normalsList.get(i).w;
 		}
-		System.out.println(Arrays.toString(this.normals));
 
 	}
 
@@ -350,33 +348,33 @@ public class TerrainPass {
 		if (!init) {
 			return;
 		}
-
-		{
-			glUseProgram(program.getProgramID());
-			{
-//				glActiveTexture(GL_TEXTURE0 + 0);
-				glBindTexture(GL_TEXTURE_2D, tex);
-				glBindVertexArray(vao);
-				{
-
-					glUniformMatrix4fv(viewID, false, Renderer.camera.getView().toFa_());
-					glUniformMatrix4fv(projID, false, Renderer.camera.getProjectionMatrix().toFa_());
-
-					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
-
-					uploadLighting();
-
-//						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-					GL15.glDrawElements(GL_TRIANGLES, indicesArray.length, GL11.GL_UNSIGNED_INT, 0);
-//						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-
-				}
-				glBindVertexArray(0);
-				glBindTexture(GL_TEXTURE_2D, 0);
-			}
-			glUseProgram(0);
-//			normalDrawing.render();
-		}
+		terrainModel.render();
+//		{
+//			glUseProgram(program.getProgramID());
+//			{
+////				glActiveTexture(GL_TEXTURE0 + 0);
+//				glBindTexture(GL_TEXTURE_2D, tex);
+//				glBindVertexArray(vao);
+//				{
+//
+//					glUniformMatrix4fv(viewID, false, Renderer.camera.getView().toFa_());
+//					glUniformMatrix4fv(projID, false, Renderer.camera.getProjectionMatrix().toFa_());
+//
+//					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
+//
+//					uploadLighting();
+//
+////						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+//					GL15.glDrawElements(GL_TRIANGLES, indicesArray.length, GL11.GL_UNSIGNED_INT, 0);
+////						GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+//
+//				}
+//				glBindVertexArray(0);
+//				glBindTexture(GL_TEXTURE_2D, 0);
+//			}
+//			glUseProgram(0);
+////			normalDrawing.render();
+//		}
 	}
 
 	protected void uploadLighting() {
@@ -478,6 +476,10 @@ public class TerrainPass {
 
 	public float getStartZ() {
 		return startZ;
+	}
+	
+	public Model getTerrainModel() {
+		return terrainModel;
 	}
 
 	public void dispose() {

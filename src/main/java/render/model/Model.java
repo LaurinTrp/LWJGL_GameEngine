@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+
 import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
@@ -38,8 +41,9 @@ public class Model {
 	private Material material;
 
 	private boolean init = false;
-	
-	private int vao;
+	private boolean hasEbo = false;
+
+	private int vao, vbo, ebo;
 	private int triangles;
 
 	private ShaderProgram program;
@@ -48,26 +52,33 @@ public class Model {
 
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
 
-	private int[] vbos = new int[4];
-
 	private Float[] vertices;
 	private Float[] uvs;
 	private Float[] normals;
-	
+
+	private int[] indices;
+
 	// min x, max x, min y, max y, min z, max z
 	protected Float[] startMinmax = new Float[6];
 	protected Float[] minmax = new Float[6];
-	
+
 	private float scale = 1.0f;
-	
+
 	private String shaderFolder;
-	
+
 	private NormalDrawing normalDrawing;
-	
+
 	private boolean showNormals;
-	
+
 	private Vec4 translation;
 
+
+	public Model(Float[] vertices, Float[] uvs, Float[] normals, int[] indices, int triangles, Material material, Float[] minmax) {
+		this(vertices, uvs, normals, triangles, material, minmax);
+		this.hasEbo = true;
+		this.indices = indices;
+	}
+	
 	public Model(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax) {
 		this.triangles = triangles;
 		this.vertices = vertices;
@@ -75,42 +86,37 @@ public class Model {
 		this.normals = normals;
 		this.material = material;
 		this.startMinmax = minmax;
+		this.minmax = startMinmax;
 	}
 
 	public Model(Model model) {
-		this.material = model.material;
-		this.triangles = model.triangles;
+		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, model.minmax);
+
 		this.program = model.program;
 
 		this.modelMatrix = model.modelMatrix;
 
 		this.uniforms = model.uniforms;
-
-		this.vertices = model.vertices;
-		this.uvs = model.uvs;
-		this.normals = model.normals;
-		
-		this.startMinmax = model.startMinmax;
 	}
-	
+
 	private void init() {
 
 		initShader(shaderFolder);
 		initMatrixes();
 		bindModel();
-		
+
 		updateMinmax();
-		
+
 		afterInit();
-		
+
 		normalDrawing = new NormalDrawing(this);
-		
+
 		init = true;
 	}
-	
-	public void afterInit() {}
 
-	
+	public void afterInit() {
+	}
+
 	private void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
 	}
@@ -133,8 +139,8 @@ public class Model {
 
 		ModelUtils.createUniform(program, uniforms, "lightsources");
 		ModelUtils.createUniform(program, uniforms, "numOfLights");
-		
-		ModelUtils.createUniform(program, uniforms, "sunPosition");		
+
+		ModelUtils.createUniform(program, uniforms, "sunPosition");
 		ModelUtils.createUniform(program, uniforms, "sunColor");
 
 	}
@@ -151,31 +157,61 @@ public class Model {
 		}
 
 		// create VAO
+		if (!hasEbo) {
+			float[] data = ModelUtils.flattenArrays(vertices, colors, uvs, normals);
 
-		float[] data = ModelUtils.flattenArrays(vertices, colors, uvs, normals);
+			vao = glGenVertexArrays();
 
-		vao = glGenVertexArrays();
+			vbo = glGenBuffers();
 
-		int vbo = glGenBuffers();
+			glBindVertexArray(vao);
+			{
+				// upload VBO
+				glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				glBufferData(GL_ARRAY_BUFFER, data, GL_DYNAMIC_READ);
+				glEnableVertexAttribArray(0);
+				glVertexAttribPointer(0, 4, GL_FLOAT, false, 16 * 4, 0 * 4);
 
-		glBindVertexArray(vao);
-		{
-			// upload VBO
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glBufferData(GL_ARRAY_BUFFER, data, GL_DYNAMIC_READ);
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 4, GL_FLOAT, false, 16 * 4, 0 * 4);
+				glEnableVertexAttribArray(1);
+				glVertexAttribPointer(1, 4, GL_FLOAT, false, 16 * 4, 4 * 4);
 
-			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 4, GL_FLOAT, false, 16 * 4, 4 * 4);
+				glEnableVertexAttribArray(2);
+				glVertexAttribPointer(2, 4, GL_FLOAT, false, 16 * 4, 8 * 4);
 
-			glEnableVertexAttribArray(2);
-			glVertexAttribPointer(2, 4, GL_FLOAT, false, 16 * 4, 8 * 4);
+				glEnableVertexAttribArray(3);
+				glVertexAttribPointer(3, 4, GL_FLOAT, false, 16 * 4, 12 * 4);
+			}
+			glBindVertexArray(0);
+		} else {
+			float[] dataBuffer = ModelUtils.flattenArrays(vertices, null, uvs, normals);
 
-			glEnableVertexAttribArray(3);
-			glVertexAttribPointer(3, 4, GL_FLOAT, false, 16 * 4, 12 * 4);
+			vao = glGenVertexArrays();
+			vbo = glGenBuffers();
+			ebo = glGenBuffers();
+
+			glBindVertexArray(vao);
+			{
+				// upload VBO
+				glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				glBufferData(GL_ARRAY_BUFFER, dataBuffer, GL_DYNAMIC_READ);
+
+				glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
+				glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indices, GL15.GL_STATIC_DRAW);
+
+				// define Vertex Attributes
+				glEnableVertexAttribArray(0);
+				glVertexAttribPointer(0, 4, GL_FLOAT, false, 12 * 4, 0 * 4);
+
+				glEnableVertexAttribArray(1);
+				glVertexAttribPointer(1, 4, GL_FLOAT, false, 12 * 4, 4 * 4);
+
+				glEnableVertexAttribArray(3);
+				glVertexAttribPointer(3, 4, GL_FLOAT, false, 12 * 4, 8 * 4);
+
+			}
+			glBindVertexArray(0);
+
 		}
-		glBindVertexArray(0);
 	}
 
 	protected void renderProcess() {
@@ -202,10 +238,10 @@ public class Model {
 		}
 		glUniform4fv(uniforms.get("lightsources"), lightsources);
 		glUniform1i(uniforms.get("numOfLights"), lights.size());
-		
+
 		glUniform4fv(uniforms.get("sunPosition"), Renderer.sun.getLightPosition().toFA_());
 		glUniform4fv(uniforms.get("sunColor"), Renderer.sun.getColor().toFA_());
-		
+
 	}
 
 	protected void uploadMatrixes() {
@@ -214,19 +250,19 @@ public class Model {
 		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
-	
+
 	protected void updateMinmax() {
 		translation = new Vec4(modelMatrix.mul(new Vec4(0.0f, 0.0f, 0.0f, 1.0f)));
-		minmax[0] = (startMinmax[0]*scale) + translation.x;
-		minmax[1] = (startMinmax[1]*scale) + translation.x;
-		minmax[2] = (startMinmax[2]*scale) + translation.y;
-		minmax[3] = (startMinmax[3]*scale) + translation.y;
-		minmax[4] = (startMinmax[4]*scale) + translation.z;
-		minmax[5] = (startMinmax[5]*scale) + translation.z;
+		minmax[0] = (startMinmax[0] * scale) + translation.x;
+		minmax[1] = (startMinmax[1] * scale) + translation.x;
+		minmax[2] = (startMinmax[2] * scale) + translation.y;
+		minmax[3] = (startMinmax[3] * scale) + translation.y;
+		minmax[4] = (startMinmax[4] * scale) + translation.z;
+		minmax[5] = (startMinmax[5] * scale) + translation.z;
 	}
 
 	public void render() {
-		if(!init){
+		if (!init) {
 			init();
 		}
 		{
@@ -239,23 +275,27 @@ public class Model {
 				{
 					updateMinmax();
 					renderProcess();
-					
+
 					uploadMaterial();
 					uploadLighting();
 					uploadMatrixes();
 
-					glDrawArrays(GL_TRIANGLES, 0, triangles);
+					if (!hasEbo) {
+						glDrawArrays(GL_TRIANGLES, 0, triangles);
+					} else {
+						GL15.glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+					}
 
 				}
 				glBindVertexArray(0);
 			}
 			glUseProgram(0);
 		}
-		if(showNormals) {
+		if (showNormals) {
 			normalDrawing.render();
 		}
 	}
-	
+
 	public Material getMaterial() {
 		return material;
 	}
@@ -267,7 +307,7 @@ public class Model {
 	public Float[] getNormals() {
 		return normals;
 	}
-	
+
 	public Float[] getUvs() {
 		return uvs;
 	}
@@ -275,30 +315,31 @@ public class Model {
 	public void setShaderFolder(String shaderFolder) {
 		this.shaderFolder = shaderFolder;
 	}
-	
+
 	public ShaderProgram getProgram() {
 		return program;
 	}
-	
+
 	public void setShowNormals(boolean showNormals) {
 		this.showNormals = showNormals;
 	}
-	
+
 	public float getScale() {
 		return scale;
 	}
-	
+
 	public Mat4 getModelMatrix() {
 		return modelMatrix;
 	}
+
 	public void setModelMatrix(Mat4 modelMatrix) {
 		this.modelMatrix = modelMatrix;
 	}
-	
+
 	public Float[] getMinmax() {
 		return minmax;
 	}
-	
+
 	public void setScale(float scale) {
 		for (int i = 0; i < minmax.length; i++) {
 			minmax[i] *= scale;
@@ -306,13 +347,12 @@ public class Model {
 		this.scale = scale;
 		modelMatrix.scale(scale);
 	}
-	
+
 	public void dispose() {
 
 		glDeleteVertexArrays(vao);
-		for (int i = 0; i < vbos.length; i++) {
-			glDeleteBuffers(vbos[i]);
-		}
+		glDeleteBuffers(vbo);
+		glDeleteBuffers(ebo);
 
 		if (program != null) {
 			program.dispose();
@@ -322,11 +362,11 @@ public class Model {
 		}
 
 		vao = 0;
-		
-		if(normalDrawing != null) {
+
+		if (normalDrawing != null) {
 			normalDrawing.dispose();
 		}
-		
+
 		init = false;
 	}
 
