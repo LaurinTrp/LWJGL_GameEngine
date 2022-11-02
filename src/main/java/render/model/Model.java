@@ -40,23 +40,23 @@ public class Model {
 
 	private Material material;
 
-	private boolean init = false;
-	private boolean hasEbo = false;
-
-	private int vao, vbo, ebo;
+	protected boolean init = false;
+	protected boolean hasEbo = false;
+	
+	protected int vao, vbo, ebo;
 	private int triangles;
 
-	private ShaderProgram program;
+	protected ShaderProgram program;
 
 	protected Mat4 modelMatrix;
 
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
 
-	private Float[] vertices;
-	private Float[] uvs;
-	private Float[] normals;
+	protected Float[] vertices;
+	protected Float[] uvs;
+	protected Float[] normals;
 
-	private int[] indices;
+	protected int[] indices;
 
 	// min x, max x, min y, max y, min z, max z
 	protected Float[] startMinmax = new Float[6];
@@ -72,10 +72,12 @@ public class Model {
 
 	private Vec4 translation;
 
-
+	public Model() {
+	}
+	
 	public Model(Float[] vertices, Float[] uvs, Float[] normals, int[] indices, int triangles, Material material, Float[] minmax) {
 		this(vertices, uvs, normals, triangles, material, minmax);
-		this.hasEbo = true;
+		hasEbo = true;
 		this.indices = indices;
 	}
 	
@@ -99,8 +101,8 @@ public class Model {
 		this.uniforms = model.uniforms;
 	}
 
-	private void init() {
-
+	public void init() {
+		
 		initShader(shaderFolder);
 		initMatrixes();
 		bindModel();
@@ -121,7 +123,7 @@ public class Model {
 		modelMatrix = new Mat4(1.0f);
 	}
 
-	private void initShader(String shaderFolder) {
+	protected void initShader(String shaderFolder) {
 
 		program = new ShaderProgram(shaderFolder);
 		ModelUtils.createUniform(program, uniforms, "modelMatrix");
@@ -299,6 +301,10 @@ public class Model {
 	public Material getMaterial() {
 		return material;
 	}
+	
+	public void setMaterial(Material material) {
+		this.material = material;
+	}
 
 	public Float[] getVertices() {
 		return vertices;
@@ -338,6 +344,10 @@ public class Model {
 
 	public Float[] getMinmax() {
 		return minmax;
+	}
+	
+	public void setHasEbo(boolean hasEbo) {
+		this.hasEbo = hasEbo;
 	}
 
 	public void setScale(float scale) {

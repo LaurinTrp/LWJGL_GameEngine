@@ -8,9 +8,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import glm.vec._4.Vec4;
+import main.java.render.model.Model;
+import main.java.render.model.TerrainGenerator;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.Cubes;
 import main.java.render.passes.Player;
+import main.java.render.passes.TerrainModel;
 import main.java.render.passes.TerrainPass;
 import main.java.render.passes.framebuffers.Framebuffer;
 import main.java.render.passes.lighting.LightSourcePass;
@@ -52,7 +55,7 @@ public class Renderer {
 
 	private MousePicker mousePicker;
 	
-	public static ArrayList<TerrainPass> terrains;
+	public static ArrayList<TerrainModel> terrains;
 	
 	private Player player;
 	
@@ -61,6 +64,8 @@ public class Renderer {
 	private Tree_1 tree_1;
 	
 	private Cubes cubes;
+	
+	private TerrainModel terrainModel;
 	
 
 	public Renderer() {
@@ -94,10 +99,14 @@ public class Renderer {
 		
 		player = new Player();
 		
-		
+
 		terrains = new ArrayList<>();
-		for (int i = 0; i < 4; i++) {
-			terrains.add(new TerrainPass(-(i%2*TerrainPass.width), -((i > 1) ? 1: 0)*TerrainPass.height));
+		
+		terrainModel = new TerrainModel(new TerrainGenerator(10, 10, 1, 0, 0), "Terrain/Terrain.png");
+		terrains.add(terrainModel);
+		
+		for (int i = 0; i < 1; i++) {
+			terrains.add(new TerrainModel(new TerrainGenerator(10, 10, 1, -10 + 10*i%1, -10 + 10*i%1), "Terrain/Terrain.png"));
 		}
 
 		camera = new Camera(player);
@@ -107,6 +116,7 @@ public class Renderer {
 		tree_1 = new Tree_1();
 		
 		cubes = new Cubes();
+		
 	}
 
 	public void render() {
@@ -115,11 +125,11 @@ public class Renderer {
 
 		glEnable(GL_DEPTH_TEST);
 		
-//		terrain.render();
-//		terrain1.render();
-		for (TerrainPass terrainPass : terrains) {
-			terrainPass.render();
-		}
+		terrainModel.render();
+
+		//		for (TerrainPass terrainPass : terrains) {
+//			terrainPass.render();
+//		}
 		
 		lightSourcePass.render();
 		sun.update();
@@ -145,7 +155,7 @@ public class Renderer {
 
 		framebuffer.dispose();
 		
-		for (TerrainPass terrainPass : terrains) {
+		for (Model terrainPass : terrains) {
 			terrainPass.dispose();
 		}
 //		terrain.dispose();

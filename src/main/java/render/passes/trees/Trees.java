@@ -8,7 +8,7 @@ import glm.vec._3.Vec3;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
 import main.java.render.model.ModelCluster;
-import main.java.render.passes.TerrainPass;
+import main.java.render.passes.TerrainModel;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
@@ -46,7 +46,7 @@ public class Trees extends ModelCluster {
 			model.getModelMatrix().translate(offset.negate());
 
 			Random random = new Random();
-			TerrainPass terrain = Renderer.terrains.get(0);
+			TerrainModel terrain = (TerrainModel) Renderer.terrains.get(0);
 			float rX = random.nextFloat()*(terrain.getWidth()) + terrain.getStartX();
 			float rZ = random.nextFloat()*(terrain.getHeight()) + terrain.getStartZ();
 			model.getModelMatrix().translate(new Vec3(rX, terrain.heightAtPosition(new Vec2(rX, rZ)), rZ));

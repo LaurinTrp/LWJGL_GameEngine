@@ -102,8 +102,8 @@ public class Player extends Model {
 	private void gravity() {
 		boolean onTerrain = false;
 
-		TerrainPass terrain = null;
-		for (TerrainPass myTerrain : Renderer.terrains) {
+		TerrainModel terrain = null;
+		for (TerrainModel myTerrain : Renderer.terrains) {
 			onTerrain = myTerrain.isOnTerrain(new Vec2(position.x,position.z));
 
 			if(onTerrain) {

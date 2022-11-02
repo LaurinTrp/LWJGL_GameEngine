@@ -45,16 +45,11 @@ import main.java.utils.loaders.ImageLoader;
 import main.java.utils.math.MathFunctions;
 import main.java.utils.math.SimplexNoise;
 
-public class TerrainPass {
+public class TerrainPass extends Model {
 
-	private Model terrainModel;	
-	
-	private boolean init = false;
+	private Model terrainModel;
 
-	private int vao = 0, vbo = 0, tex = 0, ebo = 0;
-	private int modelID;
-	private int viewID;
-	private int projID;
+	private int tex;
 	private int lightSources;
 	private int numOfLights;
 	private int sunPosition;
@@ -62,16 +57,8 @@ public class TerrainPass {
 
 	private double minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
 
-	private ShaderProgram program;
-
-	private Mat4 modelMatrix;
-
-	private ArrayList<ArrayList<Vec4>> vertices = new ArrayList<>();
+	private ArrayList<ArrayList<Vec4>> verticesList = new ArrayList<>();
 	private ArrayList<Vec4> normalsList = new ArrayList<>();
-	private Float[] verticesBuffer;
-	private Float[] uvs;
-	private Float[] normals;
-	int[] indicesArray;
 
 	public static final float width = 20, height = 20;
 	public static final float density = 1f;
@@ -88,23 +75,38 @@ public class TerrainPass {
 
 		triangleVectorIntersection(new Vec4(0.0f, 0.0f, 0.0f, 0.0f), new Vec4(1.0f, 0.5f, 1.0f, 0.0f),
 				new Vec3(1.0f, 1.0f, 1.0f), new Vec3(0.0f, -1f, 0.0f));
-	}
-
-	private void init() {
 
 		generateMesh();
-		initVAOs();
-		initShader();
-		initMatrixes();
-		initTextures();
+		setShaderFolder("Terrain");
+		setHasEbo(true);
 
-		normalDrawing = new NormalDrawing(verticesBuffer, normals, modelMatrix);
+		startMinmax = new Float[] { startX, startX + width, (float) minY, (float) maxY, startZ, startZ + height };
+		minmax = startMinmax;
 
-		terrainModel = new Model(verticesBuffer, uvs, normals, indicesArray, indicesArray.length, new Material(tex), new Float[] {startX, startX+width, (float) minY, (float) maxY, startZ, startZ+height});
-		terrainModel.setShaderFolder("Terrain");
+		System.out.println(Arrays.toString(super.vertices));
 		
-		init = true;
+		initTextures();
+		setMaterial(new Material(tex));
 	}
+
+//	@Override
+//	public void init() {
+//		
+//		generateMesh();
+//		initVAOs();
+//		initShader();
+//		initMatrixes();
+//		initTextures();
+//
+//		setMaterial(new Material(tex));
+//		
+//		normalDrawing = new NormalDrawing(vertices, normals, modelMatrix);
+//
+//		terrainModel = new Model(vertices, uvs, normals, indicesArray, indicesArray.length, new Material(tex), new Float[] {startX, startX+width, (float) minY, (float) maxY, startZ, startZ+height});
+//		terrainModel.setShaderFolder("Terrain");
+//		
+//		init = true;
+//	}
 
 	private class Triangle {
 		int point1;
@@ -121,7 +123,7 @@ public class TerrainPass {
 	}
 
 	public void generateMesh() {
-		vertices.clear();
+		verticesList.clear();
 		double noise = 0;
 		ArrayList<Vec4> uvs = new ArrayList<>();
 
@@ -134,27 +136,27 @@ public class TerrainPass {
 				double worldZ = startZ + y * density;
 
 				noise = SimplexNoise.noise(worldX / 5f, worldZ / 5f);
-				
+
 				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
 
 				uvs.add(new Vec4(x % 2, y % 2, 0.0f, 1.0f));
 			}
-			vertices.add(vertexRow);
+			verticesList.add(vertexRow);
 		}
-		for (int i = 0; i < vertices.size(); i++) {
-			for (int j = 0; j < vertices.get(i).size(); j++) {
+		for (int i = 0; i < verticesList.size(); i++) {
+			for (int j = 0; j < verticesList.get(i).size(); j++) {
 				Triangle t = getTriangle(i, j);
 				Vec4 normal = calculateNormal(t).toVec4_();
 				normalsList.add(normal);
 			}
 		}
 
-		verticesBuffer = ModelUtils.flattenListOfListsStream(vertices);
+		vertices = ModelUtils.flattenListOfListsStream(verticesList);
 
 		ArrayList<Vec4> normalsFromIndices = new ArrayList<>();
 		ArrayList<Integer> indices = new ArrayList<>();
-		for (int i = 0; i < vertices.size() - 1; i++) {
-			for (int j = 0; j < vertices.get(i).size() - 1; j++) {
+		for (int i = 0; i < verticesList.size() - 1; i++) {
+			for (int j = 0; j < verticesList.get(i).size() - 1; j++) {
 				Triangle t1 = getTriangle(i, j, true);
 				normalsFromIndices.add(calculateNormal(t1).toVec4_());
 
@@ -170,9 +172,9 @@ public class TerrainPass {
 			}
 		}
 
-		indicesArray = new int[indices.size()];
+		super.indices = new int[indices.size()];
 		for (int i = 0; i < indices.size(); i++) {
-			indicesArray[i] = indices.get(i);
+			super.indices[i] = indices.get(i);
 		}
 
 		this.uvs = new Float[uvs.size() * 4];
@@ -197,41 +199,43 @@ public class TerrainPass {
 		float d = triangleStart.dot(triangleNormal);
 
 		float r = 0;
-		float f1 = -(vectorStart.x+(d/triangleNormal.x))*ray.x;
-		float f2 = -(vectorStart.y+(d/triangleNormal.y))*ray.y;
-		float f3 = -(vectorStart.z+(d/triangleNormal.z))*ray.z;
+		float f1 = -(vectorStart.x + (d / triangleNormal.x)) * ray.x;
+		float f2 = -(vectorStart.y + (d / triangleNormal.y)) * ray.y;
+		float f3 = -(vectorStart.z + (d / triangleNormal.z)) * ray.z;
 
-		if(!Float.isNaN(f1)) {
+		if (!Float.isNaN(f1)) {
 			r = f1;
-		}if(!Float.isNaN(f2)) {
+		}
+		if (!Float.isNaN(f2)) {
 			r = f2;
-		}if(!Float.isNaN(f3)) {
+		}
+		if (!Float.isNaN(f3)) {
 			r = f3;
 		}
-		
+
 		System.out.println(r);
-		
+
 		return null;
 	}
 
 	private Triangle getTriangle(int i, int j) {
 		Triangle t = new Triangle();
-		if (i < vertices.size() - 1 && j < vertices.get(0).size() - 1) {
-			t.vertex1 = vertices.get(i).get(j);
-			t.vertex2 = vertices.get(i + 1).get(j);
-			t.vertex3 = vertices.get(i).get(j + 1);
-		} else if (i >= vertices.size() - 1 && j < vertices.get(0).size() - 1) {
-			t.vertex1 = vertices.get(i).get(j);
-			t.vertex2 = vertices.get(i - 1).get(j + 1);
-			t.vertex3 = vertices.get(i - 1).get(j);
-		} else if (i < vertices.size() - 1 && j >= vertices.get(0).size() - 1) {
-			t.vertex1 = vertices.get(i).get(j);
-			t.vertex2 = vertices.get(i).get(j - 1);
-			t.vertex3 = vertices.get(i + 1).get(j - 1);
-		} else if (i >= vertices.size() - 1 && j >= vertices.get(0).size() - 1) {
-			t.vertex1 = vertices.get(i).get(j);
-			t.vertex2 = vertices.get(i - 1).get(j);
-			t.vertex3 = vertices.get(i).get(j - 1);
+		if (i < verticesList.size() - 1 && j < verticesList.get(0).size() - 1) {
+			t.vertex1 = verticesList.get(i).get(j);
+			t.vertex2 = verticesList.get(i + 1).get(j);
+			t.vertex3 = verticesList.get(i).get(j + 1);
+		} else if (i >= verticesList.size() - 1 && j < verticesList.get(0).size() - 1) {
+			t.vertex1 = verticesList.get(i).get(j);
+			t.vertex2 = verticesList.get(i - 1).get(j + 1);
+			t.vertex3 = verticesList.get(i - 1).get(j);
+		} else if (i < verticesList.size() - 1 && j >= verticesList.get(0).size() - 1) {
+			t.vertex1 = verticesList.get(i).get(j);
+			t.vertex2 = verticesList.get(i).get(j - 1);
+			t.vertex3 = verticesList.get(i + 1).get(j - 1);
+		} else if (i >= verticesList.size() - 1 && j >= verticesList.get(0).size() - 1) {
+			t.vertex1 = verticesList.get(i).get(j);
+			t.vertex2 = verticesList.get(i - 1).get(j);
+			t.vertex3 = verticesList.get(i).get(j - 1);
 		}
 		return t;
 	}
@@ -239,21 +243,21 @@ public class TerrainPass {
 	private Triangle getTriangle(int i, int j, boolean upperLeft) {
 		Triangle t = new Triangle();
 		if (upperLeft) {
-			t.point1 = i * vertices.size() + j;
-			t.point2 = i * vertices.size() + j + 1;
-			t.point3 = (i + 1) * vertices.size() + j;
+			t.point1 = i * verticesList.size() + j;
+			t.point2 = i * verticesList.size() + j + 1;
+			t.point3 = (i + 1) * verticesList.size() + j;
 
-			t.vertex1 = vertices.get(i).get(j);
-			t.vertex2 = vertices.get(i).get(j + 1);
-			t.vertex3 = vertices.get(i + 1).get(j);
+			t.vertex1 = verticesList.get(i).get(j);
+			t.vertex2 = verticesList.get(i).get(j + 1);
+			t.vertex3 = verticesList.get(i + 1).get(j);
 		} else {
-			t.point1 = (i + 1) * vertices.size() + j;
-			t.point2 = i * vertices.size() + j + 1;
-			t.point3 = (i + 1) * vertices.size() + j + 1;
+			t.point1 = (i + 1) * verticesList.size() + j;
+			t.point2 = i * verticesList.size() + j + 1;
+			t.point3 = (i + 1) * verticesList.size() + j + 1;
 
-			t.vertex1 = vertices.get(i + 1).get(j);
-			t.vertex2 = vertices.get(i).get(j + 1);
-			t.vertex3 = vertices.get(i + 1).get(j + 1);
+			t.vertex1 = verticesList.get(i + 1).get(j);
+			t.vertex2 = verticesList.get(i).get(j + 1);
+			t.vertex3 = verticesList.get(i + 1).get(j + 1);
 		}
 
 		return t;
@@ -288,7 +292,7 @@ public class TerrainPass {
 	}
 
 	private void initVAOs() {
-		float[] dataBuffer = ModelUtils.flattenArrays(verticesBuffer, null, uvs, normals);
+		float[] dataBuffer = ModelUtils.flattenArrays(vertices, null, uvs, normals);
 
 		vao = glGenVertexArrays();
 		vbo = glGenBuffers();
@@ -301,7 +305,7 @@ public class TerrainPass {
 			glBufferData(GL_ARRAY_BUFFER, dataBuffer, GL_DYNAMIC_READ);
 
 			glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
-			glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesArray, GL15.GL_STATIC_DRAW);
+			glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, super.indices, GL15.GL_STATIC_DRAW);
 
 			// define Vertex Attributes
 			glEnableVertexAttribArray(0);
@@ -320,20 +324,28 @@ public class TerrainPass {
 
 	private void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
+
+		startMinmax = new Float[] { startX, startX + width, (float) minY, (float) maxY, startZ, startZ + height, };
+		minmax = startMinmax;
 	}
 
 	private void initShader() {
 
-		program = new ShaderProgram("Terrain");
-		modelID = glGetUniformLocation(program.getProgramID(), "modelMatrix");
-		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
-		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
+		setShaderFolder("Terrain");
+		super.initShader("Terrain");
 
-		lightSources = glGetUniformLocation(program.getProgramID(), "lightsources");
-		numOfLights = glGetUniformLocation(program.getProgramID(), "numOfLights");
+//		program = new ShaderProgram("Terrain");
+//		
 
-		sunPosition = glGetUniformLocation(program.getProgramID(), "sunPosition");
-		sunColor = glGetUniformLocation(program.getProgramID(), "sunColor");
+//		modelID = glGetUniformLocation(program.getProgramID(), "modelMatrix");
+//		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
+//		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
+//
+//		lightSources = glGetUniformLocation(program.getProgramID(), "lightsources");
+//		numOfLights = glGetUniformLocation(program.getProgramID(), "numOfLights");
+//
+//		sunPosition = glGetUniformLocation(program.getProgramID(), "sunPosition");
+//		sunColor = glGetUniformLocation(program.getProgramID(), "sunColor");
 
 	}
 
@@ -348,7 +360,10 @@ public class TerrainPass {
 		if (!init) {
 			return;
 		}
-		terrainModel.render();
+
+		super.render();
+
+//		terrainModel.render();
 //		{
 //			glUseProgram(program.getProgramID());
 //			{
@@ -395,11 +410,12 @@ public class TerrainPass {
 	}
 
 	public BufferedImage createHeightMap() {
-		BufferedImage image = new BufferedImage(vertices.size(), vertices.get(0).size(), BufferedImage.TYPE_4BYTE_ABGR);
+		BufferedImage image = new BufferedImage(verticesList.size(), verticesList.get(0).size(),
+				BufferedImage.TYPE_4BYTE_ABGR);
 		for (int i = 0; i < image.getWidth(); i++) {
 			for (int j = 0; j < image.getHeight(); j++) {
 
-				float height = MathFunctions.map(vertices.get(i).get(j).y, (float) minY, (float) maxY, 0.0f, 1.0f);
+				float height = MathFunctions.map(verticesList.get(i).get(j).y, (float) minY, (float) maxY, 0.0f, 1.0f);
 				Color color = new Color(height, height, height);
 				image.setRGB(i, j, color.getRGB());
 			}
@@ -408,7 +424,8 @@ public class TerrainPass {
 	}
 
 	public BufferedImage createNormalMap() {
-		BufferedImage image = new BufferedImage(vertices.size(), vertices.get(0).size(), BufferedImage.TYPE_4BYTE_ABGR);
+		BufferedImage image = new BufferedImage(verticesList.size(), verticesList.get(0).size(),
+				BufferedImage.TYPE_4BYTE_ABGR);
 		for (int i = 0; i < image.getWidth(); i++) {
 			for (int j = 0; j < image.getHeight(); j++) {
 				Vec4 normal = new Vec4(normalsList.get(i * image.getWidth() + j)).mul_(0.5f).add_(0.5f);
@@ -438,15 +455,15 @@ public class TerrainPass {
 			float currentTerrainHeight = 0;
 			if (xCoord <= (1 - zCoord)) {
 				currentTerrainHeight = MathFunctions.barryCentric(
-						new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition).y, 0),
-						new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition).y, 0),
-						new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1),
+						new Vec3(0, getVerticesList().get(zGridPosition).get(xGridPosition).y, 0),
+						new Vec3(1, getVerticesList().get(zGridPosition + 1).get(xGridPosition).y, 0),
+						new Vec3(0, getVerticesList().get(zGridPosition).get(xGridPosition + 1).y, 1),
 						new Vec2(zCoord, xCoord));
 			} else {
 				currentTerrainHeight = MathFunctions.barryCentric(
-						new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition).y, 0),
-						new Vec3(1, getVertices().get(zGridPosition + 1).get(xGridPosition + 1).y, 1),
-						new Vec3(0, getVertices().get(zGridPosition).get(xGridPosition + 1).y, 1),
+						new Vec3(1, getVerticesList().get(zGridPosition + 1).get(xGridPosition).y, 0),
+						new Vec3(1, getVerticesList().get(zGridPosition + 1).get(xGridPosition + 1).y, 1),
+						new Vec3(0, getVerticesList().get(zGridPosition).get(xGridPosition + 1).y, 1),
 						new Vec2(zCoord, xCoord));
 			}
 			return currentTerrainHeight;
@@ -454,8 +471,8 @@ public class TerrainPass {
 		return -20f;
 	}
 
-	public ArrayList<ArrayList<Vec4>> getVertices() {
-		return vertices;
+	public ArrayList<ArrayList<Vec4>> getVerticesList() {
+		return verticesList;
 	}
 
 	public float getWidth() {
@@ -477,28 +494,8 @@ public class TerrainPass {
 	public float getStartZ() {
 		return startZ;
 	}
-	
+
 	public Model getTerrainModel() {
 		return terrainModel;
 	}
-
-	public void dispose() {
-
-		glDeleteVertexArrays(vao);
-		glDeleteBuffers(vbo);
-		glDeleteTextures(tex);
-
-		if (program != null) {
-			program.dispose();
-		}
-
-		vao = 0;
-		vbo = 0;
-		tex = 0;
-
-		normalDrawing.dispose();
-
-		init = false;
-	}
-
 }
