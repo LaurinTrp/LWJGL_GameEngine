@@ -112,6 +112,9 @@ public class Renderer {
 		
 	}
 
+	/**
+	 * Main render method
+	 */
 	public void render() {
 
 		framebuffer.render();
@@ -144,6 +147,9 @@ public class Renderer {
 
 	}
 
+	/**
+	 * Main method to dispose all OpenGL data
+	 */
 	public void dispose() {
 
 		framebuffer.dispose();
