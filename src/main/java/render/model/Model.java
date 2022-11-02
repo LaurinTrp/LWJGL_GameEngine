@@ -1,11 +1,11 @@
 package main.java.render.model;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_READ;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
@@ -73,12 +73,32 @@ public class Model {
 	public Model() {
 	}
 	
+	/**
+	 * Model constructor with ebo
+	 * @param vertices The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
+	 * @param uvs The data of the uv coordinates
+	 * @param normals The data of the normals
+	 * @param indices The indices
+	 * @param triangles Number of triangles
+	 * @param material Material object
+	 * @param minmax Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
+	 */
 	public Model(Float[] vertices, Float[] uvs, Float[] normals, int[] indices, int triangles, Material material, Float[] minmax) {
 		this(vertices, uvs, normals, triangles, material, minmax);
 		hasEbo = true;
 		this.indices = indices;
 	}
-	
+
+	/**
+	 * Model constructor without ebo
+	 * @param vertices The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
+	 * @param uvs The data of the uv coordinates
+	 * @param normals The data of the normals
+	 * @param indices The indices
+	 * @param triangles Number of triangles
+	 * @param material Material object
+	 * @param minmax Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
+	 */
 	public Model(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax) {
 		this.triangles = triangles;
 		this.vertices = vertices;
@@ -89,6 +109,10 @@ public class Model {
 		this.minmax = startMinmax;
 	}
 
+	/**
+	 * Constructor copying other model
+	 * @param model Model to copy
+	 */
 	public Model(Model model) {
 		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, model.minmax);
 
@@ -99,6 +123,9 @@ public class Model {
 		this.uniforms = model.uniforms;
 	}
 
+	/**
+	 * Initializing the model
+	 */
 	public void init() {
 		
 		initShader(shaderFolder);
@@ -114,13 +141,24 @@ public class Model {
 		init = true;
 	}
 
-	public void afterInit() {
+	/**
+	 * Method that can be called after the initialization
+	 * Needs override
+	 */
+	protected void afterInit() {
 	}
 
+	/**
+	 * Initializing the matrices
+	 */
 	private void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
 	}
 
+	/**
+	 * Initializing the shader and the uniform variables
+	 * @param shaderFolder The name of the shader folder in the resources
+	 */
 	protected void initShader(String shaderFolder) {
 
 		program = new ShaderProgram(shaderFolder);
@@ -145,6 +183,9 @@ public class Model {
 
 	}
 
+	/**
+	 * Binding the model and the data
+	 */
 	private void bindModel() {
 
 		Float[] colors = new Float[vertices.length];
@@ -156,67 +197,69 @@ public class Model {
 			colors[i + 3] = 1.0f;
 		}
 
+		float[] data = ModelUtils.flattenArrays(vertices, colors, uvs, normals);
+
+		vao = glGenVertexArrays();
+		vbo = glGenBuffers();
+		
 		// create VAO
 		if (!hasEbo) {
-			float[] data = ModelUtils.flattenArrays(vertices, colors, uvs, normals);
-
-			vao = glGenVertexArrays();
-
-			vbo = glGenBuffers();
 
 			glBindVertexArray(vao);
 			{
 				// upload VBO
 				glBindBuffer(GL_ARRAY_BUFFER, vbo);
 				glBufferData(GL_ARRAY_BUFFER, data, GL_DYNAMIC_READ);
-				glEnableVertexAttribArray(0);
-				glVertexAttribPointer(0, 4, GL_FLOAT, false, 16 * 4, 0 * 4);
-
-				glEnableVertexAttribArray(1);
-				glVertexAttribPointer(1, 4, GL_FLOAT, false, 16 * 4, 4 * 4);
-
-				glEnableVertexAttribArray(2);
-				glVertexAttribPointer(2, 4, GL_FLOAT, false, 16 * 4, 8 * 4);
-
-				glEnableVertexAttribArray(3);
-				glVertexAttribPointer(3, 4, GL_FLOAT, false, 16 * 4, 12 * 4);
+				
+				setAttributePointers();
 			}
 			glBindVertexArray(0);
 		} else {
-			float[] dataBuffer = ModelUtils.flattenArrays(vertices, null, uvs, normals);
-
-			vao = glGenVertexArrays();
-			vbo = glGenBuffers();
 			ebo = glGenBuffers();
 
 			glBindVertexArray(vao);
 			{
 				// upload VBO
 				glBindBuffer(GL_ARRAY_BUFFER, vbo);
-				glBufferData(GL_ARRAY_BUFFER, dataBuffer, GL_DYNAMIC_READ);
+				glBufferData(GL_ARRAY_BUFFER, data, GL_DYNAMIC_READ);
 
 				glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
 				glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indices, GL15.GL_STATIC_DRAW);
 
-				// define Vertex Attributes
-				glEnableVertexAttribArray(0);
-				glVertexAttribPointer(0, 4, GL_FLOAT, false, 12 * 4, 0 * 4);
-
-				glEnableVertexAttribArray(1);
-				glVertexAttribPointer(1, 4, GL_FLOAT, false, 12 * 4, 4 * 4);
-
-				glEnableVertexAttribArray(3);
-				glVertexAttribPointer(3, 4, GL_FLOAT, false, 12 * 4, 8 * 4);
-
+				setAttributePointers();
+				
 			}
 			glBindVertexArray(0);
 
 		}
 	}
+	
+	/**
+	 * Set the attribute pointers for the render data
+	 */
+	private void setAttributePointers() {
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, false, 16 * 4, 0 * 4);
 
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 4, GL_FLOAT, false, 16 * 4, 4 * 4);
+
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 4, GL_FLOAT, false, 16 * 4, 8 * 4);
+
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, false, 16 * 4, 12 * 4);
+	}
+
+	/**
+	 * Needs override to run functions in the render process
+	 */
 	protected void renderProcess() {
 	}
 
+	/**
+	 * upload the material to the shader
+	 */
 	protected void uploadMaterial() {
 		glUniform1f(uniforms.get("material.ambient"), material.getAmbient());
 		glUniform1f(uniforms.get("material.diffuse"), material.getAmbient());
@@ -225,6 +268,9 @@ public class Model {
 		glUniform1i(uniforms.get("material.hasTexture"), material.hasTexture() ? 1 : 0);
 	}
 
+	/**
+	 * upload lighting specific values to the shader
+	 */
 	protected void uploadLighting() {
 		glUniform4fv(uniforms.get("ambientColor"), Renderer.ambientColor.toFA_());
 
@@ -243,14 +289,21 @@ public class Model {
 		glUniform4fv(uniforms.get("sunColor"), Renderer.sun.getColor().toFA_());
 
 	}
-
+	
+	
+	/**
+	 * Upload the different matrices to the shader
+	 */
 	protected void uploadMatrixes() {
 		glUniformMatrix4fv(uniforms.get("viewMatrix"), false, Renderer.camera.getView().toFa_());
 		glUniformMatrix4fv(uniforms.get("projectionMatrix"), false, Renderer.camera.getProjectionMatrix().toFa_());
 		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
-
+	
+	/**
+	 * update the minmax for example after scaling
+	 */
 	protected void updateMinmax() {
 		translation = new Vec4(modelMatrix.mul(new Vec4(0.0f, 0.0f, 0.0f, 1.0f)));
 		minmax[0] = (startMinmax[0] * scale) + translation.x;
@@ -261,10 +314,17 @@ public class Model {
 		minmax[5] = (startMinmax[5] * scale) + translation.z;
 	}
 
+	/**
+	 * Render method to render the model
+	 */
 	public void render() {
 		if (!init) {
 			init();
 		}
+		if(!init){
+			return;
+		}
+		
 		{
 			glUseProgram(program.getProgramID());
 			{
@@ -276,14 +336,16 @@ public class Model {
 					updateMinmax();
 					renderProcess();
 
+					// Upload the uniforms
 					uploadMaterial();
 					uploadLighting();
 					uploadMatrixes();
 
+					// draw the data (depends on if it has a ebo)
 					if (!hasEbo) {
 						glDrawArrays(GL_TRIANGLES, 0, triangles);
 					} else {
-						GL15.glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+						glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
 					}
 
 				}
@@ -291,63 +353,112 @@ public class Model {
 			}
 			glUseProgram(0);
 		}
+		// draw normals if necessary
 		if (showNormals) {
 			normalDrawing.render();
 		}
 	}
 
+	/**
+	 * Get the material object
+	 * @return material object
+	 */
 	public Material getMaterial() {
 		return material;
 	}
 	
+	/**
+	 * Set the material object
+	 * @param material material for the model
+	 */
 	public void setMaterial(Material material) {
 		this.material = material;
 	}
 
+	/**
+	 * Getter for the vertices data
+	 * @return The vertices as float array
+	 */
 	public Float[] getVertices() {
 		return vertices;
 	}
 
+	/**
+	 * Getter for the normals data
+	 * @return The normals as float array
+	 */
 	public Float[] getNormals() {
 		return normals;
 	}
 
+	/**
+	 * Getter for the uvs data
+	 * @return The uvs as float array
+	 */
 	public Float[] getUvs() {
 		return uvs;
 	}
 
+	/**
+	 * Set the shader folder
+	 * @param shaderFolder new Shader folder
+	 */
 	public void setShaderFolder(String shaderFolder) {
 		this.shaderFolder = shaderFolder;
 	}
 
+	/**
+	 * Get the shader program
+	 * @return current shader program
+	 */
 	public ShaderProgram getProgram() {
 		return program;
 	}
 
+	/**
+	 * set the option to show the normals
+	 * @param showNormals boolean if normals should be shown
+	 */
 	public void setShowNormals(boolean showNormals) {
 		this.showNormals = showNormals;
 	}
 
+	/**
+	 * get the current scale of the model
+	 * @return scale as float
+	 */
 	public float getScale() {
 		return scale;
 	}
 
+	/**
+	 * get the model matrix
+	 * @return model matrix as mat4
+	 */
 	public Mat4 getModelMatrix() {
 		return modelMatrix;
 	}
 
+	/**
+	 * Set a new model matrix
+	 * @param modelMatrix new Model matrix
+	 */
 	public void setModelMatrix(Mat4 modelMatrix) {
 		this.modelMatrix = modelMatrix;
 	}
 
+	/**
+	 * get the minmax values
+	 * @return minmax values as an float array
+	 */
 	public Float[] getMinmax() {
 		return minmax;
 	}
 	
-	public void setHasEbo(boolean hasEbo) {
-		this.hasEbo = hasEbo;
-	}
-
+	/**
+	 * set the scale of the model
+	 * @param scale scaling factor
+	 */
 	public void setScale(float scale) {
 		for (int i = 0; i < minmax.length; i++) {
 			minmax[i] *= scale;
@@ -356,6 +467,9 @@ public class Model {
 		modelMatrix.scale(scale);
 	}
 
+	/**
+	 * Clear the data
+	 */
 	public void dispose() {
 
 		glDeleteVertexArrays(vao);
