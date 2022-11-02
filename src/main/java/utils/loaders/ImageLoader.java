@@ -26,7 +26,15 @@ import java.nio.IntBuffer;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import resources.ResourceLoader;
+
 public class ImageLoader {
+	
+	/**
+	 * Load a image from the memory
+	 * @param path The path to the image
+	 * @return Returning the OpenGL texture id
+	 * @throws Exception if the image could not be loaded
+	 */
 	public static int loadTextureFromMemory(String path) throws Exception {
 		int width, height;
 		ByteBuffer buffer;
@@ -43,21 +51,14 @@ public class ImageLoader {
 			width = w.get();
 			height = h.get();
 		}
-		int id = glGenTextures();
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-		float[] borderColor = {1.0f, 1.0f, 0.0f, 1.0f};
-		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		
-		glBindTexture(GL_TEXTURE_2D, id);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		return id;
+		return getImageID(width, height, buffer);
 	}
 	
+	/**
+	 * Loading a texture from the resources
+	 * @param fileName Filename of the image in the res/Textures folder
+	 * @return Returning the OpenGL texture id
+	 */
 	public static int loadTextureFromResource(String fileName) {
 		try {
 			return loadTexture(ResourceLoader.loadTexture(fileName));
@@ -67,6 +68,12 @@ public class ImageLoader {
 		}
 	}
 	
+	/**
+	 * Load a texture from a byte buffer
+	 * @param data The data of the image as an byte buffer
+	 * @return Returning the OpenGL texture id
+	 * @throws Exception if the image loading failed
+	 */
 	private static int loadTexture(ByteBuffer data) throws Exception {
 		int width, height;
 		ByteBuffer buffer;
@@ -84,6 +91,17 @@ public class ImageLoader {
 			height = h.get();
 
 		}
+		return getImageID(width, height, buffer);
+	}
+
+	/**
+	 * Setting the image parameter
+	 * @param width Image width
+	 * @param height Image height
+	 * @param buffer Image Data
+	 * @return Returning the OpenGL texture id
+	 */
+	private static int getImageID(int width, int height, ByteBuffer buffer) {
 		int id = glGenTextures();
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
@@ -96,23 +114,9 @@ public class ImageLoader {
 		glBindTexture(GL_TEXTURE_2D, id);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 		glGenerateMipmap(GL_TEXTURE_2D);
+		
 		return id;
 	}
-
-	public static void byteBuffer2BufferedImage(ByteBuffer bb, BufferedImage bi) {
-        final int bytesPerPixel = 3;
-        byte[] imageArray = ((DataBufferByte) bi.getRaster()
-                .getDataBuffer()).getData();
-        bb.rewind();
-        bb.get(imageArray);
-        int numPixels = bb.capacity() / bytesPerPixel;
-        for (int i = 0; i < numPixels; i++) {
-            byte tmp = imageArray[i * bytesPerPixel];
-            imageArray[i * bytesPerPixel] = imageArray[i * bytesPerPixel
-                    + 2];
-            imageArray[i * bytesPerPixel + 2] = tmp;
-        }
-    }
 	
 	public static class ImageParams {
 		public int width, height;
