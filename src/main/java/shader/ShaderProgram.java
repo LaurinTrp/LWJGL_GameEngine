@@ -1,17 +1,11 @@
 package main.java.shader;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
-import main.java.gui.Engine_Main;
 import resources.ResourceLoader;
 
 

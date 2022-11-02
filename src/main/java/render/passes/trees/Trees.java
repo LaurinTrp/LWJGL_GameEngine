@@ -7,12 +7,12 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
-import main.java.render.model.ModelCluster;
+import main.java.render.model.ModelCluster2;
 import main.java.render.passes.TerrainModel;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
-public class Trees extends ModelCluster {
+public class Trees extends ModelCluster2 {
 
 	public Trees() {
 		super(ModelLoader.loadMultipleModelsFromObj(

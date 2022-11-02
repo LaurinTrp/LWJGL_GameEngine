@@ -14,7 +14,6 @@ import main.java.render.passes.Cottage;
 import main.java.render.passes.Cubes;
 import main.java.render.passes.Player;
 import main.java.render.passes.TerrainModel;
-import main.java.render.passes.TerrainPass;
 import main.java.render.passes.framebuffers.Framebuffer;
 import main.java.render.passes.lighting.LightSourcePass;
 import main.java.render.passes.lighting.SunPass;
@@ -104,10 +103,6 @@ public class Renderer {
 		
 		terrainModel = new TerrainModel(new TerrainGenerator(10, 10, 1, 0, 0), "Terrain/Terrain.png");
 		terrains.add(terrainModel);
-		
-		for (int i = 0; i < 1; i++) {
-			terrains.add(new TerrainModel(new TerrainGenerator(10, 10, 1, -10 + 10*i%1, -10 + 10*i%1), "Terrain/Terrain.png"));
-		}
 
 		camera = new Camera(player);
 		mousePicker = new MousePicker(camera);
@@ -127,9 +122,9 @@ public class Renderer {
 		
 		terrainModel.render();
 
-		//		for (TerrainPass terrainPass : terrains) {
-//			terrainPass.render();
-//		}
+		for (Model terrainPass : terrains) {
+			terrainPass.render();
+		}
 		
 		lightSourcePass.render();
 		sun.update();
