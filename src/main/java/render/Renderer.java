@@ -1,11 +1,10 @@
 package main.java.render;
 
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.glDeleteFramebuffers;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import glm.vec._4.Vec4;
 import main.java.render.model.Model;
@@ -25,7 +24,6 @@ import main.java.render.passes.transformation.MyModel;
 import main.java.render.passes.transformation.TransformationPass;
 import main.java.render.passes.trees.Tree_1;
 import main.java.render.passes.trees.Trees;
-import main.java.utils.ModelUtils;
 
 public class Renderer {
 	
@@ -153,8 +151,6 @@ public class Renderer {
 		for (Model terrainPass : terrains) {
 			terrainPass.dispose();
 		}
-//		terrain.dispose();
-//		terrain1.dispose();
 		
 		trianglePass.dispose();
 		rectanglePass.dispose();
