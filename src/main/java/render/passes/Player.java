@@ -29,8 +29,6 @@ public class Player extends Model {
 	public Player() {
 		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
 		
-		System.out.println(Arrays.toString(minmax));
-		
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
 	}
