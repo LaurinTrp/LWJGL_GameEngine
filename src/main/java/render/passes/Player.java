@@ -7,6 +7,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 
+import java.util.Arrays;
+
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
@@ -26,6 +28,9 @@ public class Player extends Model {
 	
 	public Player() {
 		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
+		
+		System.out.println(Arrays.toString(minmax));
+		
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
 	}
@@ -54,6 +59,9 @@ public class Player extends Model {
 		modelMatrix.translate(position);
 	}
 	
+	/**
+	 * Rotate the player around its axis
+	 */
 	private void rotation() {
 
 		double offsetX = Engine_Main.mouseHandler.getXoffset();
@@ -74,6 +82,9 @@ public class Player extends Model {
 		modelMatrix.translate(position);
 	}
 	
+	/**
+	 * Move the player model
+	 */
 	private void movement() {
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
 			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
@@ -99,6 +110,9 @@ public class Player extends Model {
 		}
 	}
 	
+	/**
+	 * Applying gravity to the player
+	 */
 	private void gravity() {
 		boolean onTerrain = false;
 
@@ -113,12 +127,17 @@ public class Player extends Model {
 		}
 		if(onTerrain) {
 			float yDiff = position.y - minmax[2];
-			position.y = terrain.heightAtPosition(new Vec2(position.x, position.z)) + yDiff;
+			System.out.println(Arrays.toString(minmax));
+			position.y = terrain.heightAtPosition(new Vec2(position.x, position.z));
 		}else {
 			position.y -= speed;
 		}
 	}
 	
+	/**
+	 * Get the position of the player
+	 * @return position as vec3
+	 */
 	public Vec3 getPosition() {
 		return position;
 	}

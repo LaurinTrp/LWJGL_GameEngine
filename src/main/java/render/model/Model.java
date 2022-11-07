@@ -333,7 +333,7 @@ public class Model {
 				}
 				glBindVertexArray(vao);
 				{
-					updateMinmax();
+//					updateMinmax();
 					renderProcess();
 
 					// Upload the uniforms
