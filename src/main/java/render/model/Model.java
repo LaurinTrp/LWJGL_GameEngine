@@ -180,6 +180,10 @@ public class Model {
 
 		ModelUtils.createUniform(program, uniforms, "sunPosition");
 		ModelUtils.createUniform(program, uniforms, "sunColor");
+		
+		ModelUtils.createUniform(program, uniforms, "texDiffuse");
+		ModelUtils.createUniform(program, uniforms, "texReflectance");
+		
 
 	}
 
@@ -266,6 +270,10 @@ public class Model {
 		glUniform1f(uniforms.get("material.specular"), material.getAmbient());
 		glUniform1f(uniforms.get("material.reflectance"), material.getReflectance());
 		glUniform1i(uniforms.get("material.hasTexture"), material.hasTexture() ? 1 : 0);
+		
+		
+		glUniform1i(uniforms.get("texDiffuse"), 0);
+		glUniform1i(uniforms.get("texReflectance"), 1);
 	}
 
 	/**
@@ -331,6 +339,8 @@ public class Model {
 				if (material != null) {
 					glActiveTexture(GL_TEXTURE0 + 0);
 					glBindTexture(GL_TEXTURE_2D, material.getTexture());
+					glActiveTexture(GL_TEXTURE0 + 1);
+					glBindTexture(GL_TEXTURE_2D, material.getReflectionTexture());
 				}
 				glBindVertexArray(vao);
 				{

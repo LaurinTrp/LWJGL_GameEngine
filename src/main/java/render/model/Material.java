@@ -4,6 +4,7 @@ import static org.lwjgl.opengl.GL11.glDeleteTextures;
 
 public class Material {
 	private int texture = 0;
+	private int reflectionTexture = 0;
 	
 	private float ambient;
 	private float diffuse;
@@ -33,7 +34,14 @@ public class Material {
 	public void setTexture(int texture) {
 		this.texture = texture;
 	}
-
+	
+	public int getReflectionTexture() {
+		return reflectionTexture;
+	}
+	
+	public void setReflectionTexture(int reflectionTexture) {
+		this.reflectionTexture = reflectionTexture;
+	}
 
 	public float getAmbient() {
 		return ambient;
