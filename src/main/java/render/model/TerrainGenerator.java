@@ -54,7 +54,6 @@ public class TerrainGenerator {
 				double worldZ = startZ + y * density;
 
 				noise = SimplexNoise.noise(worldX / 5f, worldZ / 5f);
-//				noise = 0;
 				
 				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
 

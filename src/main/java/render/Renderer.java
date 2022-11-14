@@ -80,6 +80,7 @@ public class Renderer {
 		transformationPass = new TransformationPass();
 
 		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
+		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
 		
 		lightSourcePass = new LightSourcePass();
 		lightSourcePass.setLightsourcePositions(lightSourcePositions);
@@ -124,7 +125,7 @@ public class Renderer {
 			terrainPass.render();
 		}
 		
-//		lightSourcePass.render();
+		lightSourcePass.render();
 		sun.update();
 		
 //		cottage.render();
