@@ -26,8 +26,6 @@ struct Material {
 	int hasTexture;
 };
 
-Material material;
-
 out vec4 fragColor;
 
 float a = 0.2, d = 0.8, s = 0.5;
