@@ -1,6 +1,5 @@
 #version 430 core
 
-
 uniform sampler2D tex;
 
 uniform vec4 cameraPos;
@@ -18,14 +17,25 @@ vec4 lightsource = vec4(1.0);
 uniform vec4 sunPosition;
 uniform vec4 sunColor;
 
+struct Material {
+	float ambient;
+	float specular;
+	float diffuse;
+	float reflectance;
+	int hasTexture;
+};
+
+Material material;
+
 out vec4 fragColor;
 
-float a = 0.2, d = 0.1, s = 0.1;
+float a = 0.2, d = 0.8, s = 0.5;
 
 #include <Utils/lighting.glsl>
 
 void main() {
-	lightsource = vec4(0.0, 10.0, 0.0, 1.0);
+
+	lightsource = vec4(0.0, 10.0, 10.0, 1.0);
 
 	vec3 color = vec3(0.0);
 
