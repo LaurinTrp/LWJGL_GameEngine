@@ -55,7 +55,6 @@ public class ModelLoader {
 			// Regex to match a line that indicates the start of an object
 			String[] content = lines.split("[o] .*");
 			content = Arrays.copyOfRange(content, 1, content.length);
-			System.err.println(content.length);
 			Arrays.stream(content).filter(l -> l.isBlank());
 			for (String string : content) {
 				clearFinalLists();

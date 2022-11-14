@@ -125,7 +125,6 @@ public class Player extends Model {
 		}
 		if(onTerrain) {
 			float yDiff = position.y - minmax[2];
-			System.out.println(Arrays.toString(minmax));
 			position.y = terrain.heightAtPosition(new Vec2(position.x, position.z));
 		}else {
 			position.y -= speed;

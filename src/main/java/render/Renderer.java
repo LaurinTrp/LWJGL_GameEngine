@@ -79,9 +79,7 @@ public class Renderer {
 
 		transformationPass = new TransformationPass();
 
-//		lightSourcePositions.add(new Vec4(1.2f, 1.0f, 2.0f, 1.0f));
 		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
-//		lightSourcePositions.add(new Vec4(0f, 10.0f, 0.0f, 1.0f));
 		
 		lightSourcePass = new LightSourcePass();
 		lightSourcePass.setLightsourcePositions(lightSourcePositions);
@@ -120,16 +118,16 @@ public class Renderer {
 
 		glEnable(GL_DEPTH_TEST);
 		
-		terrainModel.render();
+//		terrainModel.render();
 
 		for (Model terrainPass : terrains) {
 			terrainPass.render();
 		}
 		
-		lightSourcePass.render();
+//		lightSourcePass.render();
 		sun.update();
 		
-		cottage.render();
+//		cottage.render();
 		
 		player.render();
 
@@ -139,7 +137,7 @@ public class Renderer {
 //		model.render();
 //		compass.render();
 		
-		trees.render();
+//		trees.render();
 		glDisable(GL_DEPTH_TEST);
 		
 		framebuffer.renderColorAttachments();

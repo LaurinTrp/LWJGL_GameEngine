@@ -13,7 +13,7 @@ public class TerrainModel extends Model{
 	private TerrainGenerator generator;
 	
 	public TerrainModel(TerrainGenerator generator, String texture) {
-		super(generator.getVerticesBuffer(), generator.getUvsBuffer(), generator.getUvsBuffer(), 
+		super(generator.getVerticesBuffer(), generator.getUvsBuffer(), generator.getNormalsBuffer(), 
 				generator.getIndicesBuffer(), generator.getIndicesBuffer().length, new Material(), generator.getMinmax());
 		
 		this.generator = generator;

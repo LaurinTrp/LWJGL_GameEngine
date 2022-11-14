@@ -17,6 +17,7 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import glm.mat._4.Mat4;
@@ -44,7 +45,7 @@ public class NormalDrawing {
 		this.normals = model.getNormals();
 
 		data = ModelUtils.createNormals(vertices, normals);
-
+		
 		this.modelMatrix = model.modelMatrix;
 
 		bind();

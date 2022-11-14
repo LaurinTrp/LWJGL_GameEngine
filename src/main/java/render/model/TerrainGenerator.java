@@ -1,6 +1,8 @@
 package main.java.render.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import glm.Glm;
 import glm.vec._3.Vec3;
@@ -51,8 +53,8 @@ public class TerrainGenerator {
 				double worldX = startX + x * density;
 				double worldZ = startZ + y * density;
 
-//				noise = SimplexNoise.noise(worldX / 5f, worldZ / 5f);
-				noise = 0;
+				noise = SimplexNoise.noise(worldX / 5f, worldZ / 5f);
+//				noise = 0;
 				
 				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
 
@@ -70,15 +72,12 @@ public class TerrainGenerator {
 
 		verticesBuffer = ModelUtils.flattenListOfListsStream(verticesList);
 
-		ArrayList<Vec4> normalsFromIndices = new ArrayList<>();
 		ArrayList<Integer> indices = new ArrayList<>();
 		for (int i = 0; i < verticesList.size() - 1; i++) {
 			for (int j = 0; j < verticesList.get(i).size() - 1; j++) {
 				Triangle t1 = getTriangle(i, j, true);
-				normalsFromIndices.add(calculateNormal(t1).toVec4_());
 
 				Triangle t2 = getTriangle(i, j, false);
-				normalsFromIndices.add(calculateNormal(t2).toVec4_());
 
 				indices.add(t1.point1);
 				indices.add(t1.point2);
@@ -109,7 +108,7 @@ public class TerrainGenerator {
 			this.normalsBuffer[i * 4 + 2] = normalsList.get(i).z;
 			this.normalsBuffer[i * 4 + 3] = normalsList.get(i).w;
 		}
-
+		
 	}
 	
 	public Float[] getVerticesBuffer() {
