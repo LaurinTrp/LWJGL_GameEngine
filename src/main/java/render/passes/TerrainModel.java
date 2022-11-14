@@ -18,9 +18,11 @@ public class TerrainModel extends Model{
 		
 		this.generator = generator;
 		
-		setShaderFolder("Terrain");
+		setShaderFolder("Transformation");
 		
 		getMaterial().setTexture(ImageLoader.loadTextureFromResource(texture));
+		getMaterial().setReflectance(0.1f);
+		
 	}
 	
 	public boolean isOnTerrain(Vec2 position) {

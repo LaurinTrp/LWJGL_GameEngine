@@ -329,6 +329,7 @@ public class Model {
 			glUseProgram(program.getProgramID());
 			{
 				if (material != null) {
+					glActiveTexture(GL_TEXTURE0 + 0);
 					glBindTexture(GL_TEXTURE_2D, material.getTexture());
 				}
 				glBindVertexArray(vao);

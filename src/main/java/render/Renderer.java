@@ -96,10 +96,9 @@ public class Renderer {
 		
 		player = new Player();
 		
-
 		terrains = new ArrayList<>();
 		
-		terrainModel = new TerrainModel(new TerrainGenerator(10, 10, 1, 0, 0), "Terrain/Terrain.png");
+		terrainModel = new TerrainModel(new TerrainGenerator(100, 100, 1, 0, 0), "Terrain/Terrain.png");
 		terrains.add(terrainModel);
 
 		camera = new Camera(player);

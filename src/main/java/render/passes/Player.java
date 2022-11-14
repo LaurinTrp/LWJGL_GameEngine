@@ -39,7 +39,7 @@ public class Player extends Model {
 
 //		rotation();
 		movement();
-		updateMinmax();
+//		updateMinmax();
 		gravity();
 
 		modelMatrix.cleanTranslation();
