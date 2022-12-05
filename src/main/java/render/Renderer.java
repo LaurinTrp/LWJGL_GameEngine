@@ -5,6 +5,7 @@ import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import glm.vec._4.Vec4;
 import main.java.render.model.Model;
@@ -52,7 +53,7 @@ public class Renderer {
 
 	private MousePicker mousePicker;
 	
-	public static ArrayList<TerrainModel> terrains;
+	public static List<TerrainModel> terrains;
 	
 	private Player player;
 	
@@ -63,6 +64,8 @@ public class Renderer {
 	private Cubes cubes;
 	
 	private TerrainModel terrainModel;
+	
+	private Model myModel;
 	
 
 	public Renderer() {
@@ -100,13 +103,15 @@ public class Renderer {
 		terrainModel = new TerrainModel(new TerrainGenerator(100, 100, 1, 0, 0), "Terrain/Terrain.png");
 		terrains.add(terrainModel);
 
-		camera = new Camera(player);
+		camera = new Camera();
 		mousePicker = new MousePicker(camera);
 		
 		trees = new Trees();
 		tree_1 = new Tree_1();
 		
 		cubes = new Cubes();
+		
+		myModel = new MyModel();
 		
 	}
 
@@ -119,19 +124,19 @@ public class Renderer {
 
 		glEnable(GL_DEPTH_TEST);
 		
-//		terrainModel.render();
+		terrainModel.render();
 
-		for (Model terrainPass : terrains) {
-			terrainPass.render();
-		}
+//		for (Model terrainPass : terrains) {
+//			terrainPass.render();
+//		}
 		
-		lightSourcePass.render();
-		sun.update();
+//		lightSourcePass.render();
+//		sun.update();
 		
 //		cottage.render();
 		
 		player.render();
-
+		camera.setFocusPoint(player.getPosition());
 		camera.moveCamera();
 //		mousePicker.update();
 		
@@ -139,6 +144,9 @@ public class Renderer {
 //		compass.render();
 		
 //		trees.render();
+		
+		myModel.render();
+		
 		glDisable(GL_DEPTH_TEST);
 		
 		framebuffer.renderColorAttachments();
@@ -166,6 +174,8 @@ public class Renderer {
 		model.dispose();
 		
 		player.dispose();
+		
+		myModel.dispose();
 		
 		compass.dispose();
 		trees.dispose();

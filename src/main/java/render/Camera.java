@@ -26,13 +26,17 @@ public class Camera {
 	private final float cameraSpeed = 0.5f;
 
 	private float distanceFromPlayer = 10f;
+	
+	private Vec3 focusPoint;
 
-	public Camera(Player player) {
-
-		this.player = player;
-
+	public Camera() {
 		projectionMatrix = Glm.perspective_(45.0f, (float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight,
 				0.1f, 100.0f);
+		focusPoint = new Vec3();
+	}
+	
+	public Camera(Player player) {
+		this();
 	}
 
 	private void rotation() {
@@ -57,9 +61,9 @@ public class Camera {
 		float offsetX = (float) (horizontalDistance * Math.sin(Math.toRadians(angleHorizontal * cameraSpeed)));
 		float offsetZ = (float) (horizontalDistance * Math.cos(Math.toRadians(angleHorizontal * cameraSpeed)));
 
-		cameraPosition.x = player.getPosition().x - offsetX;
-		cameraPosition.y = player.getPosition().y + verticalDistance;
-		cameraPosition.z = player.getPosition().z - offsetZ;
+		cameraPosition.x = focusPoint.x - offsetX;
+		cameraPosition.y = focusPoint.y + verticalDistance;
+		cameraPosition.z = focusPoint.z - offsetZ;
 
 		TerrainModel terrain = (TerrainModel) Renderer.terrains.get(0);
 		if (terrain.isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
@@ -81,10 +85,13 @@ public class Camera {
 
 		rotation();
 
-		view = Glm.lookAt_(cameraPosition, main.java.utils.math.Glm.add(player.getPosition(), cameraFront), cameraUp);
-
+		view = Glm.lookAt_(cameraPosition, main.java.utils.math.Glm.add(focusPoint, cameraFront), cameraUp);
 	}
 
+	public void setFocusPoint(Vec3 focusPoint) {
+		this.focusPoint = focusPoint;
+	}
+	
 	private void updateProjectionMatrix() {
 		projectionMatrix = Glm.perspective_((float) Math.toRadians(45),
 				(float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight, 0.1f, 100f);
@@ -100,6 +107,10 @@ public class Camera {
 
 	public Vec3 getCameraPosition() {
 		return cameraPosition;
+	}
+	
+	public float getCameraSpeed() {
+		return cameraSpeed;
 	}
 
 }

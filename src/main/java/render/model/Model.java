@@ -1,11 +1,14 @@
 package main.java.render.model;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_READ;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
@@ -29,6 +32,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 import glm.mat._4.Mat4;
+import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
 import main.java.shader.ShaderProgram;
@@ -40,7 +44,7 @@ public class Model {
 
 	protected boolean init = false;
 	protected boolean hasEbo = false;
-	
+
 	protected int vao, vbo, ebo;
 	private int triangles;
 
@@ -72,18 +76,20 @@ public class Model {
 
 	public Model() {
 	}
-	
+
 	/**
 	 * Model constructor with ebo
-	 * @param vertices The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs The data of the uv coordinates
-	 * @param normals The data of the normals
-	 * @param indices The indices
+	 * 
+	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
+	 * @param uvs       The data of the uv coordinates
+	 * @param normals   The data of the normals
+	 * @param indices   The indices
 	 * @param triangles Number of triangles
-	 * @param material Material object
-	 * @param minmax Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
+	 * @param material  Material object
+	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
 	 */
-	public Model(Float[] vertices, Float[] uvs, Float[] normals, int[] indices, int triangles, Material material, Float[] minmax) {
+	public Model(Float[] vertices, Float[] uvs, Float[] normals, int[] indices, int triangles, Material material,
+			Float[] minmax) {
 		this(vertices, uvs, normals, triangles, material, minmax);
 		hasEbo = true;
 		this.indices = indices;
@@ -91,13 +97,14 @@ public class Model {
 
 	/**
 	 * Model constructor without ebo
-	 * @param vertices The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs The data of the uv coordinates
-	 * @param normals The data of the normals
-	 * @param indices The indices
+	 * 
+	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
+	 * @param uvs       The data of the uv coordinates
+	 * @param normals   The data of the normals
+	 * @param indices   The indices
 	 * @param triangles Number of triangles
-	 * @param material Material object
-	 * @param minmax Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
+	 * @param material  Material object
+	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
 	 */
 	public Model(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax) {
 		this.triangles = triangles;
@@ -111,6 +118,7 @@ public class Model {
 
 	/**
 	 * Constructor copying other model
+	 * 
 	 * @param model Model to copy
 	 */
 	public Model(Model model) {
@@ -127,7 +135,7 @@ public class Model {
 	 * Initializing the model
 	 */
 	public void init() {
-		
+
 		initShader(shaderFolder);
 		initMatrixes();
 		bindModel();
@@ -142,8 +150,7 @@ public class Model {
 	}
 
 	/**
-	 * Method that can be called after the initialization
-	 * Needs override
+	 * Method that can be called after the initialization Needs override
 	 */
 	protected void afterInit() {
 	}
@@ -157,6 +164,7 @@ public class Model {
 
 	/**
 	 * Initializing the shader and the uniform variables
+	 * 
 	 * @param shaderFolder The name of the shader folder in the resources
 	 */
 	protected void initShader(String shaderFolder) {
@@ -201,7 +209,7 @@ public class Model {
 
 		vao = glGenVertexArrays();
 		vbo = glGenBuffers();
-		
+
 		// create VAO
 		if (!hasEbo) {
 
@@ -210,7 +218,7 @@ public class Model {
 				// upload VBO
 				glBindBuffer(GL_ARRAY_BUFFER, vbo);
 				glBufferData(GL_ARRAY_BUFFER, data, GL_DYNAMIC_READ);
-				
+
 				setAttributePointers();
 			}
 			glBindVertexArray(0);
@@ -227,13 +235,13 @@ public class Model {
 				glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indices, GL15.GL_STATIC_DRAW);
 
 				setAttributePointers();
-				
+
 			}
 			glBindVertexArray(0);
 
 		}
 	}
-	
+
 	/**
 	 * Set the attribute pointers for the render data
 	 */
@@ -289,8 +297,7 @@ public class Model {
 		glUniform4fv(uniforms.get("sunColor"), Renderer.sun.getColor().toFA_());
 
 	}
-	
-	
+
 	/**
 	 * Upload the different matrices to the shader
 	 */
@@ -300,7 +307,7 @@ public class Model {
 		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
-	
+
 	/**
 	 * update the minmax for example after scaling
 	 */
@@ -321,10 +328,10 @@ public class Model {
 		if (!init) {
 			init();
 		}
-		if(!init){
+		if (!init) {
 			return;
 		}
-		
+
 		{
 			glUseProgram(program.getProgramID());
 			{
@@ -362,14 +369,16 @@ public class Model {
 
 	/**
 	 * Get the material object
+	 * 
 	 * @return material object
 	 */
 	public Material getMaterial() {
 		return material;
 	}
-	
+
 	/**
 	 * Set the material object
+	 * 
 	 * @param material material for the model
 	 */
 	public void setMaterial(Material material) {
@@ -378,6 +387,7 @@ public class Model {
 
 	/**
 	 * Getter for the vertices data
+	 * 
 	 * @return The vertices as float array
 	 */
 	public Float[] getVertices() {
@@ -386,6 +396,7 @@ public class Model {
 
 	/**
 	 * Getter for the normals data
+	 * 
 	 * @return The normals as float array
 	 */
 	public Float[] getNormals() {
@@ -394,6 +405,7 @@ public class Model {
 
 	/**
 	 * Getter for the uvs data
+	 * 
 	 * @return The uvs as float array
 	 */
 	public Float[] getUvs() {
@@ -402,6 +414,7 @@ public class Model {
 
 	/**
 	 * Set the shader folder
+	 * 
 	 * @param shaderFolder new Shader folder
 	 */
 	public void setShaderFolder(String shaderFolder) {
@@ -410,6 +423,7 @@ public class Model {
 
 	/**
 	 * Get the shader program
+	 * 
 	 * @return current shader program
 	 */
 	public ShaderProgram getProgram() {
@@ -418,6 +432,7 @@ public class Model {
 
 	/**
 	 * set the option to show the normals
+	 * 
 	 * @param showNormals boolean if normals should be shown
 	 */
 	public void setShowNormals(boolean showNormals) {
@@ -426,6 +441,7 @@ public class Model {
 
 	/**
 	 * get the current scale of the model
+	 * 
 	 * @return scale as float
 	 */
 	public float getScale() {
@@ -434,6 +450,7 @@ public class Model {
 
 	/**
 	 * get the model matrix
+	 * 
 	 * @return model matrix as mat4
 	 */
 	public Mat4 getModelMatrix() {
@@ -442,6 +459,7 @@ public class Model {
 
 	/**
 	 * Set a new model matrix
+	 * 
 	 * @param modelMatrix new Model matrix
 	 */
 	public void setModelMatrix(Mat4 modelMatrix) {
@@ -450,14 +468,16 @@ public class Model {
 
 	/**
 	 * get the minmax values
+	 * 
 	 * @return minmax values as an float array
 	 */
 	public Float[] getMinmax() {
 		return minmax;
 	}
-	
+
 	/**
 	 * set the scale of the model
+	 * 
 	 * @param scale scaling factor
 	 */
 	public void setScale(float scale) {

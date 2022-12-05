@@ -9,6 +9,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 
 import java.util.Arrays;
 
+import org.lwjgl.glfw.GLFW;
+
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
@@ -31,30 +33,29 @@ public class Player extends Model {
 		
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
-		
 	}
 	
 	@Override
 	protected void renderProcess() {
 		super.renderProcess();
 
-//		rotation();
+		rotation();
 		movement();
 //		updateMinmax();
 		gravity();
-
-		modelMatrix.cleanTranslation();
-		modelMatrix.translate(new Vec3(position).div(getScale()));
+		
+		modelMatrix = modelMatrix.cleanTranslation();
+		modelMatrix = modelMatrix.translation(position);
 	}
 	
 	@Override
 	public void afterInit() {
 		super.afterInit();
-
-		setScale(0.01f);
 		
-		position = new Vec3(0f, 5f, 0f);
-		modelMatrix.translate(position);
+		position = new Vec3(5.0, 5.0, 0.0);
+		modelMatrix.translation(position);
+		
+		modelMatrix.print("Player");
 	}
 	
 	/**
@@ -62,22 +63,20 @@ public class Player extends Model {
 	 */
 	private void rotation() {
 
-		double offsetX = Engine_Main.mouseHandler.getXoffset();
 		if(!Engine_Main.mouseHandler.isRMB_Down()) {
 			return;
 		}
 		
-		Vec3 position = Glm.matTranslation(modelMatrix);
-		modelMatrix.translate(new Vec3());
+		double mouseXOffset = Engine_Main.mouseHandler.getXoffset();
+		modelMatrix.rotateY(Math.toRadians(mouseXOffset * Renderer.camera.getCameraSpeed()));
+				
+//		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_LEFT)) {
+//			modelMatrix.rotateY(Math.toRadians(-1));
+//		}
+//		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_RIGHT)) {
+//			modelMatrix.rotateY(Math.toRadians(1));
+//		}	
 		
-		if(offsetX > 0) {
-			modelMatrix = modelMatrix.rotateY(Math.toRadians(-1d));
-		}
-		if(offsetX < 0) {
-			modelMatrix = modelMatrix.rotateY(Math.toRadians(1d));
-		}
-		
-		modelMatrix.translate(position);
 	}
 	
 	/**

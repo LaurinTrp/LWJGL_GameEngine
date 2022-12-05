@@ -57,6 +57,10 @@ public class Engine_Main {
 	
 	private static long window = -1;
 	
+	private static long currentFrameTime;
+	private static long lastFrameTime;
+	private static long delta;
+	
 	public static void main(String[] args) throws IOException {
 
 		TestClass testClass = new TestClass();
@@ -67,6 +71,8 @@ public class Engine_Main {
 		initObjects();
 		
 		initCallbacks();
+		
+		lastFrameTime = System.nanoTime();
 
 		loop();
 		
@@ -128,6 +134,7 @@ public class Engine_Main {
 		glEnable(GL_DEPTH_TEST);
 		
 		while (!glfwWindowShouldClose(window)) {
+			
 
 			if(keyHandler.isPressed(GLFW_KEY_ESCAPE)) {
 				glfwSetWindowShouldClose(window, true);
@@ -138,17 +145,25 @@ public class Engine_Main {
 
 			// RENDER //
 			render.render();
-
 			
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				Thread.sleep(10);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 			
 			glfwSwapBuffers(window);
 			glfwPollEvents();
-			
+
+			currentFrameTime = System.nanoTime();
+			delta = currentFrameTime - lastFrameTime;
+			lastFrameTime = currentFrameTime;
+//			System.out.println(delta/10000);
 		}
 	}
+	
+	public static long getDelta() {
+		return delta;
+	}
+	
 }
