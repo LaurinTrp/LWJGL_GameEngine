@@ -31,6 +31,7 @@ public class Player extends Model {
 		
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
+		
 	}
 	
 	@Override
@@ -44,7 +45,6 @@ public class Player extends Model {
 
 		modelMatrix.cleanTranslation();
 		modelMatrix.translate(new Vec3(position).div(getScale()));
-		
 	}
 	
 	@Override
@@ -123,9 +123,9 @@ public class Player extends Model {
 				break;
 			}
 		}
+		
 		if(onTerrain) {
-			float yDiff = position.y - minmax[2];
-			position.y = terrain.heightAtPosition(new Vec2(position.x, position.z));
+			position.y = terrain.heightAtPosition(new Vec2(position.x, position.z)) - minmax[2];
 		}else {
 			position.y -= speed;
 		}

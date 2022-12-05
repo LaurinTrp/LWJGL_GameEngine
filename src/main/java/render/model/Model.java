@@ -132,7 +132,7 @@ public class Model {
 		initMatrixes();
 		bindModel();
 
-		updateMinmax();
+//		updateMinmax();
 
 		afterInit();
 
