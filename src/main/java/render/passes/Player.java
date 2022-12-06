@@ -69,14 +69,6 @@ public class Player extends Model {
 		
 		double mouseXOffset = Engine_Main.mouseHandler.getXoffset();
 		modelMatrix.rotateY(Math.toRadians(mouseXOffset * Renderer.camera.getCameraSpeed()));
-				
-//		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_LEFT)) {
-//			modelMatrix.rotateY(Math.toRadians(-1));
-//		}
-//		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_RIGHT)) {
-//			modelMatrix.rotateY(Math.toRadians(1));
-//		}	
-		
 	}
 	
 	/**

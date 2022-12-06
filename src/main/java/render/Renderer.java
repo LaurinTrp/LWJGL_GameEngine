@@ -25,6 +25,7 @@ import main.java.render.passes.transformation.MyModel;
 import main.java.render.passes.transformation.TransformationPass;
 import main.java.render.passes.trees.Tree_1;
 import main.java.render.passes.trees.Trees;
+import main.java.utils.math.MousePicker;
 
 public class Renderer {
 	
