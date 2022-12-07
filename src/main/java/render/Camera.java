@@ -4,6 +4,7 @@ import glm.Glm;
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
 import main.java.render.passes.Player;
 import main.java.render.passes.TerrainModel;
@@ -12,7 +13,7 @@ public class Camera {
 
 	private Player player;
 
-	private Vec3 cameraPosition = new Vec3(0.0f, 0.0f, 0.0f);
+	private Vec4 cameraPosition = new Vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	private Vec3 cameraFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 cameraUp = new Vec3(0.0f, 1.0f, 0.0f);
 	private Vec3 cameraRight = new Vec3(1.0f, 0.0f, 0.0f);
@@ -85,7 +86,7 @@ public class Camera {
 
 		rotation();
 
-		view = Glm.lookAt_(cameraPosition, main.java.utils.math.Glm.add(focusPoint, cameraFront), cameraUp);
+		view = Glm.lookAt_(new Vec3(cameraPosition), main.java.utils.math.Glm.add(focusPoint, cameraFront), cameraUp);
 	}
 
 	public void setFocusPoint(Vec3 focusPoint) {
@@ -105,7 +106,7 @@ public class Camera {
 		return projectionMatrix;
 	}
 
-	public Vec3 getCameraPosition() {
+	public Vec4 getCameraPosition() {
 		return cameraPosition;
 	}
 	

@@ -123,7 +123,7 @@ public class TransformationPass {
 					
 					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
 					
-					glUniform4fv(cameraPositionID, new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
+					glUniform4fv(cameraPositionID, Renderer.camera.getCameraPosition().toFA_());
 					
 					glDrawArrays(GL_TRIANGLES, 0, triangles);
 					

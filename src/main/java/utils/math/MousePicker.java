@@ -2,15 +2,22 @@ package main.java.utils.math;
 
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
+import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
 import main.java.render.Camera;
+import main.java.render.model.Model;
+import main.java.render.passes.TerrainModel;
 
 public class MousePicker {
 	private Vec4 currentRay;
 	private Mat4 projectionMatrix;
 	private Mat4 viewMatrix;
 	private Camera camera;
+	
+	private final int RECURSION_STEPS = 5;
+	private final byte START_POINT = 0;
+	private final byte END_POINT = 1;
 	
 	public MousePicker(Camera camera) {
 		this.camera = camera;
@@ -22,10 +29,19 @@ public class MousePicker {
 		return currentRay;
 	}
 	
-	public void update() {
+	private void update() {
 		this.viewMatrix = new Mat4(camera.getView());
 		currentRay = calculateMouseRay();
-//		System.err.println(currentRay);
+	}
+	
+	public Vec4 terrainIntersection(Model terrain) {
+		update();
+		System.out.println(intersectionInRange(0, 200, currentRay, terrain));
+//		System.out.println(getCurrentRay());
+//		intersectionInRange(0, 6000, getCurrentRay(), terrain);
+		
+		
+		return null;
 	}
 	
 	private Vec4 calculateMouseRay() {
@@ -56,5 +72,42 @@ public class MousePicker {
 		double y = (2d*mouseY) / Engine_Main.windowHeight-1;
 		return new Vec2(x,y);
 	}
+	
+	
+	// ####################
+	// Terrain Intersection
+	// ####################
+	
+	private Vec4 getPointOnRay(Vec4 ray, float distance) {
+		Vec4 camPos = new Vec4(camera.getCameraPosition());
+		Vec4 start = new Vec4(camPos);
+		Vec4 scaledRay = new Vec4(ray).mul(distance);
+		System.out.println(scaledRay);
+		return new Vec4(start).add(scaledRay);
+	}
+	
+	private boolean intersectionInRange(float start, float end, Vec4 ray, Model terrain) {
+		Vec4 startPoint = getPointOnRay(ray, start);
+		Vec4 endPoint = getPointOnRay(ray, end);
+		if(!isUnderGround(startPoint, terrain, START_POINT) && isUnderGround(endPoint, terrain, END_POINT)) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isUnderGround(Vec4 point, Model terrain, byte pointType) {
+		float height = 0;
+		if(terrain != null) {
+			if(!((TerrainModel)terrain).isOnTerrain(new Vec2(point.x, point.z))) {
+				return pointType == END_POINT;
+			}
+			height = ((TerrainModel) terrain).heightAtPosition(new Vec2(point.x, point.z));
+		}
+		if(point.y < height) {
+			return true;
+		}
+		return false;
+	}
+	
 	
 }

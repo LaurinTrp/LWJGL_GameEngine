@@ -305,7 +305,7 @@ public class Model {
 		glUniformMatrix4fv(uniforms.get("viewMatrix"), false, Renderer.camera.getView().toFa_());
 		glUniformMatrix4fv(uniforms.get("projectionMatrix"), false, Renderer.camera.getProjectionMatrix().toFa_());
 		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
-		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
+		glUniform4fv(uniforms.get("cameraPos"), Renderer.camera.getCameraPosition().toFA_());
 	}
 
 	/**

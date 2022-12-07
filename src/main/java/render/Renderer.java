@@ -141,6 +141,8 @@ public class Renderer {
 		camera.moveCamera();
 //		mousePicker.update();
 		
+		mousePicker.terrainIntersection(terrainModel);
+		
 //		model.render();
 //		compass.render();
 		
