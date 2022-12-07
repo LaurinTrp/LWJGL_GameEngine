@@ -138,12 +138,12 @@ public class Renderer {
 		
 		player.render();
 		
-//		camera.setFocusPoint(player.getPosition());
+		camera.setFocusPoint(player.getPosition());
 		camera.moveCamera();
 		
 //		mousePicker.update();
 		
-		mousePicker.terrainIntersection(terrainModel);
+//		mousePicker.terrainIntersection(terrainModel);
 		
 //		model.render();
 //		compass.render();

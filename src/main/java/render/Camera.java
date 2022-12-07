@@ -26,7 +26,7 @@ public class Camera {
 
 	private final float cameraSpeed = 0.5f;
 
-	private float distanceFromPlayer = 10f;
+	private float distanceFromPlayer = -10f;
 	
 	private Vec3 focusPoint;
 

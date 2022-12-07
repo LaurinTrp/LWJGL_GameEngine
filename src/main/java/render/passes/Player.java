@@ -7,6 +7,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 
+import org.lwjgl.glfw.GLFW;
+
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
@@ -18,10 +20,13 @@ public class Player extends Model {
 
 	private Vec3 position;
 	private final float speed = 0.05f;
+	private final float rotationSpeed = 2f;
 	
-	private Vec3 cameraFront = new Vec3(0.0f, 0.0f, -1.0f);
-	private Vec3 cameraUp = new Vec3(0.0f, 1.0f, 0.0f);
-	private Vec3 cameraRight = new Vec3(1.0f, 0.0f, 0.0f);
+	private Vec3 playerFront = new Vec3(0.0f, 0.0f, -1.0f);
+	private Vec3 playerUp = new Vec3(0.0f, 1.0f, 0.0f);
+	private Vec3 playerRight = new Vec3(1.0f, 0.0f, 0.0f);
+	
+	private float rotationAngle = 0;
 	
 	public Player() {
 		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
@@ -58,39 +63,47 @@ public class Player extends Model {
 	 */
 	private void rotation() {
 
-		if(!Engine_Main.mouseHandler.isRMB_Down()) {
-			return;
+		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_LEFT)) {
+			modelMatrix.rotateY(Math.toRadians(-rotationSpeed));
+			rotationAngle += Math.toRadians(-rotationSpeed);
 		}
+		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_RIGHT)) {
+			modelMatrix.rotateY(Math.toRadians(rotationSpeed));
+			rotationAngle += Math.toRadians(rotationSpeed);
+		}	
 		
-		double mouseXOffset = Engine_Main.mouseHandler.getXoffset();
-		modelMatrix.rotateY(Math.toRadians(mouseXOffset * Renderer.camera.getCameraSpeed()));
+		rotationAngle%=Math.PI*2;
+		
+		playerFront = new Vec3(-Math.sin(rotationAngle), 0, -Math.cos(rotationAngle));
+		
 	}
+	
 	
 	/**
 	 * Move the player model
 	 */
 	private void movement() {
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
-			position.add(new Vec3(cameraFront).mul(speed));
+			position.add(new Vec3(playerFront).mul(speed));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_S)) {
-			position.sub(new Vec3(cameraFront).mul(speed));
+			position.sub(new Vec3(playerFront).mul(speed));
 		}
 
-		cameraRight = new Vec3(cameraFront).cross(cameraUp);
+		playerRight = new Vec3(playerFront).cross(playerUp);
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_A)) {
-			position.sub(new Vec3(cameraRight).mul(speed));
+			position.sub(new Vec3(playerRight).mul(speed));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_D)) {
-			position.add(new Vec3(cameraRight).mul(speed));
+			position.add(new Vec3(playerRight).mul(speed));
 		}
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_Q)) {
-			position.add(new Vec3(cameraUp).mul(speed));
+			position.add(new Vec3(playerUp).mul(speed));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_X)) {
-			position.sub(new Vec3(cameraUp).mul(speed));
+			position.sub(new Vec3(playerUp).mul(speed));
 		}
 	}
 	
