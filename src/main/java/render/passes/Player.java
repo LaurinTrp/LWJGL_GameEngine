@@ -14,13 +14,13 @@ import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
+import main.java.utils.Constants;
 import main.java.utils.loaders.ModelLoader;
 
 public class Player extends Model {
 
 	private Vec3 position;
 	private final float speed = 0.05f;
-	private final float rotationSpeed = 2f;
 	
 	private Vec3 playerFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 playerUp = new Vec3(0.0f, 1.0f, 0.0f);
@@ -64,12 +64,12 @@ public class Player extends Model {
 	private void rotation() {
 
 		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_LEFT)) {
-			modelMatrix.rotateY(Math.toRadians(-rotationSpeed));
-			rotationAngle += Math.toRadians(-rotationSpeed);
+			modelMatrix.rotateY(-Constants.PLAYER_ROTATION_SPEED);
+			rotationAngle += -Constants.PLAYER_ROTATION_SPEED;
 		}
 		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_RIGHT)) {
-			modelMatrix.rotateY(Math.toRadians(rotationSpeed));
-			rotationAngle += Math.toRadians(rotationSpeed);
+			modelMatrix.rotateY(Constants.PLAYER_ROTATION_SPEED);
+			rotationAngle += Constants.PLAYER_ROTATION_SPEED;
 		}	
 		
 		rotationAngle%=Math.PI*2;
@@ -136,5 +136,9 @@ public class Player extends Model {
 	 */
 	public Vec3 getPosition() {
 		return position;
+	}
+	
+	public float getRotationAngle() {
+		return rotationAngle;
 	}
 }

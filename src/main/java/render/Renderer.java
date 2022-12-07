@@ -104,7 +104,7 @@ public class Renderer {
 		terrainModel = new TerrainModel(new TerrainGenerator(100, 100, 1, 0, 0), "Terrain/Terrain.png");
 		terrains.add(terrainModel);
 
-		camera = new Camera();
+		camera = new Camera(player);
 		mousePicker = new MousePicker(camera);
 		
 		trees = new Trees();
@@ -137,7 +137,6 @@ public class Renderer {
 //		cottage.render();
 		
 		player.render();
-		
 		camera.setFocusPoint(player.getPosition());
 		camera.moveCamera();
 		

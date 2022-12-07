@@ -6,12 +6,13 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
+import main.java.render.model.Model;
 import main.java.render.passes.Player;
 import main.java.render.passes.TerrainModel;
 
 public class Camera {
 
-	private Player player;
+	private Model player;
 
 	private Vec4 cameraPosition = new Vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	private Vec3 cameraFront = new Vec3(0.0f, 0.0f, -1.0f);
@@ -26,7 +27,7 @@ public class Camera {
 
 	private final float cameraSpeed = 0.5f;
 
-	private float distanceFromPlayer = -10f;
+	private float distanceFromPlayer = 10f;
 	
 	private Vec3 focusPoint;
 
@@ -36,14 +37,16 @@ public class Camera {
 		focusPoint = new Vec3();
 	}
 	
-	public Camera(Player player) {
+	public Camera(Model player) {
 		this();
+		this.player = player;
 	}
 
 	private void rotation() {
-
+		
+		angleHorizontal = ((Player)player).getRotationAngle() - (float)Math.toRadians(180);
+		
 		angleVertical += Engine_Main.mouseHandler.getYoffset();
-		angleHorizontal += Engine_Main.mouseHandler.getXoffset();
 
 		if (angleVertical <= -89f) {
 			angleVertical = -89f;
@@ -59,8 +62,8 @@ public class Camera {
 		float verticalDistance = (float) (distanceFromPlayer * Math.sin(Math.toRadians(angleVertical * cameraSpeed)));
 		float horizontalDistance = (float) (distanceFromPlayer * Math.cos(Math.toRadians(angleVertical * cameraSpeed)));
 
-		float offsetX = (float) (horizontalDistance * Math.sin(Math.toRadians(angleHorizontal * cameraSpeed)));
-		float offsetZ = (float) (horizontalDistance * Math.cos(Math.toRadians(angleHorizontal * cameraSpeed)));
+		float offsetX = (float) (horizontalDistance * Math.sin(angleHorizontal));
+		float offsetZ = (float) (horizontalDistance * Math.cos(angleHorizontal));
 
 		cameraPosition.x = focusPoint.x - offsetX;
 		cameraPosition.y = focusPoint.y + verticalDistance;
