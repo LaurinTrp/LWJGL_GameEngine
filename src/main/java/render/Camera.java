@@ -86,7 +86,7 @@ public class Camera {
 
 		rotation();
 
-		view = Glm.lookAt_(new Vec3(cameraPosition), main.java.utils.math.Glm.add(focusPoint, cameraFront), cameraUp);
+		view = Glm.lookAt_(new Vec3(cameraPosition), new Vec3(focusPoint).add(cameraFront), cameraUp);
 	}
 
 	public void setFocusPoint(Vec3 focusPoint) {

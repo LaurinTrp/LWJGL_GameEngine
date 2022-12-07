@@ -7,17 +7,12 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 
-import java.util.Arrays;
-
-import org.lwjgl.glfw.GLFW;
-
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ModelLoader;
-import main.java.utils.math.Glm;
 
 public class Player extends Model {
 
@@ -76,26 +71,26 @@ public class Player extends Model {
 	 */
 	private void movement() {
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
-			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
+			position.add(new Vec3(cameraFront).mul(speed));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_S)) {
-			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraFront, speed)));
+			position.sub(new Vec3(cameraFront).mul(speed));
 		}
 
-		cameraRight = main.java.utils.math.Glm.cross(cameraFront, cameraUp);
+		cameraRight = new Vec3(cameraFront).cross(cameraUp);
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_A)) {
-			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraRight, speed)));
+			position.sub(new Vec3(cameraRight).mul(speed));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_D)) {
-			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraRight, speed)));
+			position.add(new Vec3(cameraRight).mul(speed));
 		}
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_Q)) {
-			position = main.java.utils.math.Glm.add(position, (main.java.utils.math.Glm.times(cameraUp, speed)));
+			position.add(new Vec3(cameraUp).mul(speed));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_X)) {
-			position = main.java.utils.math.Glm.subtract(position, (main.java.utils.math.Glm.times(cameraUp, speed)));
+			position.sub(new Vec3(cameraUp).mul(speed));
 		}
 	}
 	

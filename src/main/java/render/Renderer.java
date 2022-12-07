@@ -137,8 +137,10 @@ public class Renderer {
 //		cottage.render();
 		
 		player.render();
-		camera.setFocusPoint(player.getPosition());
+		
+//		camera.setFocusPoint(player.getPosition());
 		camera.moveCamera();
+		
 //		mousePicker.update();
 		
 		mousePicker.terrainIntersection(terrainModel);
