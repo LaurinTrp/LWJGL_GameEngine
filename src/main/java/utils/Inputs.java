@@ -75,6 +75,11 @@ public class Inputs {
 				}
 			}
 		};
+		
+		public void reset() {
+			xoffset = 0;
+			yoffset = 0;
+		}
 
 		public GLFWMouseButtonCallback getMouseButtonCallback() {
 			return mouseButtonCallback;

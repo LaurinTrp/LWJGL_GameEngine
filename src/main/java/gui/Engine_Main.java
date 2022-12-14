@@ -147,19 +147,14 @@ public class Engine_Main {
 			// RENDER //
 			render.render();
 			
-//			try {
-//				Thread.sleep(10);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
+			mouseHandler.reset();
 			
 			glfwSwapBuffers(window);
 			glfwPollEvents();
-
+			
 			currentFrameTime = System.nanoTime();
 			delta = currentFrameTime - lastFrameTime;
 			lastFrameTime = currentFrameTime;
-//			System.out.println(delta/10000);
 		}
 	}
 	

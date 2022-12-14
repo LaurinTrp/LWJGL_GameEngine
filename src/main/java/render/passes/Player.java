@@ -21,20 +21,20 @@ public class Player extends Model {
 
 	private Vec3 position;
 	private final float speed = 0.05f;
-	
+
 	private Vec3 playerFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 playerUp = new Vec3(0.0f, 1.0f, 0.0f);
 	private Vec3 playerRight = new Vec3(1.0f, 0.0f, 0.0f);
-	
+
 	private float rotationAngle = 0;
-	
+
 	public Player() {
 		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
-		
+
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
 	}
-	
+
 	@Override
 	protected void renderProcess() {
 		super.renderProcess();
@@ -43,42 +43,40 @@ public class Player extends Model {
 		movement();
 //		updateMinmax();
 		gravity();
-		
+
 		modelMatrix = modelMatrix.cleanTranslation();
 		modelMatrix = modelMatrix.translation(position);
 	}
-	
+
 	@Override
 	public void afterInit() {
 		super.afterInit();
-		
+
 		position = new Vec3(5.0, 5.0, 0.0);
 		modelMatrix.translation(position);
-		
+
 		modelMatrix.print("Player");
 	}
-	
+
 	/**
 	 * Rotate the player around its axis
 	 */
 	private void rotation() {
-
-		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_LEFT)) {
-			modelMatrix.rotateY(-Constants.PLAYER_ROTATION_SPEED);
-			rotationAngle += -Constants.PLAYER_ROTATION_SPEED;
-		}
-		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_RIGHT)) {
+		if (Engine_Main.mouseHandler.getXoffset() > 0) {
 			modelMatrix.rotateY(Constants.PLAYER_ROTATION_SPEED);
 			rotationAngle += Constants.PLAYER_ROTATION_SPEED;
 		}	
-		
-		rotationAngle%=Math.PI*2;
-		
+		if (Engine_Main.mouseHandler.getXoffset() < 0) {
+			modelMatrix.rotateY(-Constants.PLAYER_ROTATION_SPEED);
+			rotationAngle -= Constants.PLAYER_ROTATION_SPEED;
+		}
+
+		rotationAngle %= Math.PI * 2;
+
 		playerFront = new Vec3(-Math.sin(rotationAngle), 0, -Math.cos(rotationAngle));
-		
+
 	}
-	
-	
+
 	/**
 	 * Move the player model
 	 */
@@ -106,7 +104,7 @@ public class Player extends Model {
 			position.sub(new Vec3(playerUp).mul(speed));
 		}
 	}
-	
+
 	/**
 	 * Applying gravity to the player
 	 */
@@ -115,29 +113,30 @@ public class Player extends Model {
 
 		TerrainModel terrain = null;
 		for (TerrainModel myTerrain : Renderer.terrains) {
-			onTerrain = myTerrain.isOnTerrain(new Vec2(position.x,position.z));
+			onTerrain = myTerrain.isOnTerrain(new Vec2(position.x, position.z));
 
-			if(onTerrain) {
-				terrain = myTerrain;	
+			if (onTerrain) {
+				terrain = myTerrain;
 				break;
 			}
 		}
-		
-		if(onTerrain) {
+
+		if (onTerrain) {
 			position.y = terrain.heightAtPosition(new Vec2(position.x, position.z)) - minmax[2];
-		}else {
+		} else {
 			position.y -= speed;
 		}
 	}
-	
+
 	/**
 	 * Get the position of the player
+	 * 
 	 * @return position as vec3
 	 */
 	public Vec3 getPosition() {
 		return position;
 	}
-	
+
 	public float getRotationAngle() {
 		return rotationAngle;
 	}
