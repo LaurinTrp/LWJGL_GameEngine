@@ -9,12 +9,13 @@ import main.java.gui.Engine_Main;
 import main.java.render.model.Model;
 import main.java.render.passes.Player;
 import main.java.render.passes.TerrainModel;
+import main.java.utils.constants.CameraMode;
 
 public class Camera {
 
 	private Model player;
 
-	private Vec4 cameraPosition = new Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	private Vec3 cameraPosition = new Vec3(0.0f, 0.0f, 0.0f);
 	private Vec3 cameraFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 cameraUp = new Vec3(0.0f, 1.0f, 0.0f);
 	private Vec3 cameraRight = new Vec3(1.0f, 0.0f, 0.0f);
@@ -28,34 +29,63 @@ public class Camera {
 	private final float cameraSpeed = 0.5f;
 
 	private float distanceFromPlayer = 10f;
-	
+
 	private Vec3 focusPoint;
+
+	private CameraMode cameraMode = CameraMode.POV_CAMERA;
 
 	public Camera() {
 		projectionMatrix = Glm.perspective_(45.0f, (float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight,
 				0.1f, 100.0f);
 		focusPoint = new Vec3();
 	}
-	
+
 	public Camera(Model player) {
 		this();
 		this.player = player;
 	}
 
 	private void rotation() {
-		
-		angleHorizontal = ((Player)player).getRotationAngle() - (float)Math.toRadians(180);
-		
-		angleVertical += Engine_Main.mouseHandler.getYoffset();
 
-		if (angleVertical <= -89f) {
-			angleVertical = -89f;
-		}
-		if (angleVertical >= 89f) {
-			angleVertical = 89f;
-		}
+		Player player = (Player) this.player;
+		
+		switch (cameraMode) {
+		case PLAYER_CAMERA: {
+			angleHorizontal = player.getRotationAngle() - (float) Math.toRadians(180);
 
-		calculateCameraPos(angleVertical, angleHorizontal);
+			angleVertical += Engine_Main.mouseHandler.getYoffset();
+
+			if (angleVertical <= -89f) {
+				angleVertical = -89f;
+			}
+			if (angleVertical >= 89f) {
+				angleVertical = 89f;
+			}
+
+			calculateCameraPos(angleVertical, angleHorizontal);
+			break;
+		}
+		case POV_CAMERA: {
+			angleVertical += Engine_Main.mouseHandler.getYoffset();
+
+			if (angleVertical <= -89f) {
+				angleVertical = -89f;
+			}
+			if (angleVertical >= 89f) {
+				angleVertical = 89f;
+			}
+			cameraFront = new Vec3(player.getPlayerFront());
+			
+			cameraPosition = new Vec3(player.getPosition());
+			
+			focusPoint = new Vec3(cameraPosition).add(cameraFront);
+			break;
+		}
+		default:
+			System.err.println("CameraMode not supported");
+			break;
+		}
+		
 	}
 
 	private void calculateCameraPos(float angleVertical, float angleHorizontal) {
@@ -71,7 +101,7 @@ public class Camera {
 
 		TerrainModel terrain = (TerrainModel) Renderer.terrains.get(0);
 		if (terrain.isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
-			float terrainHeight =terrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
+			float terrainHeight = terrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
 			if (cameraPosition.y < terrainHeight + 0.2f) {
 				cameraPosition.y = terrainHeight + 0.2f;
 			}
@@ -95,7 +125,7 @@ public class Camera {
 	public void setFocusPoint(Vec3 focusPoint) {
 		this.focusPoint = focusPoint;
 	}
-	
+
 	private void updateProjectionMatrix() {
 		projectionMatrix = Glm.perspective_((float) Math.toRadians(45),
 				(float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight, 0.1f, 100f);
@@ -109,10 +139,10 @@ public class Camera {
 		return projectionMatrix;
 	}
 
-	public Vec4 getCameraPosition() {
+	public Vec3 getCameraPosition() {
 		return cameraPosition;
 	}
-	
+
 	public float getCameraSpeed() {
 		return cameraSpeed;
 	}

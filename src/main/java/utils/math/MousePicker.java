@@ -79,7 +79,7 @@ public class MousePicker {
 	// ####################
 	
 	private Vec4 getPointOnRay(Vec4 ray, float distance) {
-		Vec4 camPos = new Vec4(camera.getCameraPosition());
+		Vec4 camPos = new Vec4(camera.getCameraPosition(), 1.0f);
 		Vec4 start = new Vec4(camPos);
 		Vec4 scaledRay = new Vec4(ray).mul(distance);
 		System.out.println(scaledRay);

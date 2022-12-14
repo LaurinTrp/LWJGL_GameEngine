@@ -1,5 +1,6 @@
 package main.java.render;
 
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
@@ -7,6 +8,7 @@ import static org.lwjgl.opengl.GL11.glEnable;
 import java.util.ArrayList;
 import java.util.List;
 
+import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.model.Model;
 import main.java.render.model.TerrainGenerator;
@@ -28,9 +30,9 @@ import main.java.render.passes.trees.Trees;
 import main.java.utils.math.MousePicker;
 
 public class Renderer {
-	
+
 	public static Framebuffer framebuffer;
-	
+
 	public static Vec4 ambientColor;
 
 	private TrianglePass trianglePass;
@@ -49,32 +51,30 @@ public class Renderer {
 
 	private Cottage cottage;
 	private MyModel model;
-	
+
 	private Compass compass;
 
 	private MousePicker mousePicker;
-	
+
 	public static List<TerrainModel> terrains;
-	
+
 	private Player player;
-	
+
 	private Trees trees;
-	
+
 	private Tree_1 tree_1;
-	
+
 	private Cubes cubes;
-	
+
 	private TerrainModel terrainModel;
-	
+
 	private Model myModel;
-	
 
 	public Renderer() {
-		
-		framebuffer = new Framebuffer();
-		
-		ambientColor = new Vec4(1.0f);
 
+		framebuffer = new Framebuffer();
+
+		ambientColor = new Vec4(1.0f);
 
 		trianglePass = new TrianglePass();
 
@@ -85,74 +85,74 @@ public class Renderer {
 
 		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
 		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
-		
+
 		lightSourcePass = new LightSourcePass();
 		lightSourcePass.setLightsourcePositions(lightSourcePositions);
-		
+
 		sun = new SunPass();
-		
 
 		cottage = new Cottage();
 		model = new MyModel();
-		
+
 		compass = new Compass();
-		
+
 		player = new Player();
-		
+
 		terrains = new ArrayList<>();
-		
+
 		terrainModel = new TerrainModel(new TerrainGenerator(100, 100, 1, 0, 0), "Terrain/Terrain.png");
 		terrains.add(terrainModel);
 
 		camera = new Camera(player);
 		mousePicker = new MousePicker(camera);
-		
+
 		trees = new Trees();
 		tree_1 = new Tree_1();
-		
+
 		cubes = new Cubes();
-		
+
 		myModel = new MyModel();
-		
+
 	}
 
 	/**
 	 * Main render method
 	 */
 	public void render() {
-
 		framebuffer.render();
 
 		glEnable(GL_DEPTH_TEST);
-		
+
 		terrainModel.render();
 
 //		for (Model terrainPass : terrains) {
 //			terrainPass.render();
 //		}
-		
+
 //		lightSourcePass.render();
 //		sun.update();
-		
+
 //		cottage.render();
-		
+
+		glEnable(GL_CULL_FACE);
 		player.render();
-		camera.setFocusPoint(player.getPosition());
+		glDisable(GL_CULL_FACE);
+		camera.setFocusPoint(new Vec3(player.getPosition()).add(player.getPlayerFront()));
 		camera.moveCamera();
-		
+
 //		mousePicker.update();
-		
+
 //		mousePicker.terrainIntersection(terrainModel);
-		
+
 //		model.render();
 //		compass.render();
-		
+
 //		trees.render();
-		
+
 		myModel.render();
-		
+
 		glDisable(GL_DEPTH_TEST);
-		
+
 		framebuffer.renderColorAttachments();
 
 	}
@@ -163,11 +163,11 @@ public class Renderer {
 	public void dispose() {
 
 		framebuffer.dispose();
-		
+
 		for (Model terrainPass : terrains) {
 			terrainPass.dispose();
 		}
-		
+
 		trianglePass.dispose();
 		rectanglePass.dispose();
 		texturePass.dispose();
@@ -176,15 +176,15 @@ public class Renderer {
 
 		cottage.dispose();
 		model.dispose();
-		
+
 		player.dispose();
-		
+
 		myModel.dispose();
-		
+
 		compass.dispose();
 		trees.dispose();
 		tree_1.dispose();
-		
+
 		cubes.dispose();
 	}
 

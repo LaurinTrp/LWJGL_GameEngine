@@ -14,7 +14,7 @@ import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
-import main.java.utils.Constants;
+import main.java.utils.constants.Constants;
 import main.java.utils.loaders.ModelLoader;
 
 public class Player extends Model {
@@ -139,5 +139,17 @@ public class Player extends Model {
 
 	public float getRotationAngle() {
 		return rotationAngle;
+	}
+	
+	public Vec3 getPlayerFront() {
+		return playerFront;
+	}
+	
+	public Vec3 getPlayerRight() {
+		return playerRight;
+	}
+	
+	public Vec3 getPlayerUp() {
+		return playerUp;
 	}
 }
