@@ -9,7 +9,9 @@ import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
 
-public class ModelCluster {
+import main.java.render.IRenderObject;
+
+public class ModelCluster implements IRenderObject {
 	
 	protected ArrayList<Model> models = new ArrayList<>();
 	
@@ -19,6 +21,7 @@ public class ModelCluster {
 		this.models = models;
 	}
 	
+	@Override
 	public void init() {
 		afterInit();
 		init = true;
@@ -26,6 +29,7 @@ public class ModelCluster {
 	
 	public void afterInit() {}
 	
+	@Override
 	public void render() {
 
 		glEnable(GL_CULL_FACE);
@@ -39,6 +43,7 @@ public class ModelCluster {
 		glDisable(GL_CULL_FACE);
 	}
 	
+	@Override
 	public void dispose() {
 		models.forEach(m -> m.dispose());
 	}

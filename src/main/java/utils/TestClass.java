@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import main.java.gui.Engine_Main;
-import main.java.render.model.TerrainGenerator;
 import main.java.render.passes.TerrainModel;
+import main.java.render.utilities.TerrainGenerator;
 import main.java.utils.loaders.ModelLoader;
 import main.java.utils.math.ImprovedNoise;
 import main.java.utils.math.SimplexNoise;

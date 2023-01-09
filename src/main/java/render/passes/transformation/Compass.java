@@ -21,10 +21,11 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import glm.mat._4.Mat4;
+import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.shader.ShaderProgram;
 
-public class Compass {
+public class Compass implements IRenderObject {
 
 	private boolean init = false;
 
@@ -37,7 +38,8 @@ public class Compass {
 	
 	private Mat4 modelMatrix;
 
-	private void init() {
+	@Override
+	public void init() {
 		initVAOs();
 		initShader();
 		initMatrixes();

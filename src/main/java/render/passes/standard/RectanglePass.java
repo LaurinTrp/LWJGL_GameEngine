@@ -25,9 +25,10 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
+import main.java.render.IRenderObject;
 import main.java.shader.ShaderProgram;
 
-public class RectanglePass {
+public class RectanglePass implements IRenderObject {
 
 	private boolean init = false;
 
@@ -119,8 +120,9 @@ public class RectanglePass {
 		}
 		glBindVertexArray(0);
 	}
-	
-	private void init() {
+
+	@Override
+	public void init() {
 		initVAOs();
 		
 		program = new ShaderProgram("Rectangle");
@@ -132,6 +134,7 @@ public class RectanglePass {
 	}
 	
 	float offsetY = 0;
+	@Override
 	public void render() {
 
 		if (!init) {
@@ -155,6 +158,7 @@ public class RectanglePass {
 		}
 	}
 
+	@Override
 	public void dispose() {
 
 		glDeleteVertexArrays(vao);

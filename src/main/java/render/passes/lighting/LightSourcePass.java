@@ -31,11 +31,12 @@ import org.lwjgl.system.MemoryUtil;
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
+import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.shader.ShaderProgram;
 import main.java.utils.Shapes;
 
-public class LightSourcePass {
+public class LightSourcePass implements IRenderObject {
 
 	private boolean init = false;
 
@@ -52,7 +53,8 @@ public class LightSourcePass {
 	
 	private ArrayList<Mat4> modelMatrices = new ArrayList<>();
 
-	private void init() {
+	@Override
+	public void init() {
 		initVAOs();
 		initShader();
 		initMatrixes();
@@ -106,10 +108,11 @@ public class LightSourcePass {
 		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
 		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
 		lightPosID = glGetUniformLocation(program.getProgramID(), "lightPos");
-		xID = glGetUniformLocation(program.getProgramID(), "x");
+	
 	}
-	float x = 0.0f;
-	int xID;
+	
+
+	@Override
 	public void render() {
 
 		if (!init) {
@@ -130,10 +133,6 @@ public class LightSourcePass {
 					glUniformMatrix4fv(viewID, false, Renderer.camera.getView().toFa_());
 					glUniformMatrix4fv(projID, false, Renderer.camera.getProjectionMatrix().toFa_());
 					
-					
-//					lightPosition.set(Math.sin(Math.toRadians(x)), lightPosition.y, lightPosition.z, lightPosition.w);
-//					glUniform1f(xID, Math.sin(Math.toRadians(x)));
-
 					for (int i = 0; i < modelMatrices.size(); i++) {
 						glUniformMatrix4fv(modelID, false, modelMatrices.get(i).toFa_());
 						glUniform4fv(lightPosID, lightsourcePositions.get(i).toFA_());
@@ -154,11 +153,8 @@ public class LightSourcePass {
 	public ArrayList<Mat4> getModelMatrices() {
 		return modelMatrices;
 	}
-	
-//	public Vec4 getLightPosition() {
-//		return lightPosition;
-//	}
 
+	@Override
 	public void dispose() {
 
 		glDeleteVertexArrays(vao);

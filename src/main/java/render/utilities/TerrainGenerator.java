@@ -1,4 +1,4 @@
-package main.java.render.model;
+package main.java.render.utilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;

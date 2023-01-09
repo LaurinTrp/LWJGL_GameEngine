@@ -1,4 +1,4 @@
-package main.java.render.model;
+package main.java.render.utilities;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_LINES;
@@ -21,7 +21,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import glm.mat._4.Mat4;
+import main.java.render.IRenderObject;
 import main.java.render.Renderer;
+import main.java.render.model.Model;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
@@ -40,13 +42,13 @@ public class NormalDrawing {
 	
 	private boolean init = false;
 
-	public NormalDrawing(Model model) {
-		this.vertices = model.getVertices();
-		this.normals = model.getNormals();
+	public NormalDrawing(IRenderObject model) {
+		this.vertices = ((Model) model).getVertices();
+		this.normals = ((Model) model).getNormals();
 
 		data = ModelUtils.createNormals(vertices, normals);
 		
-		this.modelMatrix = model.modelMatrix;
+		this.modelMatrix = ((Model) model).getModelMatrix();
 
 		bind();
 		initShader();

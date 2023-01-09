@@ -4,11 +4,11 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.render.model.Material;
 import main.java.render.model.Model;
-import main.java.render.model.TerrainGenerator;
+import main.java.render.utilities.TerrainGenerator;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.math.MathFunctions;
 
-public class TerrainModel extends Model{
+public class TerrainModel extends Model {
 	
 	private TerrainGenerator generator;
 	

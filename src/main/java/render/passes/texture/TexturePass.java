@@ -27,10 +27,11 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 
 import glm.mat._4.Mat4;
+import main.java.render.IRenderObject;
 import main.java.shader.ShaderProgram;
 import main.java.utils.loaders.ImageLoader;
 
-public class TexturePass {
+public class TexturePass implements IRenderObject{
 
 	private boolean init = false;
 
@@ -90,7 +91,8 @@ public class TexturePass {
 		glBindVertexArray(0);
 	}
 
-	private void init() {
+	@Override
+	public void init() {
 		initVAOs();
 		initTextures();
 		program = new ShaderProgram("Texture");
@@ -101,6 +103,7 @@ public class TexturePass {
 
 	float offsetY = 0;
 
+	@Override
 	public void render() {
 
 		if (!init) {
@@ -125,6 +128,7 @@ public class TexturePass {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		glDeleteVertexArrays(vao);
 		glDeleteBuffers(vbo);

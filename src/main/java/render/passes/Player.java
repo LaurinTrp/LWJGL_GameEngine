@@ -7,11 +7,10 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 
-import org.lwjgl.glfw.GLFW;
-
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
+import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
 import main.java.utils.constants.Constants;
@@ -111,9 +110,9 @@ public class Player extends Model {
 	private void gravity() {
 		boolean onTerrain = false;
 
-		TerrainModel terrain = null;
-		for (TerrainModel myTerrain : Renderer.terrains) {
-			onTerrain = myTerrain.isOnTerrain(new Vec2(position.x, position.z));
+		IRenderObject terrain = null;
+		for (IRenderObject myTerrain : Renderer.terrains) {
+			onTerrain = ((TerrainModel) myTerrain).isOnTerrain(new Vec2(position.x, position.z));
 
 			if (onTerrain) {
 				terrain = myTerrain;
@@ -122,7 +121,7 @@ public class Player extends Model {
 		}
 
 		if (onTerrain) {
-			position.y = terrain.heightAtPosition(new Vec2(position.x, position.z)) - minmax[2];
+			position.y = ((TerrainModel) terrain).heightAtPosition(new Vec2(position.x, position.z)) - minmax[2];
 		} else {
 			position.y -= speed;
 		}

@@ -25,9 +25,10 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
 
+import main.java.render.IRenderObject;
 import main.java.shader.ShaderProgram;
 
-public class TrianglePass {
+public class TrianglePass implements IRenderObject{
 
 	private boolean init = false;
 
@@ -79,7 +80,8 @@ public class TrianglePass {
 		glBindVertexArray(0);
 	}
 
-	private void init() {
+	@Override
+	public void init() {
 		initVAOs();
 
 		program = new ShaderProgram("Triangle");
@@ -90,6 +92,7 @@ public class TrianglePass {
 
 	float offsetY = 0;
 
+	@Override
 	public void render() {
 
 		if (!init) {
@@ -113,6 +116,7 @@ public class TrianglePass {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		glDeleteVertexArrays(vao);
 		glDeleteBuffers(vbo);

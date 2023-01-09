@@ -34,11 +34,13 @@ import org.lwjgl.opengl.GL15;
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
+import main.java.render.IRenderObject;
 import main.java.render.Renderer;
+import main.java.render.utilities.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class Model {
+public class Model implements IRenderObject {
 
 	private Material material;
 
@@ -134,6 +136,7 @@ public class Model {
 	/**
 	 * Initializing the model
 	 */
+	@Override
 	public void init() {
 
 		initShader(shaderFolder);
@@ -158,7 +161,7 @@ public class Model {
 	/**
 	 * Initializing the matrices
 	 */
-	private void initMatrixes() {
+	public void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
 	}
 
@@ -280,7 +283,7 @@ public class Model {
 	 * upload lighting specific values to the shader
 	 */
 	protected void uploadLighting() {
-		glUniform4fv(uniforms.get("ambientColor"), Renderer.ambientColor.toFA_());
+//		glUniform4fv(uniforms.get("ambientColor"), Renderer.ambientColor.toFA_());
 
 		ArrayList<Vec4> lights = Renderer.lightSourcePositions;
 		float[] lightsources = new float[lights.size() * 4];
@@ -324,6 +327,7 @@ public class Model {
 	/**
 	 * Render method to render the model
 	 */
+	@Override
 	public void render() {
 		if (!init) {
 			init();
@@ -491,6 +495,7 @@ public class Model {
 	/**
 	 * Clear the data
 	 */
+	@Override
 	public void dispose() {
 
 		glDeleteVertexArrays(vao);

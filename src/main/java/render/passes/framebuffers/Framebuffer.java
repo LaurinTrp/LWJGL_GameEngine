@@ -50,9 +50,10 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import glm.vec._2.Vec2;
 import main.java.gui.Engine_Main;
+import main.java.render.IRenderObject;
 import main.java.shader.ShaderProgram;
 
-public class Framebuffer {
+public class Framebuffer implements IRenderObject {
 
 	private boolean init = false;
 	private int vao = 0, vbo = 0, fbo = 0, rbo = 0, texture = 0;
@@ -184,6 +185,7 @@ public class Framebuffer {
 	/**
 	 * The main init method to initialize the Framebuffer
 	 */
+	@Override
 	public void init() {
 		initFbo();
 
@@ -210,6 +212,7 @@ public class Framebuffer {
 	/**
 	 * Rendering to the fbo
 	 */
+	@Override
 	public void render() {
 		if (!init) {
 			init();
@@ -259,6 +262,7 @@ public class Framebuffer {
 	/**
 	 * Dispose the fbo and rbo
 	 */
+	@Override
 	public void dispose() {
 		glDeleteFramebuffers(fbo);
 		glDeleteRenderbuffers(rbo);

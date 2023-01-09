@@ -13,7 +13,7 @@ import main.java.utils.constants.CameraMode;
 
 public class Camera {
 
-	private Model player;
+	private IRenderObject player;
 
 	private Vec3 cameraPosition = new Vec3(0.0f, 0.0f, 0.0f);
 	private Vec3 cameraFront = new Vec3(0.0f, 0.0f, -1.0f);
@@ -32,7 +32,7 @@ public class Camera {
 
 	private Vec3 focusPoint;
 
-	private CameraMode cameraMode = CameraMode.POV_CAMERA;
+	private CameraMode cameraMode = CameraMode.PLAYER_CAMERA;
 
 	public Camera() {
 		projectionMatrix = Glm.perspective_(45.0f, (float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight,
@@ -40,7 +40,7 @@ public class Camera {
 		focusPoint = new Vec3();
 	}
 
-	public Camera(Model player) {
+	public Camera(IRenderObject player) {
 		this();
 		this.player = player;
 	}
