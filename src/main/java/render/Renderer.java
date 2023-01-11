@@ -1,16 +1,18 @@
 package main.java.render;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import glm.Glm;
-import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
-import main.java.gui.Engine_Main;
 import main.java.render.model.Model;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.Cubes;
@@ -74,7 +76,7 @@ public class Renderer {
 		texturePass = new TexturePass();
 
 		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
-		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
+		lightSourcePositions.add(new Vec4(1.2f, 1.0f, 2.0f, 1.0f));
 
 		lightSourcePass = new LightSourcePass();
 		((LightSourcePass) lightSourcePass).setLightsourcePositions(lightSourcePositions);
@@ -116,6 +118,8 @@ public class Renderer {
 		camera.setFocusPoint(new Vec3(((Player) player).getPosition()).add(((Player) player).getPlayerFront()));
 		camera.moveCamera();
 
+		sun.update();
+		
 		glDisable(GL_DEPTH_TEST);
 		((Framebuffer) framebuffer).renderColorAttachments();
 
@@ -125,6 +129,7 @@ public class Renderer {
 	public void renderScene() {
 		glEnable(GL_CULL_FACE);
 		terrainModel.render();
+		lightSourcePass.render();
 
 		cottage.render();
 		tree_1.render();

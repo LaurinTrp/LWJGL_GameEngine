@@ -10,11 +10,11 @@ import main.java.utils.loaders.ModelLoader;
 public class Tree_1 extends Model {
 
 	public Tree_1() {
-		super((Model) ModelLoader.loadModel("/media/laurin/Laurin Festplatte/Blender/Models/tree_1.obj"));
+		super((Model) ModelLoader.loadModelFromResource("Trees", "Tree1.obj"));
 		setShaderFolder("Transformation");
 		try {
 			getMaterial().setTexture(ImageLoader
-					.loadTextureFromMemory("/media/laurin/Laurin Festplatte/Blender/Models/tree_X12_+X1_Rock_Pack/_1_tree.png"));
+					.loadTextureFromResource("Tree1.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

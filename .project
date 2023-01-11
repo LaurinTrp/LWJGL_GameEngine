@@ -3,6 +3,7 @@
 	<name>LWJGL_GameEngine</name>
 	<comment></comment>
 	<projects>
+		<project>GLM</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

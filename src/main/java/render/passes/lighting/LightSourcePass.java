@@ -1,7 +1,7 @@
 package main.java.render.passes.lighting;
 
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glBindTexture;
@@ -122,7 +122,7 @@ public class LightSourcePass implements IRenderObject {
 		if (!init) {
 			return;
 		}
-
+		glDisable(GL_CULL_FACE);
 		{
 			glUseProgram(program.getProgramID());
 			{
@@ -144,6 +144,7 @@ public class LightSourcePass implements IRenderObject {
 				glBindVertexArray(0);
 			}
 		}
+		glEnable(GL_CULL_FACE);
 	}
 	
 	public void setLightsourcePositions(ArrayList<Vec4> lightsourcePositions) {
