@@ -6,6 +6,9 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
 
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
@@ -13,6 +16,7 @@ import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
+import main.java.utils.constants.CameraMode;
 import main.java.utils.constants.Constants;
 import main.java.utils.loaders.ModelLoader;
 
@@ -35,9 +39,13 @@ public class Player extends Model {
 	}
 
 	@Override
-	protected void renderProcess() {
-		super.renderProcess();
-
+	protected void renderProcessBegin() {
+		super.renderProcessBegin();
+		
+		if(Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
+			glEnable(GL_CULL_FACE);
+		}
+		
 		rotation();
 		movement();
 //		updateMinmax();
@@ -45,6 +53,15 @@ public class Player extends Model {
 
 		modelMatrix = modelMatrix.cleanTranslation();
 		modelMatrix = modelMatrix.translation(position);
+	}
+	
+	@Override
+	protected void renderProcessEnd() {
+		super.renderProcessEnd();
+		
+		if(Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
+			glDisable(GL_CULL_FACE);
+		}
 	}
 
 	@Override

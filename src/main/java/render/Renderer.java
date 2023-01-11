@@ -1,21 +1,24 @@
 package main.java.render;
 
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import glm.Glm;
+import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
-import main.java.render.model.Model;
+import main.java.gui.Engine_Main;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.Cubes;
 import main.java.render.passes.Player;
 import main.java.render.passes.TerrainModel;
+import main.java.render.passes.framebuffers.DepthMap;
 import main.java.render.passes.framebuffers.Framebuffer;
+import main.java.render.passes.framebuffers.IFramebuffer;
 import main.java.render.passes.lighting.LightSourcePass;
 import main.java.render.passes.lighting.SunPass;
 import main.java.render.passes.standard.RectanglePass;
@@ -23,13 +26,13 @@ import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.texture.TexturePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.passes.trees.Tree_1;
-import main.java.render.passes.trees.Trees;
 import main.java.render.utilities.TerrainGenerator;
 import main.java.utils.math.MousePicker;
 
 public class Renderer {
 
-	public static IRenderObject framebuffer;
+	public static IFramebuffer framebuffer;
+	public IFramebuffer depthBuffer;
 
 	private IRenderObject trianglePass;
 
@@ -45,8 +48,6 @@ public class Renderer {
 	public static List<IRenderObject> terrains;
 
 	private IRenderObject player;
-
-	private IRenderObject trees;
 
 	private IRenderObject tree_1;
 
@@ -65,6 +66,7 @@ public class Renderer {
 	public Renderer() {
 
 		framebuffer = new Framebuffer();
+		depthBuffer = new DepthMap();
 
 		trianglePass = new TrianglePass();
 
@@ -93,7 +95,6 @@ public class Renderer {
 		camera = new Camera(player);
 		mousePicker = new MousePicker(camera);
 
-		trees = new Trees();
 		tree_1 = new Tree_1();
 
 		cubes = new Cubes();
@@ -104,26 +105,26 @@ public class Renderer {
 	 */
 	public void render() {
 		framebuffer.render();
-
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 		glEnable(GL_DEPTH_TEST);
-
-		terrainModel.render();
-
-		cottage.render();
-
-		glEnable(GL_CULL_FACE);
-		
-		player.render();
-		
-		glDisable(GL_CULL_FACE);
+		renderScene();
 		
 		camera.setFocusPoint(new Vec3(((Player) player).getPosition()).add(((Player) player).getPlayerFront()));
 		camera.moveCamera();
 
 		glDisable(GL_DEPTH_TEST);
-
 		((Framebuffer) framebuffer).renderColorAttachments();
 
+	}
+	
+	
+	public void renderScene() {
+		terrainModel.render();
+
+		cottage.render();
+		
+		player.render();
 	}
 
 	/**
@@ -147,8 +148,7 @@ public class Renderer {
 		player.dispose();
 
 		compass.dispose();
-		trees.dispose();
-		tree_1.dispose();
+			tree_1.dispose();
 
 		cubes.dispose();
 	}

@@ -53,7 +53,7 @@ public class Engine_Main {
 	public static MouseInputs mouseHandler;
 	public static KeyHandler keyHandler;
 	
-	private static Renderer render;
+	public static Renderer render;
 	
 	private static long window = -1;
 	

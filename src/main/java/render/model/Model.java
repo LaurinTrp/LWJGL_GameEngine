@@ -265,7 +265,12 @@ public class Model implements IRenderObject {
 	/**
 	 * Needs override to run functions in the render process
 	 */
-	protected void renderProcess() {
+	protected void renderProcessBegin() {
+	}
+	/**
+	 * Needs override to run functions in the render process
+	 */
+	protected void renderProcessEnd() {
 	}
 
 	/**
@@ -346,7 +351,7 @@ public class Model implements IRenderObject {
 				glBindVertexArray(vao);
 				{
 //					updateMinmax();
-					renderProcess();
+					renderProcessBegin();
 
 					// Upload the uniforms
 					uploadMaterial();
@@ -359,6 +364,8 @@ public class Model implements IRenderObject {
 					} else {
 						glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
 					}
+					
+					renderProcessEnd();
 
 				}
 				glBindVertexArray(0);

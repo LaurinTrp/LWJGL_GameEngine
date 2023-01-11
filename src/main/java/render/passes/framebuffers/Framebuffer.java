@@ -53,7 +53,7 @@ import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
 import main.java.shader.ShaderProgram;
 
-public class Framebuffer implements IRenderObject {
+public class Framebuffer implements IFramebuffer {
 
 	private boolean init = false;
 	private int vao = 0, vbo = 0, fbo = 0, rbo = 0, texture = 0;
@@ -66,7 +66,8 @@ public class Framebuffer implements IRenderObject {
 	/**
 	 * Initializing the Frame Buffer Object
 	 */
-	private void initFbo() {
+	@Override
+	public void initFbo() {
 		fbo = glGenFramebuffers();
 		bindFbo();
 	}
@@ -74,7 +75,8 @@ public class Framebuffer implements IRenderObject {
 	/**
 	 * Initializing the Render Buffer Object
 	 */
-	private void initRbo() {
+	@Override
+	public void initRbo() {
 		rbo = glGenRenderbuffers();
 		bindRbo();
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, Engine_Main.windowWidth, Engine_Main.windowHeight);
@@ -84,7 +86,8 @@ public class Framebuffer implements IRenderObject {
 	/**
 	 * Initializing the vertex buffer object
 	 */
-	private void initVao() {
+	@Override
+	public void initVao() {
 
 		// create vertex array
 		float[] vertices = new float[] {
@@ -135,7 +138,8 @@ public class Framebuffer implements IRenderObject {
 	/**
 	 * Initializing the texture
 	 */
-	private void initTexture() {
+	@Override
+	public void initTexture() {
 		texture = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -149,7 +153,8 @@ public class Framebuffer implements IRenderObject {
 	/**
 	 * Initializing the shader
 	 */
-	private void initShader() {
+	@Override
+	public void initShader() {
 		program = new ShaderProgram("Framebuffer");
 		uniformScreenSize = program.getUniformLocation("screenSize");
 	}
@@ -157,6 +162,7 @@ public class Framebuffer implements IRenderObject {
 	/**
 	 * bind the fbo
 	 */
+	@Override
 	public void bindFbo() {
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	}
@@ -164,6 +170,7 @@ public class Framebuffer implements IRenderObject {
 	/**
 	 * unbind the fbo
 	 */
+	@Override
 	public void unbindFbo() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -171,6 +178,7 @@ public class Framebuffer implements IRenderObject {
 	/**
 	 * bind the rbo
 	 */
+	@Override
 	public void bindRbo() {
 		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 	}
@@ -178,6 +186,7 @@ public class Framebuffer implements IRenderObject {
 	/**
 	 * unbind the rbo
 	 */
+	@Override
 	public void unbindRbo() {
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	}

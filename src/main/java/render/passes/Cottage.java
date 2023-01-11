@@ -17,8 +17,8 @@ public class Cottage extends Model {
 	}
 	
 	@Override
-	protected void renderProcess() {
-		super.renderProcess();
+	protected void renderProcessBegin() {
+		super.renderProcessBegin();
 		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_LEFT)) {
 			modelMatrix.rotateY(Math.toRadians(-1));
 		}

@@ -32,7 +32,7 @@ public class Camera {
 
 	private Vec3 focusPoint;
 
-	private CameraMode cameraMode = CameraMode.PLAYER_CAMERA;
+	public CameraMode cameraMode = CameraMode.PLAYER_CAMERA;
 
 	public Camera() {
 		projectionMatrix = Glm.perspective_(45.0f, (float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight,
