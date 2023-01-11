@@ -10,7 +10,7 @@ import main.java.utils.loaders.ModelLoader;
 public class Cottage extends Model {
 
 	public Cottage() {
-		super(ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
+		super((Model) ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage_diffuse.png"));
 		

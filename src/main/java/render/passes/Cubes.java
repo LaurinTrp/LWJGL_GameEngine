@@ -8,7 +8,7 @@ import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
 public class Cubes implements IRenderObject {
-	ArrayList<Model> models = new ArrayList<>();
+	ArrayList<IRenderObject> models = new ArrayList<>();
 	
 	public Cubes() {
 	}
@@ -16,22 +16,22 @@ public class Cubes implements IRenderObject {
 	@Override
 	public void init() {
 		models = ModelLoader.loadMultipleModelsFromObj("/media/laurin/Laurin Festplatte/Blender/Models/Cubes.obj");
-		for (Model model : models) {
-			model.setShaderFolder("Transformation");
-			model.getMaterial().setTexture(ImageLoader.loadTextureFromResource("Warn.png"));
+		for (IRenderObject model : models) {
+			((Model)model).setShaderFolder("Transformation");
+			((Model)model).getMaterial().setTexture(ImageLoader.loadTextureFromResource("Warn.png"));
 		}
 	}
 	
 	@Override
 	public void render() {
-		for (Model model : models) {
+		for (IRenderObject model : models) {
 			model.render();
 		}
 	}
 
 	@Override
 	public void dispose() {
-		for (Model model : models) {
+		for (IRenderObject model : models) {
 			model.dispose();
 		}
 	}

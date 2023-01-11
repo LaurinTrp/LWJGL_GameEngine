@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import main.java.gui.Engine_Main;
+import main.java.render.IRenderObject;
 import main.java.render.model.Material;
 import main.java.render.model.Model;
 import main.java.utils.FileUtils;
@@ -30,17 +31,17 @@ public class ModelLoader {
 	private static File file;
 	
 
-	private static ArrayList<Model> models = new ArrayList<Model>();
+	private static ArrayList<IRenderObject> models = new ArrayList<IRenderObject>();
 	private static HashMap<String, Integer> materials = new HashMap<String, Integer>();
 
 	public ModelLoader() {
 	}
 
-	public static ArrayList<Model> loadMultipleModelsFromObj(String path) {
-		ArrayList<Model> models = new ArrayList<>();
+	public static ArrayList<IRenderObject> loadMultipleModelsFromObj(String path) {
+		ArrayList<IRenderObject> models = new ArrayList<>();
 		ArrayList<Float[][]> objects = loadMultipleFromObj(path);
 		for (Float[][] floats : objects) {
-			Model model = new Model(floats[0], floats[1], floats[2], floats[4][0].intValue(), new Material(), floats[3]);
+			IRenderObject model = new Model(floats[0], floats[1], floats[2], floats[4][0].intValue(), new Material(), floats[3]);
 			models.add(model);
 		}
 		return models;
@@ -133,22 +134,21 @@ public class ModelLoader {
 				break;
 			}
 		}
-
-		
 		
 		return new Float[][] { getVertices(), getTextures(), getNormals(), minmax};
 	}
 
-	public static Model loadModel(String path) {
+	public static IRenderObject loadModel(String path) {
 		Float[][] data = loadObj(path);
-		Model model = new Model(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
+		IRenderObject model = new Model(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
 		return model;
 	}
 
-	public static Model loadModelFromResource(String parent, String file) {
+	public static IRenderObject loadModelFromResource(String parent, String file) {
 		clear();
 		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + "/" + file);
-		Model model = new Model(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
+		IRenderObject model = new Model(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
+		
 		return model;
 	}
 
@@ -166,7 +166,7 @@ public class ModelLoader {
 		normalsFinal.clear();
 	}
 
-	public ArrayList<Model> getModels() {
+	public ArrayList<IRenderObject> getModels() {
 		return models;
 	}
 

@@ -10,6 +10,8 @@ import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
+import java.util.Arrays;
+
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
@@ -24,7 +26,7 @@ public class Player extends Model {
 
 	private Vec3 position;
 	private final float speed = 0.05f;
-
+	private boolean hasMoved;
 	private Vec3 playerFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 playerUp = new Vec3(0.0f, 1.0f, 0.0f);
 	private Vec3 playerRight = new Vec3(1.0f, 0.0f, 0.0f);
@@ -32,7 +34,7 @@ public class Player extends Model {
 	private float rotationAngle = 0;
 
 	public Player() {
-		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
+		super((Model) ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
 
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
@@ -41,25 +43,29 @@ public class Player extends Model {
 	@Override
 	protected void renderProcessBegin() {
 		super.renderProcessBegin();
+
+		hasMoved = false;
 		
-		if(Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
+		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
 			glEnable(GL_CULL_FACE);
 		}
-		
+
 		rotation();
 		movement();
-//		updateMinmax();
-		gravity();
-
-		modelMatrix = modelMatrix.cleanTranslation();
-		modelMatrix = modelMatrix.translation(position);
+		
+		if(hasMoved) {
+			gravity();
+			modelMatrix = modelMatrix.cleanTranslation();
+			modelMatrix = modelMatrix.translation(position);
+			updateMinmax();
+		}
 	}
-	
+
 	@Override
 	protected void renderProcessEnd() {
 		super.renderProcessEnd();
-		
-		if(Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
+
+		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
 			glDisable(GL_CULL_FACE);
 		}
 	}
@@ -68,10 +74,9 @@ public class Player extends Model {
 	public void afterInit() {
 		super.afterInit();
 
-		position = new Vec3(5.0, 5.0, 0.0);
-		modelMatrix.translation(position);
-
-		modelMatrix.print("Player");
+		position = new Vec3(5.0, 0.0, 0.0);
+		modelMatrix = modelMatrix.translation(position);
+		updateMinmax();
 	}
 
 	/**
@@ -81,7 +86,7 @@ public class Player extends Model {
 		if (Engine_Main.mouseHandler.getXoffset() > 0) {
 			modelMatrix.rotateY(Constants.PLAYER_ROTATION_SPEED);
 			rotationAngle += Constants.PLAYER_ROTATION_SPEED;
-		}	
+		}
 		if (Engine_Main.mouseHandler.getXoffset() < 0) {
 			modelMatrix.rotateY(-Constants.PLAYER_ROTATION_SPEED);
 			rotationAngle -= Constants.PLAYER_ROTATION_SPEED;
@@ -99,25 +104,31 @@ public class Player extends Model {
 	private void movement() {
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
 			position.add(new Vec3(playerFront).mul(speed));
+			hasMoved = true;
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_S)) {
 			position.sub(new Vec3(playerFront).mul(speed));
+			hasMoved = true;
 		}
 
 		playerRight = new Vec3(playerFront).cross(playerUp);
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_A)) {
 			position.sub(new Vec3(playerRight).mul(speed));
+			hasMoved = true;
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_D)) {
 			position.add(new Vec3(playerRight).mul(speed));
+			hasMoved = true;
 		}
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_Q)) {
 			position.add(new Vec3(playerUp).mul(speed));
+			hasMoved = true;
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_X)) {
 			position.sub(new Vec3(playerUp).mul(speed));
+			hasMoved = true;
 		}
 	}
 
@@ -138,7 +149,7 @@ public class Player extends Model {
 		}
 
 		if (onTerrain) {
-			position.y = ((TerrainModel) terrain).heightAtPosition(new Vec2(position.x, position.z)) - minmax[2];
+			position.y = ((TerrainModel) terrain).heightAtPosition(new Vec2(position.x, position.z)) - startMinmax[2];
 		} else {
 			position.y -= speed;
 		}
@@ -156,15 +167,15 @@ public class Player extends Model {
 	public float getRotationAngle() {
 		return rotationAngle;
 	}
-	
+
 	public Vec3 getPlayerFront() {
 		return playerFront;
 	}
-	
+
 	public Vec3 getPlayerRight() {
 		return playerRight;
 	}
-	
+
 	public Vec3 getPlayerUp() {
 		return playerUp;
 	}

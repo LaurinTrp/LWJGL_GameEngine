@@ -26,6 +26,7 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
@@ -63,7 +64,7 @@ public class Model implements IRenderObject {
 	protected int[] indices;
 
 	// min x, max x, min y, max y, min z, max z
-	protected Float[] startMinmax = new Float[6];
+	protected final Float[] startMinmax;
 	protected Float[] minmax = new Float[6];
 
 	private float scale = 1.0f;
@@ -77,6 +78,7 @@ public class Model implements IRenderObject {
 	private Vec4 translation;
 
 	public Model() {
+		startMinmax = new Float[6];
 	}
 
 	/**
@@ -115,7 +117,7 @@ public class Model implements IRenderObject {
 		this.normals = normals;
 		this.material = material;
 		this.startMinmax = minmax;
-		this.minmax = startMinmax;
+		this.minmax = Arrays.copyOf(minmax, minmax.length);
 	}
 
 	/**
@@ -124,13 +126,21 @@ public class Model implements IRenderObject {
 	 * @param model Model to copy
 	 */
 	public Model(Model model) {
-		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, model.minmax);
+			this(model.vertices, model.uvs, model.normals, model.triangles,
+					model.material, new Float[] {
+							model.minmax[0],
+							model.minmax[1],
+							model.minmax[2],
+							model.minmax[3],
+							model.minmax[4],
+							model.minmax[5],
+							});
 
-		this.program = model.program;
+			this.program = model.program;
 
-		this.modelMatrix = model.modelMatrix;
+			this.modelMatrix = model.modelMatrix;
 
-		this.uniforms = model.uniforms;
+			this.uniforms = model.uniforms;
 	}
 
 	/**
@@ -142,8 +152,6 @@ public class Model implements IRenderObject {
 		initShader(shaderFolder);
 		initMatrixes();
 		bindModel();
-
-//		updateMinmax();
 
 		afterInit();
 
@@ -267,6 +275,7 @@ public class Model implements IRenderObject {
 	 */
 	protected void renderProcessBegin() {
 	}
+
 	/**
 	 * Needs override to run functions in the render process
 	 */
@@ -320,13 +329,13 @@ public class Model implements IRenderObject {
 	 * update the minmax for example after scaling
 	 */
 	protected void updateMinmax() {
-		translation = new Vec4(modelMatrix.mul(new Vec4(0.0f, 0.0f, 0.0f, 1.0f)));
-		minmax[0] = (startMinmax[0] * scale) + translation.x;
-		minmax[1] = (startMinmax[1] * scale) + translation.x;
-		minmax[2] = (startMinmax[2] * scale) + translation.y;
-		minmax[3] = (startMinmax[3] * scale) + translation.y;
-		minmax[4] = (startMinmax[4] * scale) + translation.z;
-		minmax[5] = (startMinmax[5] * scale) + translation.z;
+		translation = new Vec4(0.0f, 0.0f, 0.0f, 1.0f).mul(modelMatrix);
+		minmax[0] = startMinmax[0] + translation.x;
+		minmax[1] = startMinmax[1] + translation.x;
+		minmax[2] = startMinmax[2] + translation.y;
+		minmax[3] = startMinmax[3] + translation.y;
+		minmax[4] = startMinmax[4] + translation.z;
+		minmax[5] = startMinmax[5] + translation.z;
 	}
 
 	/**
@@ -364,7 +373,7 @@ public class Model implements IRenderObject {
 					} else {
 						glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
 					}
-					
+
 					renderProcessEnd();
 
 				}
