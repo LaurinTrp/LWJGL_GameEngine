@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.model.Material;
 import main.java.render.model.Model;
@@ -110,4 +111,25 @@ public class ModelUtils {
 		System.out.println("Shininess: " + (material0.getReflectance() == material1.getReflectance()));
 	}
 
+
+	public static boolean isIntersecting(Float[] minmax0, Float[] minmax1) {
+		return (minmax0[1] >= minmax1[0] && minmax0[0] <= minmax1[1]
+				&& minmax0[3] >= minmax1[2] && minmax0[2] <= minmax1[3]
+				&& minmax0[5] >= minmax1[4] && minmax0[4] <= minmax1[5]);
+	}
+
+	public static Float[] calculateMinmax(Float[] startMinmax, Vec3 translation) {
+		return calculateMinmax(startMinmax, new Vec4(translation, 1.0f));
+	}
+	public static Float[] calculateMinmax(Float[] startMinmax, Vec4 translation) {
+		Float[] minmax = new Float[6];
+		minmax[0] = startMinmax[0] + translation.x;
+		minmax[1] = startMinmax[1] + translation.x;
+		minmax[2] = startMinmax[2] + translation.y;
+		minmax[3] = startMinmax[3] + translation.y;
+		minmax[4] = startMinmax[4] + translation.z;
+		minmax[5] = startMinmax[5] + translation.z;
+		return minmax;
+	}
+	
 }

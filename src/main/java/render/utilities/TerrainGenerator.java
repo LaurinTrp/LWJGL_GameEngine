@@ -79,11 +79,11 @@ public class TerrainGenerator {
 				Triangle t2 = getTriangle(i, j, false);
 
 				indices.add(t1.point1);
-				indices.add(t1.point2);
 				indices.add(t1.point3);
+				indices.add(t1.point2);
 				indices.add(t2.point1);
-				indices.add(t2.point2);
 				indices.add(t2.point3);
+				indices.add(t2.point2);
 			}
 		}
 

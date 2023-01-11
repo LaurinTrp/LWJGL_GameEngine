@@ -1,5 +1,7 @@
 package main.java.render.passes.trees;
 
+import java.util.Arrays;
+
 import glm.vec._3.Vec3;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ImageLoader;
@@ -21,7 +23,8 @@ public class Tree_1 extends Model {
 	@Override
 	public void afterInit() {
 		super.afterInit();
-		modelMatrix.translate(new Vec3(1.0f, 0f, 0f));
+		modelMatrix.translate(new Vec3(10.0f, 0f, 0f));
+		updateMinmax();
 	}
 
 }

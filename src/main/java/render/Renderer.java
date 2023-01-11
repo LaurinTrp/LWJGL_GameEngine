@@ -98,6 +98,9 @@ public class Renderer {
 		tree_1 = new Tree_1();
 
 		cubes = new Cubes();
+		
+		((Player)player).addIntersector((Model)cottage);
+		((Player)player).addIntersector((Model)tree_1);
 	}
 
 	/**
@@ -124,10 +127,8 @@ public class Renderer {
 		terrainModel.render();
 
 		cottage.render();
-		
+		tree_1.render();
 		player.render();
-		
-		System.out.println(((Model)player).intersection((Model)cottage));
 		
 		compass.render();
 		glDisable(GL_CULL_FACE);

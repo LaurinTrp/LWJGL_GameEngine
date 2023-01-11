@@ -2,6 +2,7 @@ package main.java.render.passes;
 
 import org.lwjgl.glfw.GLFW;
 
+import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ImageLoader;
@@ -29,10 +30,10 @@ public class Cottage extends Model {
 
 	@Override
 	public void afterInit() {
+		modelMatrix.translate(new Vec3(10f, 0f, 10f));
+
 		setScale(0.2f);
+		updateMinmax();
 		
-		
-		
-//		modelMatrix.scale(.2f);
 	}
 }

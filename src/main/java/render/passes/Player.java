@@ -8,16 +8,17 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
+import main.java.utils.ModelUtils;
 import main.java.utils.constants.CameraMode;
 import main.java.utils.constants.Constants;
 import main.java.utils.loaders.ModelLoader;
@@ -25,13 +26,17 @@ import main.java.utils.loaders.ModelLoader;
 public class Player extends Model {
 
 	private Vec3 position;
+	private Vec3 prevPosition;
 	private final float speed = 0.05f;
 	private boolean hasMoved;
 	private Vec3 playerFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 playerUp = new Vec3(0.0f, 1.0f, 0.0f);
 	private Vec3 playerRight = new Vec3(1.0f, 0.0f, 0.0f);
+	private Vec3 direction = new Vec3();
 
 	private float rotationAngle = 0;
+
+	private ArrayList<Model> intersectors = new ArrayList<>();
 
 	public Player() {
 		super((Model) ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
@@ -44,12 +49,10 @@ public class Player extends Model {
 	protected void renderProcessBegin() {
 		super.renderProcessBegin();
 
-		hasMoved = false;
-
 		rotation();
 		movement();
-		
-		if(hasMoved) {
+
+		if (hasMoved) {
 			gravity();
 			modelMatrix = modelMatrix.cleanTranslation();
 			modelMatrix = modelMatrix.translation(position);
@@ -71,6 +74,7 @@ public class Player extends Model {
 		super.afterInit();
 
 		position = new Vec3(5.0, 0.0, 0.0);
+		prevPosition = new Vec3(position);
 		modelMatrix = modelMatrix.translation(position);
 		updateMinmax();
 	}
@@ -98,33 +102,48 @@ public class Player extends Model {
 	 * Move the player model
 	 */
 	private void movement() {
+		direction = new Vec3();
+		hasMoved = false;
+		
+		
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
-			position.add(new Vec3(playerFront).mul(speed));
-			hasMoved = true;
+			direction.add(new Vec3(playerFront).mul(speed));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_S)) {
-			position.sub(new Vec3(playerFront).mul(speed));
-			hasMoved = true;
+			direction.sub(new Vec3(playerFront).mul(speed));
 		}
 
 		playerRight = new Vec3(playerFront).cross(playerUp);
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_A)) {
-			position.sub(new Vec3(playerRight).mul(speed));
-			hasMoved = true;
+			direction.sub(new Vec3(playerRight).mul(speed));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_D)) {
-			position.add(new Vec3(playerRight).mul(speed));
-			hasMoved = true;
+			direction.add(new Vec3(playerRight).mul(speed));
 		}
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_Q)) {
-			position.add(new Vec3(playerUp).mul(speed));
-			hasMoved = true;
+			direction.add(new Vec3(playerUp).mul(speed));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_X)) {
-			position.sub(new Vec3(playerUp).mul(speed));
-			hasMoved = true;
+			direction.add(new Vec3(playerUp).mul(speed));
+		}
+
+		if (!direction.equals(new Vec3())) {
+			boolean isIntersecting = false;
+			
+			Float[] tempMinmax = ModelUtils.calculateMinmax(startMinmax, new Vec3(position).add(direction));
+			
+			for (Model model : intersectors) {
+				if (ModelUtils.isIntersecting(tempMinmax, model.getMinmax())) {
+					isIntersecting = true;
+					break;
+				}
+			}
+			if (!isIntersecting) {
+				position.add(direction);
+				hasMoved = true;
+			}
 		}
 	}
 
@@ -174,5 +193,13 @@ public class Player extends Model {
 
 	public Vec3 getPlayerUp() {
 		return playerUp;
+	}
+
+	public void addIntersector(Model intersector) {
+		intersectors.add(intersector);
+	}
+
+	public void removeIntersector(Model intersector) {
+		intersectors.remove(intersector);
 	}
 }

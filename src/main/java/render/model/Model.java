@@ -323,12 +323,7 @@ public class Model implements IRenderObject {
 	 */
 	protected void updateMinmax() {
 		translation = new Vec4(0.0f, 0.0f, 0.0f, 1.0f).mul(modelMatrix);
-		minmax[0] = startMinmax[0] + translation.x;
-		minmax[1] = startMinmax[1] + translation.x;
-		minmax[2] = startMinmax[2] + translation.y;
-		minmax[3] = startMinmax[3] + translation.y;
-		minmax[4] = startMinmax[4] + translation.z;
-		minmax[5] = startMinmax[5] + translation.z;
+		minmax = ModelUtils.calculateMinmax(startMinmax, translation);
 	}
 
 	/**
@@ -380,11 +375,6 @@ public class Model implements IRenderObject {
 		}
 	}
 
-	public boolean intersection(Model intersector) {
-		return (this.minmax[1] >= intersector.minmax[0] && this.minmax[0] <= intersector.minmax[1]
-				&& this.minmax[3] >= intersector.minmax[2] && this.minmax[2] <= intersector.minmax[3]
-				&& this.minmax[5] >= intersector.minmax[4] && this.minmax[4] <= intersector.minmax[5]);
-	}
 
 	/**
 	 * Get the material object
@@ -502,6 +492,7 @@ public class Model implements IRenderObject {
 	public void setScale(float scale) {
 		for (int i = 0; i < minmax.length; i++) {
 			minmax[i] *= scale;
+			startMinmax[i] *= scale;
 		}
 		this.scale = scale;
 		modelMatrix.scale(scale);
