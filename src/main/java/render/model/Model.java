@@ -126,21 +126,14 @@ public class Model implements IRenderObject {
 	 * @param model Model to copy
 	 */
 	public Model(Model model) {
-			this(model.vertices, model.uvs, model.normals, model.triangles,
-					model.material, new Float[] {
-							model.minmax[0],
-							model.minmax[1],
-							model.minmax[2],
-							model.minmax[3],
-							model.minmax[4],
-							model.minmax[5],
-							});
+		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, new Float[] { model.minmax[0],
+				model.minmax[1], model.minmax[2], model.minmax[3], model.minmax[4], model.minmax[5], });
 
-			this.program = model.program;
+		this.program = model.program;
 
-			this.modelMatrix = model.modelMatrix;
+		this.modelMatrix = model.modelMatrix;
 
-			this.uniforms = model.uniforms;
+		this.uniforms = model.uniforms;
 	}
 
 	/**
@@ -385,6 +378,12 @@ public class Model implements IRenderObject {
 		if (showNormals) {
 			normalDrawing.render();
 		}
+	}
+
+	public boolean intersection(Model intersector) {
+		return (this.minmax[1] >= intersector.minmax[0] && this.minmax[0] <= intersector.minmax[1]
+				&& this.minmax[3] >= intersector.minmax[2] && this.minmax[2] <= intersector.minmax[3]
+				&& this.minmax[5] >= intersector.minmax[4] && this.minmax[4] <= intersector.minmax[5]);
 	}
 
 	/**

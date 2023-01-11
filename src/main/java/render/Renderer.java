@@ -1,10 +1,9 @@
 package main.java.render;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import glm.Glm;
@@ -12,6 +11,7 @@ import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
+import main.java.render.model.Model;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.Cubes;
 import main.java.render.passes.Player;
@@ -120,11 +120,17 @@ public class Renderer {
 	
 	
 	public void renderScene() {
+		glEnable(GL_CULL_FACE);
 		terrainModel.render();
 
 		cottage.render();
 		
 		player.render();
+		
+		System.out.println(((Model)player).intersection((Model)cottage));
+		
+		compass.render();
+		glDisable(GL_CULL_FACE);
 	}
 
 	/**

@@ -1,6 +1,6 @@
 package main.java.render.passes.transformation;
 
-
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_LINES;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
@@ -106,7 +106,7 @@ public class Compass implements IRenderObject {
 		if (!init) {
 			return;
 		}
-
+		glDisable(GL_DEPTH_TEST);
 		{
 			glLineWidth(5.0f);
 			glUseProgram(program.getProgramID());
@@ -126,6 +126,7 @@ public class Compass implements IRenderObject {
 			}
 			glUseProgram(0);
 		}
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	public void dispose() {

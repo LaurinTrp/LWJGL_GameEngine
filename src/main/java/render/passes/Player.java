@@ -45,10 +45,6 @@ public class Player extends Model {
 		super.renderProcessBegin();
 
 		hasMoved = false;
-		
-		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
-			glEnable(GL_CULL_FACE);
-		}
 
 		rotation();
 		movement();

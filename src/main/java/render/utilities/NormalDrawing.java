@@ -1,6 +1,6 @@
 package main.java.render.utilities;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_LINES;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -105,6 +105,7 @@ public class NormalDrawing {
 		if(!init){
 			init();
 		}
+		glLineWidth(1);
 		{
 			glUseProgram(program.getProgramID());
 			{

@@ -29,6 +29,10 @@ public class Cottage extends Model {
 
 	@Override
 	public void afterInit() {
-		modelMatrix.scale(.2f);
+		setScale(0.2f);
+		
+		
+		
+//		modelMatrix.scale(.2f);
 	}
 }
