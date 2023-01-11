@@ -1,8 +1,6 @@
 package main.java.render.utilities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 
 import glm.Glm;
 import glm.vec._3.Vec3;

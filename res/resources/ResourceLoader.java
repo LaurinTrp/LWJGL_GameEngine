@@ -2,24 +2,16 @@ package resources;
 
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.io.*;
-import java.nio.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
-
-import static java.lang.Math.*;
-import static org.lwjgl.glfw.Callbacks.*;
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL12.*;
-import static org.lwjgl.stb.STBImage.*;
-import static org.lwjgl.stb.STBImageResize.*;
-import static org.lwjgl.system.MemoryStack.*;
-import static org.lwjgl.system.MemoryUtil.*;
 
 public class ResourceLoader {
 

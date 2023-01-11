@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
 import main.java.render.model.Material;
 import main.java.render.model.Model;

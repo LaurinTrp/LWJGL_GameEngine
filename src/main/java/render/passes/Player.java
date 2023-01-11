@@ -13,7 +13,6 @@ import java.util.ArrayList;
 
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
-import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;

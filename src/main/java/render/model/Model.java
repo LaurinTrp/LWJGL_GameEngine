@@ -33,7 +33,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 import glm.mat._4.Mat4;
-import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;

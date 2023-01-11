@@ -50,7 +50,6 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import glm.vec._2.Vec2;
 import main.java.gui.Engine_Main;
-import main.java.render.IRenderObject;
 import main.java.shader.ShaderProgram;
 
 public class Framebuffer implements IFramebuffer {

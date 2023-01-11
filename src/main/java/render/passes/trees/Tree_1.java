@@ -1,7 +1,5 @@
 package main.java.render.passes.trees;
 
-import java.util.Arrays;
-
 import glm.vec._3.Vec3;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ImageLoader;
