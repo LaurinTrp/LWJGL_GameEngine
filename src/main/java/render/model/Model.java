@@ -136,9 +136,6 @@ public class Model implements IRenderObject {
 		this.uniforms = model.uniforms;
 	}
 
-	/**
-	 * Initializing the model
-	 */
 	@Override
 	public void init() {
 
@@ -326,9 +323,6 @@ public class Model implements IRenderObject {
 		minmax = ModelUtils.calculateMinmax(startMinmax, translation);
 	}
 
-	/**
-	 * Render method to render the model
-	 */
 	@Override
 	public void render() {
 		if (!init) {
@@ -498,9 +492,6 @@ public class Model implements IRenderObject {
 		modelMatrix.scale(scale);
 	}
 
-	/**
-	 * Clear the data
-	 */
 	@Override
 	public void dispose() {
 
