@@ -25,7 +25,6 @@ import main.java.render.passes.lighting.LightSourcePass;
 import main.java.render.passes.lighting.SunPass;
 import main.java.render.passes.standard.RectanglePass;
 import main.java.render.passes.standard.TrianglePass;
-import main.java.render.passes.texture.TexturePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.passes.trees.Tree_1;
 import main.java.render.utilities.TerrainGenerator;
@@ -39,7 +38,6 @@ public class Renderer {
 	private IRenderObject trianglePass;
 
 	private IRenderObject rectanglePass;
-	private IRenderObject texturePass;
 
 	private IRenderObject lightSourcePass;
 
@@ -73,7 +71,6 @@ public class Renderer {
 		trianglePass = new TrianglePass();
 
 		rectanglePass = new RectanglePass();
-		texturePass = new TexturePass();
 
 		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
 		lightSourcePositions.add(new Vec4(1.2f, 1.0f, 2.0f, 1.0f));
@@ -152,7 +149,6 @@ public class Renderer {
 
 		trianglePass.dispose();
 		rectanglePass.dispose();
-		texturePass.dispose();
 		lightSourcePass.dispose();
 
 		cottage.dispose();
