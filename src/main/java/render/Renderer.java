@@ -28,6 +28,7 @@ import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.passes.trees.Tree_1;
 import main.java.render.utilities.TerrainGenerator;
+import main.java.utils.Shapes.Cube;
 import main.java.utils.math.MousePicker;
 
 public class Renderer {
@@ -52,6 +53,7 @@ public class Renderer {
 	private IRenderObject tree_1;
 
 	private IRenderObject cubes;
+	private IRenderObject cube;
 
 	private IRenderObject terrainModel;
 	
@@ -88,7 +90,7 @@ public class Renderer {
 
 		terrains = new ArrayList<>();
 
-		terrainModel = new TerrainModel(new TerrainGenerator(100, 100, 1, 0, 0), "Terrain/Terrain.png");
+		terrainModel = new TerrainModel(new TerrainGenerator(10, 10, 1, 0, 0), "Terrain/Terrain.png");
 		terrains.add(terrainModel);
 
 		camera = new Camera(player);
@@ -97,6 +99,7 @@ public class Renderer {
 		tree_1 = new Tree_1();
 
 		cubes = new Cubes();
+		cube = new main.java.render.passes.Cube();
 		
 		((Player)player).addIntersector((Model)cottage);
 		((Player)player).addIntersector((Model)tree_1);
@@ -128,9 +131,11 @@ public class Renderer {
 		terrainModel.render();
 		lightSourcePass.render();
 
-		cottage.render();
-		tree_1.render();
+//		cottage.render();
+//		tree_1.render();
 		player.render();
+		
+		cube.render();
 		
 		compass.render();
 		glDisable(GL_CULL_FACE);

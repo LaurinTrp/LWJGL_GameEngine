@@ -55,7 +55,7 @@ public class TerrainGenerator {
 				
 				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
 
-				uvs.add(new Vec4(x % 2, y % 2, 0.0f, 1.0f));
+				uvs.add(new Vec4(x / width, y / height, 0.0f, 1.0f));
 			}
 			verticesList.add(vertexRow);
 		}

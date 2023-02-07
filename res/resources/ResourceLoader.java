@@ -43,6 +43,7 @@ public class ResourceLoader {
 	public static ByteBuffer loadTexture(String fileName) {
 		InputStream imageFile = ResourceLoader.class.getResourceAsStream("Textures/" + fileName);
 		byte[] imageData;
+		System.out.println(fileName);
 		try {
 			imageData = IOUtils.toByteArray(imageFile);
 			ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
@@ -82,30 +83,5 @@ public class ResourceLoader {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	public static void main(String[] args) {
-		int width, height;
-		ByteBuffer buffer;
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			IntBuffer w = stack.mallocInt(1);
-			IntBuffer h = stack.mallocInt(1);
-			IntBuffer c = stack.mallocInt(1);
-			
-			ByteBuffer imageBuffer = ResourceLoader.loadTexture("Player/Player.png");
-
-			buffer = STBImage.stbi_load_from_memory(imageBuffer, w, h, c, 0);
-			if (buffer == null) {
-				throw new Exception("Image File not loaded " + STBImage.stbi_failure_reason());
-			}
-
-			width = w.get();
-			height = h.get();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-
 	}
 }

@@ -24,10 +24,11 @@ import glm.mat._4.Mat4;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
+import main.java.render.model.MultiTextureTerrain;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class NormalDrawing {
+public class NormalDrawing<E> {
 
 	private Float[] vertices;
 	private Float[] normals;
@@ -39,21 +40,32 @@ public class NormalDrawing {
 	private int vao = 0, vbo = 0;
 
 	private Mat4 modelMatrix = new Mat4(1.0f);
-	
+
 	private boolean init = false;
 
-	public NormalDrawing(IRenderObject model) {
-		this.vertices = ((Model) model).getVertices();
-		this.normals = ((Model) model).getNormals();
+	public NormalDrawing(E model) {
+		if (model instanceof Model) {
+			this.vertices = ((Model) model).getVertices();
+			this.normals = ((Model) model).getNormals();
 
-		data = ModelUtils.createNormals(vertices, normals);
+			data = ModelUtils.createNormals(vertices, normals);
+
+			this.modelMatrix = ((Model) model).getModelMatrix();
+		}
+
+		if (model instanceof MultiTextureTerrain) {
+			this.vertices = ((MultiTextureTerrain) model).getVertices();
+			this.normals = ((MultiTextureTerrain) model).getNormals();
+
+			data = ModelUtils.createNormals(vertices, normals);
+
+			this.modelMatrix = ((MultiTextureTerrain) model).getModelMatrix();
+		}
 		
-		this.modelMatrix = ((Model) model).getModelMatrix();
-
 		bind();
 		initShader();
 	}
-	
+
 	public NormalDrawing(Float[] vertices, Float[] normals, Mat4 modelMatrix) {
 		this.vertices = vertices;
 		this.normals = normals;
@@ -65,7 +77,7 @@ public class NormalDrawing {
 
 		bind();
 		initShader();
-		
+
 		init = true;
 	}
 
@@ -102,7 +114,7 @@ public class NormalDrawing {
 	}
 
 	public void render() {
-		if(!init){
+		if (!init) {
 			init();
 		}
 		glLineWidth(1);

@@ -3,12 +3,13 @@ package main.java.render.passes;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.render.model.Material;
-import main.java.render.model.Model;
+import main.java.render.model.MultiTextureTerrain;
 import main.java.render.utilities.TerrainGenerator;
+import main.java.render.utilities.TexturePack;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.math.MathFunctions;
 
-public class TerrainModel extends Model {
+public class TerrainModel extends MultiTextureTerrain {
 	
 	private TerrainGenerator generator;
 	
@@ -18,12 +19,12 @@ public class TerrainModel extends Model {
 		
 		this.generator = generator;
 		
-		setShaderFolder("Terrain");
-		
-		getMaterial().setTexture(ImageLoader.loadTextureFromResource(texture));
-		getMaterial().setReflectance(0.1f);
+		setShaderFolder("TerrainMultiTexture");
 		
 		setShowNormals(true);
+		
+		TexturePack tp = new TexturePack("Terrain/BlendMap.png", "Terrain/Grass.png", "Terrain/Rocks.png", "Terrain/Mushroom.png", "Terrain/Flowers.png");
+		setTexturePack(tp);
 		
 	}
 	

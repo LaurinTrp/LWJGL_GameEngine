@@ -137,7 +137,9 @@ public class Engine_Main {
 			
 
 			if(keyHandler.isPressed(GLFW_KEY_ESCAPE)) {
+				render.dispose();
 				glfwSetWindowShouldClose(window, true);
+				continue;
 			}
 
 			glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
