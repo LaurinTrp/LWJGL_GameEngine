@@ -43,6 +43,7 @@ public class ResourceLoader {
 	public static ByteBuffer loadTexture(String fileName) {
 		InputStream imageFile = ResourceLoader.class.getResourceAsStream("Textures/" + fileName);
 		byte[] imageData;
+		System.out.println(fileName);
 		try {
 			imageData = IOUtils.toByteArray(imageFile);
 			ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);

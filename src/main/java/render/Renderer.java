@@ -131,8 +131,8 @@ public class Renderer {
 		terrainModel.render();
 		lightSourcePass.render();
 
-		cottage.render();
-		tree_1.render();
+//		cottage.render();
+//		tree_1.render();
 		player.render();
 		
 		cube.render();
