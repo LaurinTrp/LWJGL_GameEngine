@@ -19,21 +19,20 @@ public class TerrainGenerator {
 	private ArrayList<ArrayList<Vec4>> verticesList = new ArrayList<>();
 	private ArrayList<Vec4> normalsList = new ArrayList<>();
 	
-	private float width, height, density, startX, startZ;
+	private float size, density, startX, startZ;
 	
 	private Float[] minmax;
 	
-	public TerrainGenerator(float width, float height, float density, float startX, float startZ) {
-		this.width = width;
-		this.height = height;
+	public TerrainGenerator(float size, float density, float startX, float startZ) {
+		this.size = size;
 		this.density = density;
 		this.startX = startX;
 		this.startZ = startZ;
 		
 		minmax = new Float[] {
-				startX, startX + width,
+				startX, startX + size,
 				0f, 0f,
-				startZ, startZ+height
+				startZ, startZ+size
 		};
 		
 		generateMesh();
@@ -43,11 +42,11 @@ public class TerrainGenerator {
 		double noise = 0;
 		ArrayList<Vec4> uvs = new ArrayList<>();
 
-		for (int y = 0; y <= height / density; y++) {
+		for (int y = 0; y <= size / density; y++) {
 
 			ArrayList<Vec4> vertexRow = new ArrayList<>();
 
-			for (int x = 0; x <= width / density; x++) {
+			for (int x = 0; x <= size / density; x++) {
 				double worldX = startX + x * density;
 				double worldZ = startZ + y * density;
 
@@ -55,7 +54,7 @@ public class TerrainGenerator {
 				
 				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
 
-				uvs.add(new Vec4(x % 2, y % 2, 0.0f, 1.0f));
+				uvs.add(new Vec4(x / (size/density), y / (size/density), 0.0f, 1.0f));
 			}
 			verticesList.add(vertexRow);
 		}
@@ -66,7 +65,7 @@ public class TerrainGenerator {
 				normalsList.add(normal);
 			}
 		}
-
+		
 		verticesBuffer = ModelUtils.flattenListOfListsStream(verticesList);
 
 		ArrayList<Integer> indices = new ArrayList<>();
@@ -132,12 +131,10 @@ public class TerrainGenerator {
 		return minmax;
 	}
 	
-	public float getWidth() {
-		return width;
+	public float getSize() {
+		return size;
 	}
-	public float getHeight() {
-		return height;
-	}
+	
 	public float getDensity() {
 		return density;
 	}

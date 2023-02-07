@@ -110,10 +110,10 @@ public class Camera {
 
 		updateProjectionMatrix();
 
-		if (distanceFromPlayer <= 10 && distanceFromPlayer >= 2) {
-			distanceFromPlayer = Math.min(10,
+//		if (distanceFromPlayer <= 100 && distanceFromPlayer >= 2) {
+			distanceFromPlayer = Math.min(100,
 					Math.max(2, distanceFromPlayer - Engine_Main.mouseHandler.getScrollY() * 0.4f));
-		}
+//		}
 
 		rotation();
 

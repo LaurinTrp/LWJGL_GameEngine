@@ -5,6 +5,7 @@ import glm.vec._2.Vec2;
 import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
 import main.java.render.Camera;
+import main.java.render.IRenderObject;
 import main.java.render.model.Model;
 import main.java.render.passes.TerrainModel;
 
@@ -85,7 +86,7 @@ public class MousePicker {
 		return new Vec4(start).add(scaledRay);
 	}
 	
-	private boolean intersectionInRange(float start, float end, Vec4 ray, Model terrain) {
+	private boolean intersectionInRange(float start, float end, Vec4 ray, IRenderObject terrain) {
 		Vec4 startPoint = getPointOnRay(ray, start);
 		Vec4 endPoint = getPointOnRay(ray, end);
 		if(!isUnderGround(startPoint, terrain, START_POINT) && isUnderGround(endPoint, terrain, END_POINT)) {
@@ -94,7 +95,7 @@ public class MousePicker {
 		return false;
 	}
 	
-	private boolean isUnderGround(Vec4 point, Model terrain, byte pointType) {
+	private boolean isUnderGround(Vec4 point, IRenderObject terrain, byte pointType) {
 		float height = 0;
 		if(terrain != null) {
 			if(!((TerrainModel)terrain).isOnTerrain(new Vec2(point.x, point.z))) {

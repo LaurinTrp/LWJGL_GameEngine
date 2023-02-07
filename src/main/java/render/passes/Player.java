@@ -26,7 +26,7 @@ public class Player extends Model {
 
 	private Vec3 position;
 	private Vec3 prevPosition;
-	private final float speed = 0.05f;
+	private final float speed = 0.1f;
 	private boolean hasMoved;
 	private Vec3 playerFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 playerUp = new Vec3(0.0f, 1.0f, 0.0f);
@@ -35,7 +35,7 @@ public class Player extends Model {
 
 	private float rotationAngle = 0;
 
-	private ArrayList<Model> intersectors = new ArrayList<>();
+	private ArrayList<IRenderObject> intersectors = new ArrayList<>();
 
 	public Player() {
 		super((Model) ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
@@ -133,8 +133,8 @@ public class Player extends Model {
 			
 			Float[] tempMinmax = ModelUtils.calculateMinmax(startMinmax, new Vec3(position).add(direction));
 			
-			for (Model model : intersectors) {
-				if (ModelUtils.isIntersecting(tempMinmax, model.getMinmax())) {
+			for (IRenderObject model : intersectors) {
+				if (ModelUtils.isIntersecting(tempMinmax, ((Model) model).getMinmax())) {
 					isIntersecting = true;
 					break;
 				}
@@ -194,7 +194,7 @@ public class Player extends Model {
 		return playerUp;
 	}
 
-	public void addIntersector(Model intersector) {
+	public void addIntersector(IRenderObject intersector) {
 		intersectors.add(intersector);
 	}
 

@@ -17,16 +17,6 @@ vec4 lightsource = vec4(1.0);
 uniform vec4 sunPosition;
 uniform vec4 sunColor;
 
-struct Material {
-	float ambient;
-	float specular;
-	float diffuse;
-	float reflectance;
-	int hasTexture;
-};
-
-Material material;
-
 out vec4 fragColor;
 
 float a = 0.2, d = 0.2, s = 0.1;

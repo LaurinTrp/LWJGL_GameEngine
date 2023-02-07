@@ -13,7 +13,6 @@ import java.util.List;
 
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
-import main.java.render.model.Model;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.Cubes;
 import main.java.render.passes.Player;
@@ -28,6 +27,7 @@ import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.passes.trees.Tree_1;
 import main.java.render.utilities.TerrainGenerator;
+import main.java.render.utilities.TexturePack;
 import main.java.utils.math.MousePicker;
 
 public class Renderer {
@@ -52,6 +52,7 @@ public class Renderer {
 	private IRenderObject tree_1;
 
 	private IRenderObject cubes;
+	private IRenderObject cube;
 
 	private IRenderObject terrainModel;
 	
@@ -87,8 +88,9 @@ public class Renderer {
 		player = new Player();
 
 		terrains = new ArrayList<>();
-
-		terrainModel = new TerrainModel(new TerrainGenerator(100, 100, 1, 0, 0), "Terrain/Terrain.png");
+		
+		TexturePack tp = new TexturePack("Terrain/BlendMap.png", "Terrain/Grass.png", "Terrain/Rocks.png", "Terrain/Mushroom.png", "Terrain/Flowers.png");
+		terrainModel = new TerrainModel(new TerrainGenerator(100, 2, -50, -50), tp);
 		terrains.add(terrainModel);
 
 		camera = new Camera(player);
@@ -97,9 +99,10 @@ public class Renderer {
 		tree_1 = new Tree_1();
 
 		cubes = new Cubes();
+		cube = new main.java.render.passes.Cube();
 		
-		((Player)player).addIntersector((Model)cottage);
-		((Player)player).addIntersector((Model)tree_1);
+		((Player) player).addIntersector(cottage);
+		((Player) player).addIntersector(tree_1);
 	}
 
 	/**
@@ -131,6 +134,8 @@ public class Renderer {
 		cottage.render();
 		tree_1.render();
 		player.render();
+		
+		cube.render();
 		
 		compass.render();
 		glDisable(GL_CULL_FACE);
