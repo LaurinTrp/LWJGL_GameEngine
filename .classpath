@@ -6,7 +6,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="res"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-15">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -39,5 +38,6 @@
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-opengl-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-stb-natives-linux.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GLM"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/LWJGL_GameEngine_Resources"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

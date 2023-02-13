@@ -14,6 +14,7 @@ import java.util.List;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.passes.Cottage;
+import main.java.render.passes.Cube;
 import main.java.render.passes.Cubes;
 import main.java.render.passes.Player;
 import main.java.render.passes.TerrainModel;
@@ -99,10 +100,10 @@ public class Renderer {
 		tree_1 = new Tree_1();
 
 		cubes = new Cubes();
-		cube = new main.java.render.passes.Cube();
+		cube = new Cube();
 		
-		((Player) player).addIntersector(cottage);
-		((Player) player).addIntersector(tree_1);
+//		((Player) player).addIntersector(cottage);
+//		((Player) player).addIntersector(tree_1);
 	}
 
 	/**

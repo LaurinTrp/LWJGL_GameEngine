@@ -60,6 +60,7 @@ public class ImageLoader {
 	 */
 	public static int loadTextureFromResource(String fileName) {
 		try {
+			System.out.println("FILE: " + fileName);
 			return loadTexture(ResourceLoader.loadTexture(fileName));
 		} catch (Exception e) {
 			e.printStackTrace();
