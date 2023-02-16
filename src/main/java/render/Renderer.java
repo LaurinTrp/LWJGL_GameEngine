@@ -13,10 +13,10 @@ import java.util.List;
 
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
+import main.java.render.entities.Player;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.Cube;
 import main.java.render.passes.Cubes;
-import main.java.render.passes.Player;
 import main.java.render.passes.TerrainModel;
 import main.java.render.passes.framebuffers.DepthMap;
 import main.java.render.passes.framebuffers.Framebuffer;

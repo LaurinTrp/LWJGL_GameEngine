@@ -1,4 +1,4 @@
-package main.java.render.passes;
+package main.java.render.entities;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
@@ -17,6 +17,7 @@ import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
+import main.java.render.passes.TerrainModel;
 import main.java.utils.ModelUtils;
 import main.java.utils.constants.CameraMode;
 import main.java.utils.constants.Constants;
@@ -162,7 +163,7 @@ public class Player extends Model {
 			}
 		}
 
-		if (onTerrain) {
+		if (onTerrain) {	
 			position.y = ((TerrainModel) terrain).heightAtPosition(new Vec2(position.x, position.z)) - startMinmax[2];
 		} else {
 			position.y -= speed;

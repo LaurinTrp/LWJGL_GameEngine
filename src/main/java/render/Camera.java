@@ -5,7 +5,7 @@ import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
-import main.java.render.passes.Player;
+import main.java.render.entities.Player;
 import main.java.render.passes.TerrainModel;
 import main.java.utils.constants.CameraMode;
 
