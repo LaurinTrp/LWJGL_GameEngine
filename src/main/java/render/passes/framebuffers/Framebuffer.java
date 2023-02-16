@@ -1,6 +1,6 @@
 package main.java.render.passes.framebuffers;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -21,7 +21,7 @@ import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_READ;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
@@ -256,9 +256,7 @@ public class Framebuffer implements IFramebuffer {
 					glUniform2fv(uniformScreenSize,
 							new Vec2(Engine_Main.windowWidth, Engine_Main.windowHeight).toFA_());
 
-//					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 					glDrawArrays(GL_TRIANGLES, 0, 6);
-//					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 				}
 				glBindVertexArray(0);
 			}

@@ -20,6 +20,7 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
@@ -27,9 +28,10 @@ import org.lwjgl.system.MemoryStack;
 import resources.ResourceLoader;
 
 public class ImageLoader {
-	
+
 	/**
 	 * Load a image from the memory
+	 * 
 	 * @param path The path to the image
 	 * @return Returning the OpenGL texture id
 	 * @throws Exception if the image could not be loaded
@@ -37,39 +39,40 @@ public class ImageLoader {
 	public static int loadTextureFromMemory(String path) throws Exception {
 		int width, height;
 		ByteBuffer buffer;
-		try(MemoryStack stack = MemoryStack.stackPush()){
+		try (MemoryStack stack = MemoryStack.stackPush()) {
 			IntBuffer w = stack.mallocInt(1);
 			IntBuffer h = stack.mallocInt(1);
 			IntBuffer c = stack.mallocInt(1);
-			
+
 			buffer = STBImage.stbi_load(path, w, h, c, 4);
-			if(buffer == null) {
+			if (buffer == null) {
 				throw new Exception("Image File " + path + " not loaded " + STBImage.stbi_failure_reason());
 			}
-			
+
 			width = w.get();
 			height = h.get();
 		}
 		return getImageID(width, height, buffer);
 	}
-	
+
 	/**
 	 * Loading a texture from the resources
+	 * 
 	 * @param fileName Filename of the image in the res/Textures folder
 	 * @return Returning the OpenGL texture id
 	 */
 	public static int loadTextureFromResource(String fileName) {
 		try {
-			System.out.println("FILE: " + fileName);
 			return loadTexture(ResourceLoader.loadTexture(fileName));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
 		}
 	}
-	
+
 	/**
 	 * Load a texture from a byte buffer
+	 * 
 	 * @param data The data of the image as an byte buffer
 	 * @return Returning the OpenGL texture id
 	 * @throws Exception if the image loading failed
@@ -81,7 +84,7 @@ public class ImageLoader {
 			IntBuffer w = stack.mallocInt(1);
 			IntBuffer h = stack.mallocInt(1);
 			IntBuffer c = stack.mallocInt(1);
-			
+
 			buffer = STBImage.stbi_load_from_memory(data, w, h, c, 0);
 			if (buffer == null) {
 				throw new Exception("Image File not loaded " + STBImage.stbi_failure_reason());
@@ -94,9 +97,42 @@ public class ImageLoader {
 		return getImageID(width, height, buffer);
 	}
 
+	public static int loadSkybox(String[] files) throws Exception {
+		int textureID = glGenTextures();
+		glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+		int width, height;
+		for (int i = 0; i < files.length; i++) {
+			ByteBuffer data = ResourceLoader.loadTexture(files[i]);
+			ByteBuffer buffer;
+			try (MemoryStack stack = MemoryStack.stackPush()) {
+				IntBuffer w = stack.mallocInt(1);
+				IntBuffer h = stack.mallocInt(1);
+				IntBuffer c = stack.mallocInt(1);
+
+				buffer = STBImage.stbi_load_from_memory(data, w, h, c, 0);
+				if (buffer == null) {
+					throw new Exception("Image File not loaded " + STBImage.stbi_failure_reason());
+				}
+
+				width = w.get();
+				height = h.get();
+			}
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB,
+			GL_UNSIGNED_BYTE, buffer);
+		}
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);  
+		
+		return textureID;
+	}
+
 	/**
 	 * Setting the image parameter
-	 * @param width Image width
+	 * 
+	 * @param width  Image width
 	 * @param height Image height
 	 * @param buffer Image Data
 	 * @return Returning the OpenGL texture id
@@ -106,28 +142,16 @@ public class ImageLoader {
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-		float[] borderColor = {1.0f, 0.0f, 0.0f, 1.0f};
+		float[] borderColor = { 1.0f, 0.0f, 0.0f, 1.0f };
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		
+
 		glBindTexture(GL_TEXTURE_2D, id);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-		System.out.println(width + "\t" + height);
 		glGenerateMipmap(GL_TEXTURE_2D);
-		
-		return id;
-	}
-	
-	public static class ImageParams {
-		public int width, height;
-		public ByteBuffer buffer;
 
-		public ImageParams(int width, int height, ByteBuffer buffer) {
-			this.width = width;
-			this.height = height;
-			this.buffer = buffer;
-		}
+		return id;
 	}
 
 }

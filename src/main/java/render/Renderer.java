@@ -4,7 +4,7 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
@@ -23,13 +23,16 @@ import main.java.render.passes.framebuffers.Framebuffer;
 import main.java.render.passes.framebuffers.IFramebuffer;
 import main.java.render.passes.lighting.LightSourcePass;
 import main.java.render.passes.lighting.SunPass;
+import main.java.render.passes.skybox.Skybox;
 import main.java.render.passes.standard.RectanglePass;
 import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.passes.trees.Tree_1;
 import main.java.render.utilities.TerrainGenerator;
 import main.java.render.utilities.TexturePack;
+import main.java.utils.loaders.ImageLoader;
 import main.java.utils.math.MousePicker;
+import resources.ResourceLoader;
 
 public class Renderer {
 
@@ -64,9 +67,14 @@ public class Renderer {
 	public static ArrayList<Vec4> lightSourcePositions = new ArrayList<>();
 
 	private MousePicker mousePicker;
+	
+	private Skybox skybox;
 
 	public Renderer() {
-
+		
+		skybox = createSkybox();
+		
+		
 		framebuffer = new Framebuffer();
 		depthBuffer = new DepthMap();
 
@@ -106,19 +114,32 @@ public class Renderer {
 //		((Player) player).addIntersector(tree_1);
 	}
 
+	private Skybox createSkybox() {
+		String[] paths = new String[] {
+				"skybox/right.png",
+				"skybox/left.png",
+				"skybox/top.png",
+				"skybox/bottom.png",
+				"skybox/front.png",
+				"skybox/back.png",
+		};
+		return new Skybox(paths);
+	}
+	
 	/**
 	 * Main render method
 	 */
 	public void render() {
 		framebuffer.render();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
+		skybox.render();
 		glEnable(GL_DEPTH_TEST);
 		renderScene();
 		
 		camera.setFocusPoint(new Vec3(((Player) player).getPosition()).add(((Player) player).getPlayerFront()));
 		camera.moveCamera();
-
+//
 		sun.update();
 		
 		glDisable(GL_DEPTH_TEST);
@@ -128,15 +149,16 @@ public class Renderer {
 	
 	
 	public void renderScene() {
+		
 		glEnable(GL_CULL_FACE);
 		terrainModel.render();
-		lightSourcePass.render();
+//		lightSourcePass.render();
 
 //		cottage.render();
 //		tree_1.render();
 		player.render();
 		
-		cube.render();
+//		cube.render();
 		
 		compass.render();
 		glDisable(GL_CULL_FACE);
@@ -148,7 +170,7 @@ public class Renderer {
 	public void dispose() {
 
 		framebuffer.dispose();
-
+		skybox.dispose();
 		for (IRenderObject terrainPass : terrains) {
 			terrainPass.dispose();
 		}

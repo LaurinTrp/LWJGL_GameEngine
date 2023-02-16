@@ -23,7 +23,7 @@ public class TerrainModel extends MultiTextureTerrain {
 		
 		setShaderFolder("TerrainMultiTexture");
 		
-		setShowNormals(true);
+		setShowNormals(false);
 		
 		setTexturePack(texturePack);
 		
