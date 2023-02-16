@@ -99,7 +99,7 @@ public class Renderer {
 		terrains = new ArrayList<>();
 		
 		TexturePack tp = new TexturePack("Terrain/BlendMap.png", "Terrain/Grass.png", "Terrain/Rocks.png", "Terrain/Mushroom.png", "Terrain/Flowers.png");
-		terrainModel = new TerrainModel(new TerrainGenerator(100, 2, -50, -50), tp);
+		terrainModel = new TerrainModel(new TerrainGenerator(64, 2, -32, -32), tp);
 		terrains.add(terrainModel);
 
 		camera = new Camera(player);

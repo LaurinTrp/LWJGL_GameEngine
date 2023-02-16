@@ -28,5 +28,6 @@ void main() {
 	vec4 bColor = rgbValue.b * texture(bTexture, tiledCoord.xy);
 
 	fragColor = (backgroundColor + rColor + gColor + bColor) * 0.5;
+//	fragColor = texture(blendMap, uvCoord.xy);
 }
 
