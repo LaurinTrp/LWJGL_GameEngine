@@ -29,6 +29,8 @@ public class Skybox implements IRenderObject {
 	private boolean init = false;
 
 	private ShaderProgram program;
+	
+	private Mat4 modelMatrix;
 
 	private HashMap<String, Integer> uniforms = new HashMap<>();
 
@@ -46,6 +48,8 @@ public class Skybox implements IRenderObject {
 	public void init() {
 		bindVAO();
 		initShader();
+		
+		modelMatrix = new Mat4();
 
 		init = true;
 	}
@@ -118,6 +122,7 @@ public class Skybox implements IRenderObject {
 
 		ModelUtils.createUniform(program, uniforms, "proj");
 		ModelUtils.createUniform(program, uniforms, "view");
+		ModelUtils.createUniform(program, uniforms, "model");
 	}
 
 	@Override
@@ -136,7 +141,11 @@ public class Skybox implements IRenderObject {
 			Mat4 view = new Mat4(Renderer.camera.getView().toMat3_());
 
 			glUniformMatrix4fv(uniforms.get("view"), false, view.toFa_());
+			glUniformMatrix4fv(uniforms.get("model"), false, modelMatrix.toFa_());
 			{
+				
+//				modelMatrix.rotateY(Math.toRadians(0.01f));
+				
 				glBindVertexArray(vao);
 				glActiveTexture(GL_TEXTURE0+0);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);

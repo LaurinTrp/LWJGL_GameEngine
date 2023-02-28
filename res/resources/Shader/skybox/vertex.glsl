@@ -5,9 +5,10 @@ out vec3 TexCoords;
 
 uniform mat4 proj;
 uniform mat4 view;
+uniform mat4 model;
 
 void main(){
 	TexCoords = aPos;
-	vec4 pos = proj * view * vec4(aPos, 1.0);
+	vec4 pos = proj * view * model * vec4(aPos, 1.0);
 	gl_Position = pos.xyww;
 }
