@@ -166,7 +166,7 @@ public class Player extends Model {
 		if (onTerrain) {	
 			position.y = ((TerrainModel) terrain).heightAtPosition(new Vec2(position.x, position.z)) - startMinmax[2];
 		} else {
-			position.y -= speed;
+//			position.y -= speed;
 		}
 	}
 

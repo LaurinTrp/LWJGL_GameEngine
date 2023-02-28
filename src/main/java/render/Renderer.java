@@ -1,14 +1,7 @@
 package main.java.render;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import glm.vec._3.Vec3;
@@ -28,11 +21,12 @@ import main.java.render.passes.standard.RectanglePass;
 import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.passes.trees.Tree_1;
-import main.java.render.utilities.TerrainGenerator;
 import main.java.render.utilities.TexturePack;
-import main.java.utils.loaders.ImageLoader;
+import main.java.render.utilities.terrain.ProceduralTerrain;
+import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.utils.math.MousePicker;
-import resources.ResourceLoader;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
 
@@ -58,6 +52,8 @@ public class Renderer {
 	private IRenderObject cubes;
 	private IRenderObject cube;
 
+	private ProceduralTerrain proceduralTerrain;
+	
 	private IRenderObject terrainModel;
 	
 	public static SunPass sun;
@@ -71,9 +67,10 @@ public class Renderer {
 	private Skybox skybox;
 
 	public Renderer() {
-		
 		skybox = createSkybox();
+		terrains = Collections.synchronizedList(new ArrayList<IRenderObject>());
 		
+		proceduralTerrain = new ProceduralTerrain(terrains);
 		
 		framebuffer = new Framebuffer();
 		depthBuffer = new DepthMap();
@@ -96,7 +93,6 @@ public class Renderer {
 
 		player = new Player();
 
-		terrains = new ArrayList<>();
 		
 		TexturePack tp = new TexturePack("Terrain/BlendMap.png", "Terrain/Grass.png", "Terrain/Rocks.png", "Terrain/Mushroom.png", "Terrain/Flowers.png");
 		terrainModel = new TerrainModel(new TerrainGenerator(64, 2, -32, -32), tp);
@@ -151,7 +147,14 @@ public class Renderer {
 	public void renderScene() {
 		
 		glEnable(GL_CULL_FACE);
-		terrainModel.render();
+		
+		proceduralTerrain.update(camera);
+		
+		for (IRenderObject terrain : terrains) {
+			terrain.render();
+		}
+		
+//		terrainModel.render();
 //		lightSourcePass.render();
 
 //		cottage.render();

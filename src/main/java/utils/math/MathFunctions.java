@@ -17,4 +17,10 @@ public class MathFunctions {
 		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart)); 
 	}
 	
+	
+	public static class VECTOR_MATH{
+		public static float distance(Vec3 v0, Vec3 v1) {
+			return (float)Math.sqrt(Math.pow(v0.x - v1.x, 2) + Math.pow(v0.y - v1.y, 2) + Math.pow(v0.z - v1.z, 2));
+		}
+	}
 }

@@ -26,11 +26,7 @@ import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.io.IOException;
@@ -107,13 +103,21 @@ public class Engine_Main {
 		windowWidth = mode.width();
 		windowHeight = mode.height();
 
-		glfwMakeContextCurrent(window);
+		makeContextCurrent();
 		glfwSwapInterval(1);
 
 		// ####### Disable cursor
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 		
 		glfwShowWindow(window);
+		createCapabilities();
+	}
+	
+	public static void makeContextCurrent() {
+		glfwMakeContextCurrent(window);
+	}
+
+	public static void createCapabilities() {
 		GL.createCapabilities();
 	}
 	

@@ -1,8 +1,9 @@
-package main.java.render.utilities;
+package main.java.render.utilities.terrain;
 
 import java.util.ArrayList;
 
 import glm.Glm;
+import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.utils.ModelUtils;
@@ -23,6 +24,8 @@ public class TerrainGenerator {
 	
 	private Float[] minmax;
 	
+	private Vec3[] edgePoints = new Vec3[4];
+	
 	public TerrainGenerator(float size, float density, float startX, float startZ) {
 		this.size = size;
 		this.density = density;
@@ -34,6 +37,11 @@ public class TerrainGenerator {
 				0f, 0f,
 				startZ, startZ+size
 		};
+		
+		edgePoints[0] = new Vec3(startX, 0, startZ);
+		edgePoints[1] = new Vec3(startX + size, 0, startZ);
+		edgePoints[2] = new Vec3(startX, 0, startZ + size);
+		edgePoints[3] = new Vec3(startX + size, 0, startZ + size);
 		
 		generateMesh();
 	}
@@ -143,6 +151,10 @@ public class TerrainGenerator {
 	}
 	public float getStartZ() {
 		return startZ;
+	}
+	
+	public Vec3[] getEdgePoints() {
+		return edgePoints;
 	}
 	
 	

@@ -6,8 +6,8 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.render.model.Material;
 import main.java.render.model.MultiTextureTerrain;
-import main.java.render.utilities.TerrainGenerator;
 import main.java.render.utilities.TexturePack;
+import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.utils.ModelUtils;
 import main.java.utils.math.MathFunctions;
 
@@ -74,6 +74,10 @@ public class TerrainModel extends MultiTextureTerrain {
 			return currentTerrainHeight;
 		}
 		return -20f;
+	}
+	
+	public TerrainGenerator getGenerator() {
+		return generator;
 	}
 	
 }
