@@ -14,9 +14,9 @@ public class Cottage extends Model {
 		super((Model) ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage_diffuse.png"));
-		
+
 	}
-	
+
 	@Override
 	protected void renderProcessBegin() {
 		super.renderProcessBegin();
@@ -34,6 +34,6 @@ public class Cottage extends Model {
 
 		setScale(0.2f);
 		updateMinmax();
-		
+
 	}
 }

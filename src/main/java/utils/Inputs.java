@@ -13,18 +13,18 @@ public class Inputs {
 
 		private double lastX = 400, lastY = 400;
 		private double xoffset, yoffset;
-		
+
 		private double mouseX, mouseY;
-		
+
 		private float scrollY;
-		
+
 		private boolean LMB_Down = false;
 		private boolean RMB_Down = false;
-		
+
 		GLFWCursorPosCallback cursorPosCallback = new GLFWCursorPosCallback() {
 			@Override
 			public void invoke(long window, double xpos, double ypos) {
-				
+
 				xoffset = xpos - lastX;
 				yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
 				lastX = xpos;
@@ -37,21 +37,21 @@ public class Inputs {
 				if(Math.abs(yoffset) <= 2) {
 					yoffset = 0;
 				}
-				
+
 				float sensitivity = 0.15f;
 				xoffset *= sensitivity;
 				yoffset *= sensitivity;
-				
+
 				mouseX = xpos;
 				mouseY = ypos;
-				
+
 			}
 		};
 
 		public GLFWCursorPosCallback getCursorPosCallback() {
 			return cursorPosCallback;
 		}
-		
+
 		GLFWScrollCallback scrollCallback = new GLFWScrollCallback() {
 			@Override
 			public void invoke(long window, double xoffset, double yoffset) {
@@ -62,9 +62,9 @@ public class Inputs {
 		public GLFWScrollCallback getScrollCallback() {
 			return scrollCallback;
 		}
-		
+
 		GLFWMouseButtonCallback mouseButtonCallback = new GLFWMouseButtonCallback() {
-			
+
 			@Override
 			public void invoke(long window, int button, int action, int mods) {
 				if(button == GLFW.GLFW_MOUSE_BUTTON_1) {
@@ -75,7 +75,7 @@ public class Inputs {
 				}
 			}
 		};
-		
+
 		public void reset() {
 			xoffset = 0;
 			yoffset = 0;
@@ -84,37 +84,37 @@ public class Inputs {
 		public GLFWMouseButtonCallback getMouseButtonCallback() {
 			return mouseButtonCallback;
 		}
-		
+
 		public double getXoffset() {
 			return xoffset;
 		}
-		
+
 		public double getYoffset() {
 			return yoffset;
 		}
-		
+
 		public float getScrollY() {
 	        float value = scrollY;
 	        scrollY = 0.0f;
 	        return value;
 	    }
 
-		
+
 		public double getMouseX() {
 			return mouseX;
 		}
 		public double getMouseY() {
 			return mouseY;
 		}
-		
+
 		public boolean isLMB_Down() {
 			return LMB_Down;
 		}
-		
+
 		public boolean isRMB_Down() {
 			return RMB_Down;
 		}
-		
+
 	}
 
 	public static class KeyHandler {

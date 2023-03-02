@@ -44,16 +44,16 @@ public class LightSourcePass implements IRenderObject {
 	private boolean init = false;
 
 	private ArrayList<Vec4> lightsourcePositions = new ArrayList<>();
-	
+
 	private int vao = 0, vbo = 0, tex = 0;
 	private int modelID;
     private int viewID;
     private int projID;
     private int lightPosID;
-    
-    
+
+
 	private ShaderProgram program;
-	
+
 	private ArrayList<Mat4> modelMatrices = new ArrayList<>();
 
 	@Override
@@ -63,7 +63,7 @@ public class LightSourcePass implements IRenderObject {
 		initMatrixes();
 		init = true;
 	}
-	
+
 	private void initVAOs() {
 
 		// create vertex array
@@ -95,7 +95,7 @@ public class LightSourcePass implements IRenderObject {
 		}
 		glBindVertexArray(0);
 	}
-	
+
 	private void initMatrixes() {
 		for(int i = 0; i < lightsourcePositions.size(); i++) {
 			modelMatrices.add(new Mat4(1.0f));
@@ -111,9 +111,9 @@ public class LightSourcePass implements IRenderObject {
 		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
 		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
 		lightPosID = glGetUniformLocation(program.getProgramID(), "lightPos");
-	
+
 	}
-	
+
 
 	@Override
 	public void render() {
@@ -132,28 +132,28 @@ public class LightSourcePass implements IRenderObject {
 				glBindTexture(GL_TEXTURE_2D, tex);
 				glBindVertexArray(vao);
 				{
-					
+
 					glUniformMatrix4fv(viewID, false, Renderer.camera.getView().toFa_());
 					glUniformMatrix4fv(projID, false, Renderer.camera.getProjectionMatrix().toFa_());
-					
+
 					for (int i = 0; i < modelMatrices.size(); i++) {
 						glUniformMatrix4fv(modelID, false, modelMatrices.get(i).toFa_());
 						glUniform4fv(lightPosID, lightsourcePositions.get(i).toFA_());
-						
-						glDrawArrays(GL_TRIANGLES, 0, Shapes.Cube.triangleCount);	
+
+						glDrawArrays(GL_TRIANGLES, 0, Shapes.Cube.triangleCount);
 					}
-					
+
 				}
 				glBindVertexArray(0);
 			}
 		}
 		glEnable(GL_CULL_FACE);
 	}
-	
+
 	public void setLightsourcePositions(ArrayList<Vec4> lightsourcePositions) {
 		this.lightsourcePositions = lightsourcePositions;
 	}
-	
+
 	public ArrayList<Mat4> getModelMatrices() {
 		return modelMatrices;
 	}
@@ -168,7 +168,7 @@ public class LightSourcePass implements IRenderObject {
 		if (program != null) {
 			program.dispose();
 		}
-		
+
 		vao = 0;
 		vbo = 0;
 		tex = 0;

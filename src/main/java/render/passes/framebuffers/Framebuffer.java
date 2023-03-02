@@ -240,6 +240,7 @@ public class Framebuffer implements IFramebuffer {
 	/**
 	 * Render the colors
 	 */
+	@Override
 	public void renderColorAttachments() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -256,9 +257,7 @@ public class Framebuffer implements IFramebuffer {
 					glUniform2fv(uniformScreenSize,
 							new Vec2(Engine_Main.windowWidth, Engine_Main.windowHeight).toFA_());
 
-//					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 					glDrawArrays(GL_TRIANGLES, 0, 6);
-//					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 				}
 				glBindVertexArray(0);
 			}

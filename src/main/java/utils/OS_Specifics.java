@@ -1,9 +1,9 @@
 package main.java.utils;
 
 public class OS_Specifics {
-	
+
 	private static String OS = System.getProperty("os.name").toLowerCase();
-	
+
 	public static String getFilepathSeperator() {
 		if(isWindows()) {
 			return "\\";
@@ -13,7 +13,7 @@ public class OS_Specifics {
 		}
 		return "";
 	}
-	
+
 	public static boolean isWindows() {
         return (OS.indexOf("win") >= 0);
     }

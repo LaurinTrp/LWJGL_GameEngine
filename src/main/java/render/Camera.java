@@ -5,7 +5,7 @@ import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
-import main.java.render.passes.Player;
+import main.java.render.entities.Player;
 import main.java.render.passes.TerrainModel;
 import main.java.utils.constants.CameraMode;
 
@@ -46,7 +46,7 @@ public class Camera {
 	private void rotation() {
 
 		Player player = (Player) this.player;
-		
+
 		switch (cameraMode) {
 		case PLAYER_CAMERA: {
 			angleHorizontal = player.getRotationAngle() - (float) Math.toRadians(180);
@@ -73,9 +73,9 @@ public class Camera {
 				angleVertical = 89f;
 			}
 			cameraFront = new Vec3(player.getPlayerFront());
-			
+
 			cameraPosition = new Vec3(player.getPosition());
-			
+
 			focusPoint = new Vec3(cameraPosition).add(cameraFront);
 			break;
 		}
@@ -83,7 +83,7 @@ public class Camera {
 			System.err.println("CameraMode not supported");
 			break;
 		}
-		
+
 	}
 
 	private void calculateCameraPos(float angleVertical, float angleHorizontal) {
@@ -97,11 +97,13 @@ public class Camera {
 		cameraPosition.y = focusPoint.y + verticalDistance;
 		cameraPosition.z = focusPoint.z - offsetZ;
 
-		TerrainModel terrain = (TerrainModel) Renderer.terrains.get(0);
-		if (terrain.isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
-			float terrainHeight = terrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
-			if (cameraPosition.y < terrainHeight + 0.2f) {
-				cameraPosition.y = terrainHeight + 0.2f;
+		for (IRenderObject terrain : Renderer.terrains) {
+			TerrainModel currTerrain = (TerrainModel) terrain;
+			if (currTerrain.isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
+				float terrainHeight = currTerrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
+				if (cameraPosition.y < terrainHeight + 0.2f) {
+					cameraPosition.y = terrainHeight + 0.2f;
+				}
 			}
 		}
 	}
@@ -111,8 +113,8 @@ public class Camera {
 		updateProjectionMatrix();
 
 //		if (distanceFromPlayer <= 100 && distanceFromPlayer >= 2) {
-			distanceFromPlayer = Math.min(100,
-					Math.max(2, distanceFromPlayer - Engine_Main.mouseHandler.getScrollY() * 0.4f));
+		distanceFromPlayer = Math.min(100,
+				Math.max(2, distanceFromPlayer - Engine_Main.mouseHandler.getScrollY() * 0.4f));
 //		}
 
 		rotation();

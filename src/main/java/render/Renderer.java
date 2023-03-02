@@ -9,25 +9,28 @@ import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
+import main.java.render.entities.Player;
+import main.java.render.entities.Test;
 import main.java.render.passes.Cottage;
-import main.java.render.passes.Cubes;
-import main.java.render.passes.Player;
 import main.java.render.passes.TerrainModel;
 import main.java.render.passes.framebuffers.DepthMap;
 import main.java.render.passes.framebuffers.Framebuffer;
 import main.java.render.passes.framebuffers.IFramebuffer;
 import main.java.render.passes.lighting.LightSourcePass;
 import main.java.render.passes.lighting.SunPass;
+import main.java.render.passes.skybox.Skybox;
 import main.java.render.passes.standard.RectanglePass;
 import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.passes.trees.Tree_1;
-import main.java.render.utilities.TerrainGenerator;
 import main.java.render.utilities.TexturePack;
+import main.java.render.utilities.terrain.ProceduralTerrain;
+import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.utils.math.MousePicker;
 
 public class Renderer {
@@ -51,11 +54,10 @@ public class Renderer {
 
 	private IRenderObject tree_1;
 
-	private IRenderObject cubes;
-	private IRenderObject cube;
+	private ProceduralTerrain proceduralTerrain;
 
 	private IRenderObject terrainModel;
-	
+
 	public static SunPass sun;
 
 	public static Camera camera;
@@ -64,7 +66,15 @@ public class Renderer {
 
 	private MousePicker mousePicker;
 
+	private Skybox skybox;
+
+	private Test testCube;
+
 	public Renderer() {
+		skybox = createSkybox();
+		terrains = Collections.synchronizedList(new ArrayList<IRenderObject>());
+
+		proceduralTerrain = new ProceduralTerrain(terrains);
 
 		framebuffer = new Framebuffer();
 		depthBuffer = new DepthMap();
@@ -87,22 +97,34 @@ public class Renderer {
 
 		player = new Player();
 
-		terrains = new ArrayList<>();
-		
-		TexturePack tp = new TexturePack("Terrain/BlendMap.png", "Terrain/Grass.png", "Terrain/Rocks.png", "Terrain/Mushroom.png", "Terrain/Flowers.png");
-		terrainModel = new TerrainModel(new TerrainGenerator(100, 2, -50, -50), tp);
-		terrains.add(terrainModel);
-
 		camera = new Camera(player);
 		mousePicker = new MousePicker(camera);
 
+		generateFirstTerrain();
+
 		tree_1 = new Tree_1();
 
-		cubes = new Cubes();
-		cube = new main.java.render.passes.Cube();
-		
-		((Player) player).addIntersector(cottage);
-		((Player) player).addIntersector(tree_1);
+		testCube = new Test();
+//		((Player) player).addIntersector(cottage);
+//		((Player) player).addIntersector(tree_1);
+	}
+
+	private Skybox createSkybox() {
+		String[] paths = new String[] { "skybox/right.png", "skybox/left.png", "skybox/top.png", "skybox/bottom.png",
+				"skybox/front.png", "skybox/back.png", };
+		return new Skybox(paths);
+	}
+
+	private void generateFirstTerrain() {
+		TerrainGenerator generator = new TerrainGenerator(64, 2, -32, -32);
+		generator.generate();
+		IRenderObject terrainModel = new TerrainModel(generator, TexturePack.DEFAULT_TERRAIN);
+		terrains.add(terrainModel);
+
+		TerrainGenerator generator1 = new TerrainGenerator(64, 2, -64, -32);
+		generator1.generate();
+		IRenderObject terrainModel1 = new TerrainModel(generator1, TexturePack.DEFAULT_TERRAIN);
+		terrains.add(terrainModel1);
 	}
 
 	/**
@@ -111,32 +133,44 @@ public class Renderer {
 	public void render() {
 		framebuffer.render();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
+		skybox.render();
 		glEnable(GL_DEPTH_TEST);
 		renderScene();
-		
-		camera.setFocusPoint(new Vec3(((Player) player).getPosition()).add(((Player) player).getPlayerFront()));
-		camera.moveCamera();
 
+		camera.setFocusPoint(new Vec3(((Player) player).getPosition()));
+		camera.moveCamera();
+//
 		sun.update();
-		
+
 		glDisable(GL_DEPTH_TEST);
 		((Framebuffer) framebuffer).renderColorAttachments();
 
 	}
-	
-	
+
 	public void renderScene() {
+
 		glEnable(GL_CULL_FACE);
-		terrainModel.render();
-		lightSourcePass.render();
+
+//		if(first) {
+//			proceduralTerrain.update(camera);
+//		}
+
+		for (IRenderObject terrain : terrains) {
+			terrain.render();
+		}
+
+		testCube.render();
+
+//		terrainModel.render();
+//		lightSourcePass.render();
 
 		cottage.render();
-		tree_1.render();
+//		tree_1.render();
 		player.render();
-		
-		cube.render();
-		
+
+//		cube.render();
+
 		compass.render();
 		glDisable(GL_CULL_FACE);
 	}
@@ -147,7 +181,7 @@ public class Renderer {
 	public void dispose() {
 
 		framebuffer.dispose();
-
+		skybox.dispose();
 		for (IRenderObject terrainPass : terrains) {
 			terrainPass.dispose();
 		}
@@ -161,9 +195,9 @@ public class Renderer {
 		player.dispose();
 
 		compass.dispose();
-			tree_1.dispose();
+		tree_1.dispose();
 
-		cubes.dispose();
+		testCube.dispose();
 	}
 
 }

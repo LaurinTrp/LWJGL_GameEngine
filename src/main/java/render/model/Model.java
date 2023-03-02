@@ -15,7 +15,6 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glUniform1f;
 import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
@@ -59,6 +58,7 @@ public class Model implements IRenderObject {
 	protected Float[] vertices;
 	protected Float[] uvs;
 	protected Float[] normals;
+	protected Float[] colors;
 
 	protected int[] indices;
 
@@ -78,11 +78,12 @@ public class Model implements IRenderObject {
 
 	public Model() {
 		startMinmax = new Float[6];
+
 	}
 
 	/**
 	 * Model constructor with ebo
-	 * 
+	 *
 	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
 	 * @param uvs       The data of the uv coordinates
 	 * @param normals   The data of the normals
@@ -100,7 +101,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * Model constructor without ebo
-	 * 
+	 *
 	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
 	 * @param uvs       The data of the uv coordinates
 	 * @param normals   The data of the normals
@@ -121,7 +122,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * Constructor copying other model
-	 * 
+	 *
 	 * @param model Model to copy
 	 */
 	public Model(Model model) {
@@ -164,7 +165,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * Initializing the shader and the uniform variables
-	 * 
+	 *
 	 * @param shaderFolder The name of the shader folder in the resources
 	 */
 	protected void initShader(String shaderFolder) {
@@ -188,7 +189,7 @@ public class Model implements IRenderObject {
 	 */
 	private void bindModel() {
 
-		Float[] colors = new Float[vertices.length];
+		colors = new Float[vertices.length];
 
 		for (int i = 0; i < colors.length; i += 4) {
 			colors[i] = 1.0f;
@@ -196,7 +197,6 @@ public class Model implements IRenderObject {
 			colors[i + 2] = 0.0f;
 			colors[i + 3] = 1.0f;
 		}
-
 		float[] data = ModelUtils.flattenArrays(vertices, colors, uvs, normals);
 
 		vao = glGenVertexArrays();
@@ -348,10 +348,9 @@ public class Model implements IRenderObject {
 		}
 	}
 
-
 	/**
 	 * Get the material object
-	 * 
+	 *
 	 * @return material object
 	 */
 	public Material getMaterial() {
@@ -360,7 +359,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * Set the material object
-	 * 
+	 *
 	 * @param material material for the model
 	 */
 	public void setMaterial(Material material) {
@@ -369,7 +368,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * Getter for the vertices data
-	 * 
+	 *
 	 * @return The vertices as float array
 	 */
 	public Float[] getVertices() {
@@ -378,7 +377,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * Getter for the normals data
-	 * 
+	 *
 	 * @return The normals as float array
 	 */
 	public Float[] getNormals() {
@@ -387,7 +386,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * Getter for the uvs data
-	 * 
+	 *
 	 * @return The uvs as float array
 	 */
 	public Float[] getUvs() {
@@ -396,7 +395,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * Set the shader folder
-	 * 
+	 *
 	 * @param shaderFolder new Shader folder
 	 */
 	public void setShaderFolder(String shaderFolder) {
@@ -405,7 +404,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * Get the shader program
-	 * 
+	 *
 	 * @return current shader program
 	 */
 	public ShaderProgram getProgram() {
@@ -414,7 +413,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * set the option to show the normals
-	 * 
+	 *
 	 * @param showNormals boolean if normals should be shown
 	 */
 	public void setShowNormals(boolean showNormals) {
@@ -423,7 +422,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * get the current scale of the model
-	 * 
+	 *
 	 * @return scale as float
 	 */
 	public float getScale() {
@@ -432,7 +431,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * get the model matrix
-	 * 
+	 *
 	 * @return model matrix as mat4
 	 */
 	public Mat4 getModelMatrix() {
@@ -441,7 +440,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * Set a new model matrix
-	 * 
+	 *
 	 * @param modelMatrix new Model matrix
 	 */
 	public void setModelMatrix(Mat4 modelMatrix) {
@@ -450,7 +449,7 @@ public class Model implements IRenderObject {
 
 	/**
 	 * get the minmax values
-	 * 
+	 *
 	 * @return minmax values as an float array
 	 */
 	public Float[] getMinmax() {
@@ -459,13 +458,15 @@ public class Model implements IRenderObject {
 
 	/**
 	 * set the scale of the model
-	 * 
+	 *
 	 * @param scale scaling factor
 	 */
 	public void setScale(float scale) {
-		for (int i = 0; i < minmax.length; i++) {
-			minmax[i] *= scale;
-			startMinmax[i] *= scale;
+		if (startMinmax != null && minmax != null) {
+			for (int i = 0; i < minmax.length; i++) {
+				minmax[i] *= scale;
+				startMinmax[i] *= scale;
+			}
 		}
 		this.scale = scale;
 		modelMatrix.scale(scale);

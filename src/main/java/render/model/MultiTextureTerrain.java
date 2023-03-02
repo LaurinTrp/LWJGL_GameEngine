@@ -6,7 +6,7 @@ import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glDrawElements;
-import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_READ;
@@ -15,7 +15,6 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glUniform1f;
 import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
@@ -26,7 +25,6 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
@@ -38,13 +36,14 @@ import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.utilities.NormalDrawing;
 import main.java.render.utilities.TexturePack;
+import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
 public class MultiTextureTerrain implements IRenderObject {
 
 	protected boolean init = false;
-	protected boolean hasEbo = false;
+	protected boolean hasEbo = true;
 
 	protected int vao, vbo, ebo;
 	private int triangles;
@@ -77,63 +76,22 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	private TexturePack texturePack;
 
-	public MultiTextureTerrain() {
-		startMinmax = new Float[6];
-	}
-
-	/**
-	 * Model constructor with ebo
-	 * 
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
-	 */
-	public MultiTextureTerrain(Float[] vertices, Float[] uvs, Float[] normals, int[] indices, int triangles,
-			Material material, Float[] minmax) {
-		this(vertices, uvs, normals, triangles, minmax);
-		hasEbo = true;
-		this.indices = indices;
-	}
-
-	/**
-	 * Model constructor without ebo
-	 * 
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
-	 */
-	public MultiTextureTerrain(Float[] vertices, Float[] uvs, Float[] normals, int triangles, 
-			Float[] minmax) {
-		this.triangles = triangles;
-		this.vertices = vertices;
-		this.uvs = uvs;
-		this.normals = normals;
-		this.startMinmax = minmax;
-		this.minmax = Arrays.copyOf(minmax, minmax.length);
-	}
-
-	/**
-	 * Constructor copying other model
-	 * 
-	 * @param model Model to copy
-	 */
-	public MultiTextureTerrain(MultiTextureTerrain model) {
-		this(model.vertices, model.uvs, model.normals, model.triangles, new Float[] { model.minmax[0],
-				model.minmax[1], model.minmax[2], model.minmax[3], model.minmax[4], model.minmax[5], });
-
-		this.program = model.program;
-
-		this.modelMatrix = model.modelMatrix;
-
-		this.uniforms = model.uniforms;
+	public MultiTextureTerrain(TerrainGenerator generator) {
+		while(!generator.isReady()) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+//			System.out.println("TEST");
+		}
+		startMinmax = generator.getMinmax();
+		minmax = generator.getMinmax();
+		vertices = generator.getVerticesBuffer();
+		uvs = generator.getUvsBuffer();
+		normals = generator.getNormalsBuffer();
+		indices = generator.getIndicesBuffer();
+		triangles = generator.getIndicesBuffer().length;
 	}
 
 	@Override
@@ -142,7 +100,7 @@ public class MultiTextureTerrain implements IRenderObject {
 		initShader(shaderFolder);
 		initMatrixes();
 		bindModel();
-		
+
 		afterInit();
 
 		normalDrawing = new NormalDrawing<>(this);
@@ -165,7 +123,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * Initializing the shader and the uniform variables
-	 * 
+	 *
 	 * @param shaderFolder The name of the shader folder in the resources
 	 */
 	protected void initShader(String shaderFolder) {
@@ -181,7 +139,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 		ModelUtils.createUniform(program, uniforms, "sunPosition");
 		ModelUtils.createUniform(program, uniforms, "sunColor");
-		
+
 		ModelUtils.createUniform(program, uniforms, "blendMap");
 		ModelUtils.createUniform(program, uniforms, "backgroundTexture");
 		ModelUtils.createUniform(program, uniforms, "rTexture");
@@ -328,7 +286,7 @@ public class MultiTextureTerrain implements IRenderObject {
 		glActiveTexture(GL_TEXTURE0 + 4);
 		glBindTexture(GL_TEXTURE_2D, texturePack.getbTexture());
 	}
-	
+
 	@Override
 	public void render() {
 		if (!init) {
@@ -373,7 +331,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * Getter for the vertices data
-	 * 
+	 *
 	 * @return The vertices as float array
 	 */
 	public Float[] getVertices() {
@@ -382,7 +340,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * Getter for the normals data
-	 * 
+	 *
 	 * @return The normals as float array
 	 */
 	public Float[] getNormals() {
@@ -391,7 +349,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * Getter for the uvs data
-	 * 
+	 *
 	 * @return The uvs as float array
 	 */
 	public Float[] getUvs() {
@@ -400,7 +358,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * Set the shader folder
-	 * 
+	 *
 	 * @param shaderFolder new Shader folder
 	 */
 	public void setShaderFolder(String shaderFolder) {
@@ -409,7 +367,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * Get the shader program
-	 * 
+	 *
 	 * @return current shader program
 	 */
 	public ShaderProgram getProgram() {
@@ -418,7 +376,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * set the option to show the normals
-	 * 
+	 *
 	 * @param showNormals boolean if normals should be shown
 	 */
 	public void setShowNormals(boolean showNormals) {
@@ -427,7 +385,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * get the current scale of the model
-	 * 
+	 *
 	 * @return scale as float
 	 */
 	public float getScale() {
@@ -436,7 +394,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * get the model matrix
-	 * 
+	 *
 	 * @return model matrix as mat4
 	 */
 	public Mat4 getModelMatrix() {
@@ -445,7 +403,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * Set a new model matrix
-	 * 
+	 *
 	 * @param modelMatrix new Model matrix
 	 */
 	public void setModelMatrix(Mat4 modelMatrix) {
@@ -454,7 +412,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * get the minmax values
-	 * 
+	 *
 	 * @return minmax values as an float array
 	 */
 	public Float[] getMinmax() {
@@ -467,7 +425,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	/**
 	 * set the scale of the model
-	 * 
+	 *
 	 * @param scale scaling factor
 	 */
 	public void setScale(float scale) {
@@ -493,7 +451,7 @@ public class MultiTextureTerrain implements IRenderObject {
 		if(texturePack != null) {
 			texturePack.dispose();
 		}
-		
+
 		vao = 0;
 
 		if (normalDrawing != null) {

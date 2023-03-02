@@ -5,13 +5,10 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
 
 public class ResourceLoader {
 
@@ -30,7 +27,7 @@ public class ResourceLoader {
 		InputStream is = rl.getClass().getResourceAsStream("Shader/" + parent + "/" + fileName);
 		return is;
 	}
-	
+
 	public static String loadShaderAsString(String parent, String fileName) {
 		try {
 			return new String(loadShader(parent, fileName).readAllBytes());
@@ -54,7 +51,7 @@ public class ResourceLoader {
 			return null;
 		}
 	}
-	
+
 	public static ArrayList<String> loadObjFile(String parentFolder, String fileName){
 		InputStream modelFile = ResourceLoader.class.getResourceAsStream("Models/" + parentFolder + "/" + fileName);
 		try {
@@ -83,4 +80,13 @@ public class ResourceLoader {
 		}
 		return null;
 	}
+
+	public static void main(String[] args) {
+		ByteBuffer b = ResourceLoader.loadTexture("Warn.png");
+		for (int i = 0; i < b.capacity(); i++) {
+			System.out.println(b.get(i));
+		}
+
+	}
+
 }

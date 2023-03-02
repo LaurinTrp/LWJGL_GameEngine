@@ -17,7 +17,7 @@ public class Tree_1 extends Model {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void afterInit() {
 		super.afterInit();

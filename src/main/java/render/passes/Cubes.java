@@ -9,7 +9,7 @@ import main.java.utils.loaders.ModelLoader;
 
 public class Cubes implements IRenderObject {
 	ArrayList<IRenderObject> models = new ArrayList<>();
-	
+
 	public Cubes() {
 	}
 
@@ -21,7 +21,7 @@ public class Cubes implements IRenderObject {
 			((Model)model).getMaterial().setTexture(ImageLoader.loadTextureFromResource("Warn.png"));
 		}
 	}
-	
+
 	@Override
 	public void render() {
 		for (IRenderObject model : models) {

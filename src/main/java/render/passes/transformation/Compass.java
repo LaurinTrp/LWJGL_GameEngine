@@ -35,9 +35,9 @@ public class Compass implements IRenderObject {
 	private int modelID;
     private int viewID;
     private int projID;
-    
+
 	private ShaderProgram program;
-	
+
 	private Mat4 modelMatrix;
 
 	@Override
@@ -47,12 +47,12 @@ public class Compass implements IRenderObject {
 		initMatrixes();
 		init = true;
 	}
-	
-	
+
+
 	private void initVAOs() {
 		vao = glGenVertexArrays();
 		vbo = glGenBuffers();
-		
+
 		float[] vertices = {
 			0.0f, 0.0f, 0.0f, 1.0f,
 			1.0f, 0.0f, 0.0f, 1.0f,
@@ -61,13 +61,13 @@ public class Compass implements IRenderObject {
 
 			0.0f, 0.0f, 0.0f, 1.0f,
 			0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f, 
+			0.0f, 1.0f, 0.0f, 1.0f,
 			0.0f, 1.0f, 0.0f, 1.0f,
 
 			0.0f, 0.0f, 0.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f, 
-			0.0f, 0.0f, 1.0f, 1.0f, 
-			0.0f, 0.0f, 1.0f, 1.0f, 
+			0.0f, 0.0f, 1.0f, 1.0f,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			0.0f, 0.0f, 1.0f, 1.0f,
 		};
 		glBindVertexArray(vao);
 		{
@@ -78,27 +78,28 @@ public class Compass implements IRenderObject {
 			// define Vertex Attributes
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 4, GL_FLOAT, false, 8 * 4, 0 * 4);
-			
+
 			glEnableVertexAttribArray(1);
 			glVertexAttribPointer(1, 4, GL_FLOAT, false, 8 * 4, 4 * 4);
 		}
 		glBindVertexArray(0);
 	}
-	
+
 	private void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
 		modelMatrix.scale(1.5f);
 	}
 
-	
+
 	private void initShader() {
 
 		program = new ShaderProgram("Compass");
 		modelID = glGetUniformLocation(program.getProgramID(), "modelMatrix");
 		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
 		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
-		
+
 	}
+	@Override
 	public void render() {
 
 		if (!init) {
@@ -117,12 +118,12 @@ public class Compass implements IRenderObject {
 				{
 					glUniformMatrix4fv(viewID, false, Renderer.camera.getView().toFa_());
 					glUniformMatrix4fv(projID, false, Renderer.camera.getProjectionMatrix().toFa_());
-					
+
 					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
-					
-					
+
+
 					glDrawArrays(GL_LINES, 0, 9);
-					
+
 				}
 				glBindVertexArray(0);
 			}
@@ -131,6 +132,7 @@ public class Compass implements IRenderObject {
 		glEnable(GL_DEPTH_TEST);
 	}
 
+	@Override
 	public void dispose() {
 
 		glDeleteVertexArrays(vao);
@@ -139,7 +141,7 @@ public class Compass implements IRenderObject {
 		if (program != null) {
 			program.dispose();
 		}
-		
+
 		vao = 0;
 		vbo = 0;
 

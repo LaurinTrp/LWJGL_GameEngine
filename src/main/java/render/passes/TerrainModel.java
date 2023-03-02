@@ -4,43 +4,41 @@ import org.lwjgl.opengl.GL20;
 
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
-import main.java.render.model.Material;
 import main.java.render.model.MultiTextureTerrain;
-import main.java.render.utilities.TerrainGenerator;
 import main.java.render.utilities.TexturePack;
+import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.utils.ModelUtils;
 import main.java.utils.math.MathFunctions;
 
 public class TerrainModel extends MultiTextureTerrain {
-	
+
 	private TerrainGenerator generator;
-	
+
 	public TerrainModel(TerrainGenerator generator, TexturePack texturePack) {
-		super(generator.getVerticesBuffer(), generator.getUvsBuffer(), generator.getNormalsBuffer(), 
-				generator.getIndicesBuffer(), generator.getIndicesBuffer().length, new Material(), generator.getMinmax());
-		
+		super(generator);
+
 		this.generator = generator;
-		
+
 		setShaderFolder("TerrainMultiTexture");
-		
-		setShowNormals(true);
-		
+
+		setShowNormals(false);
+
 		setTexturePack(texturePack);
-		
+
 	}
-	
+
 	@Override
 	protected void afterInit() {
 		super.afterInit();
 		ModelUtils.createUniform(program, uniforms, "size");
 	}
-	
+
 	@Override
 	protected void renderProcessBegin() {
 		super.renderProcessBegin();
 		GL20.glUniform1f(uniforms.get("size"), generator.getSize());
 	}
-	
+
 	public boolean isOnTerrain(Vec2 position) {
 		float xPositionOnTerrain = position.x - generator.getStartX();
 		float zPositionOnTerrain = position.y - generator.getStartZ();
@@ -75,5 +73,10 @@ public class TerrainModel extends MultiTextureTerrain {
 		}
 		return -20f;
 	}
-	
+
+	public TerrainGenerator getGenerator() {
+		return generator;
+	}
+
+
 }

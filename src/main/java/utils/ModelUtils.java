@@ -25,7 +25,7 @@ public class ModelUtils {
 		if (normals != null)
 			count += normals.length;
 		float[] output = new float[count];
-		ArrayList<Float> list = new ArrayList<Float>();
+		ArrayList<Float> list = new ArrayList<>();
 		for (int i = 0; i < vertices.length; i += 4) {
 			if (vertices != null) {
 				for (int j = 0; j < 4; j++) {
@@ -56,7 +56,7 @@ public class ModelUtils {
 
 	public static float[] createNormals(Float[] vertices, Float[] normals) {
 		float[] output = new float[vertices.length + normals.length];
-		ArrayList<Float> list = new ArrayList<Float>();
+		ArrayList<Float> list = new ArrayList<>();
 		for (int i = 0; i < vertices.length; i += 4) {
 			for (int j = 0; j < 4; j++) {
 				list.add(vertices[i + j]);
@@ -91,7 +91,7 @@ public class ModelUtils {
 		int id = program.getUniformLocation(name);
 		uniforms.put(name, id);
 	}
-	
+
 	public static void compareModels(Model model0, Model model1) {
 		System.out.println("#########################");
 		System.out.println("Model Compare:");
@@ -101,7 +101,7 @@ public class ModelUtils {
 		compareMaterials(model0.getMaterial(), model1.getMaterial());
 		System.out.println("#########################");
 	}
-	
+
 	public static void compareMaterials(Material material0, Material material1) {
 		System.out.println("Material Compare:");
 		System.out.println("Ambient: " + (material0.getAmbient() == material1.getAmbient()));
@@ -111,16 +111,15 @@ public class ModelUtils {
 		System.out.println("Shininess: " + (material0.getReflectance() == material1.getReflectance()));
 	}
 
-
 	public static boolean isIntersecting(Float[] minmax0, Float[] minmax1) {
-		return (minmax0[1] >= minmax1[0] && minmax0[0] <= minmax1[1]
-				&& minmax0[3] >= minmax1[2] && minmax0[2] <= minmax1[3]
-				&& minmax0[5] >= minmax1[4] && minmax0[4] <= minmax1[5]);
+		return (minmax0[1] >= minmax1[0] && minmax0[0] <= minmax1[1] && minmax0[3] >= minmax1[2]
+				&& minmax0[2] <= minmax1[3] && minmax0[5] >= minmax1[4] && minmax0[4] <= minmax1[5]);
 	}
 
 	public static Float[] calculateMinmax(Float[] startMinmax, Vec3 translation) {
 		return calculateMinmax(startMinmax, new Vec4(translation, 1.0f));
 	}
+
 	public static Float[] calculateMinmax(Float[] startMinmax, Vec4 translation) {
 		Float[] minmax = new Float[6];
 		minmax[0] = startMinmax[0] + translation.x;
@@ -131,5 +130,4 @@ public class ModelUtils {
 		minmax[5] = startMinmax[5] + translation.z;
 		return minmax;
 	}
-	
 }

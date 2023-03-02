@@ -1,7 +1,7 @@
 package main.java.render;
 
 public interface IRenderObject {
-
+	
 	/**
 	 * Initializing the model
 	 */
@@ -16,5 +16,5 @@ public interface IRenderObject {
 	 * Clear the data
 	 */
 	public void dispose();
-	
+
 }
