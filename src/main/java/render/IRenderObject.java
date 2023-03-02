@@ -16,5 +16,5 @@ public interface IRenderObject {
 	 * Clear the data
 	 */
 	public void dispose();
-	
+
 }

@@ -12,7 +12,7 @@ public class FileUtils {
 		}
 		return "";
 	}
-	
+
 	public static String getExtension(File file) {
 		if(file.isFile()) {
 			return file.getName().substring(file.getName().lastIndexOf(".") + 1);
@@ -21,7 +21,7 @@ public class FileUtils {
 	}
 
 	public static ArrayList<String> getFileContent(File file) throws IOException {
-		ArrayList<String> content = new ArrayList<String>();
+		ArrayList<String> content = new ArrayList<>();
 		FileInputStream fis = new FileInputStream(file);
 		String contentString = new String(fis.readAllBytes());
 		for (String string : contentString.split("\n")) {
@@ -34,5 +34,5 @@ public class FileUtils {
 		String contentString = new String(fis.readAllBytes());
 		return contentString;
 	}
-	
+
 }

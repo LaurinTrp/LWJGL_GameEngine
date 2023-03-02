@@ -3,7 +3,6 @@ package main.java.render.utilities.terrain;
 import java.util.ArrayList;
 
 import glm.Glm;
-import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.utils.ModelUtils;
@@ -19,32 +18,32 @@ public class TerrainGenerator {
 
 	private ArrayList<ArrayList<Vec4>> verticesList = new ArrayList<>();
 	private ArrayList<Vec4> normalsList = new ArrayList<>();
-	
+
 	private float size, density, startX, startZ;
-	
+
 	private Float[] minmax;
-	
+
 	private Vec3[] edgePoints = new Vec3[4];
-	
+
 	private boolean isReady = false;
-	
+
 	public TerrainGenerator(float size, float density, float startX, float startZ) {
 		this.size = size;
 		this.density = density;
 		this.startX = startX;
 		this.startZ = startZ;
-		
+
 		minmax = new Float[] {
 				startX, startX + size,
 				0f, 0f,
 				startZ, startZ+size
 		};
-		
+
 		edgePoints[0] = new Vec3(startX, 0, startZ);
 		edgePoints[1] = new Vec3(startX + size, 0, startZ);
 		edgePoints[2] = new Vec3(startX, 0, startZ + size);
 		edgePoints[3] = new Vec3(startX + size, 0, startZ + size);
-		
+
 	}
 
 	public void generate() {
@@ -53,7 +52,7 @@ public class TerrainGenerator {
 			isReady = true;
 		}).start();
 	}
-	
+
 	private void generateMesh() {
 		double noise = 0;
 		ArrayList<Vec4> uvs = new ArrayList<>();
@@ -67,7 +66,7 @@ public class TerrainGenerator {
 				double worldZ = startZ + y * density;
 
 				noise = SimplexNoise.noise(worldX / 5f, worldZ / 5f);
-				
+
 				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
 
 				uvs.add(new Vec4(x / (size/density), y / (size/density), 0.0f, 1.0f));
@@ -81,7 +80,7 @@ public class TerrainGenerator {
 				normalsList.add(normal);
 			}
 		}
-		
+
 		verticesBuffer = ModelUtils.flattenListOfListsStream(verticesList);
 
 		ArrayList<Integer> indices = new ArrayList<>();
@@ -121,35 +120,35 @@ public class TerrainGenerator {
 			this.normalsBuffer[i * 4 + 3] = normalsList.get(i).w;
 		}
 	}
-	
+
 	public Float[] getVerticesBuffer() {
 		return verticesBuffer;
 	}
-	
+
 	public ArrayList<ArrayList<Vec4>> getVerticesList() {
 		return verticesList;
 	}
-	
+
 	public Float[] getUvsBuffer() {
 		return uvsBuffer;
 	}
-	
+
 	public Float[] getNormalsBuffer() {
 		return normalsBuffer;
 	}
-	
+
 	public int[] getIndicesBuffer() {
 		return indicesBuffer;
 	}
-	
+
 	public Float[] getMinmax() {
 		return minmax;
 	}
-	
+
 	public float getSize() {
 		return size;
 	}
-	
+
 	public float getDensity() {
 		return density;
 	}
@@ -159,16 +158,16 @@ public class TerrainGenerator {
 	public float getStartZ() {
 		return startZ;
 	}
-	
+
 	public Vec3[] getEdgePoints() {
 		return edgePoints;
 	}
-	
+
 	public boolean isReady() {
 		return isReady;
 	}
-	
-	
+
+
 	private Triangle getTriangle(int i, int j) {
 		Triangle t = new Triangle();
 		if (i < verticesList.size() - 1 && j < verticesList.get(0).size() - 1) {
@@ -245,7 +244,7 @@ public class TerrainGenerator {
 			System.out.println("TRIANGLE: " + vertex1 + "\t" + vertex2 + "\t" + vertex3);
 		}
 	}
-	
+
 
 	public String id() {
 		return getStartX() + "|" + getStartZ() + "|" + getSize() + "|" + getDensity();

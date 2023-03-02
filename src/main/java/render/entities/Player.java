@@ -104,8 +104,8 @@ public class Player extends Model {
 	private void movement() {
 		direction = new Vec3();
 		hasMoved = false;
-		
-		
+
+
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
 			direction.add(new Vec3(playerFront).mul(speed));
 		}
@@ -131,9 +131,9 @@ public class Player extends Model {
 
 		if (!direction.equals(new Vec3())) {
 			boolean isIntersecting = false;
-			
+
 			Float[] tempMinmax = ModelUtils.calculateMinmax(startMinmax, new Vec3(position).add(direction));
-			
+
 			for (IRenderObject model : intersectors) {
 				if (ModelUtils.isIntersecting(tempMinmax, ((Model) model).getMinmax())) {
 					isIntersecting = true;
@@ -163,7 +163,7 @@ public class Player extends Model {
 			}
 		}
 
-		if (onTerrain) {	
+		if (onTerrain) {
 			position.y = ((TerrainModel) terrain).heightAtPosition(new Vec2(position.x, position.z)) - startMinmax[2];
 		} else {
 //			position.y -= speed;
@@ -172,7 +172,7 @@ public class Player extends Model {
 
 	/**
 	 * Get the position of the player
-	 * 
+	 *
 	 * @return position as vec3
 	 */
 	public Vec3 getPosition() {

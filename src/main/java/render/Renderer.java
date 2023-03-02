@@ -15,9 +15,8 @@ import java.util.List;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.entities.Player;
+import main.java.render.entities.Test;
 import main.java.render.passes.Cottage;
-import main.java.render.passes.Cube;
-import main.java.render.passes.Cubes;
 import main.java.render.passes.TerrainModel;
 import main.java.render.passes.framebuffers.DepthMap;
 import main.java.render.passes.framebuffers.Framebuffer;
@@ -55,9 +54,6 @@ public class Renderer {
 
 	private IRenderObject tree_1;
 
-	private IRenderObject cubes;
-	private IRenderObject cube;
-
 	private ProceduralTerrain proceduralTerrain;
 
 	private IRenderObject terrainModel;
@@ -71,6 +67,8 @@ public class Renderer {
 	private MousePicker mousePicker;
 
 	private Skybox skybox;
+
+	private Test testCube;
 
 	public Renderer() {
 		skybox = createSkybox();
@@ -98,7 +96,7 @@ public class Renderer {
 		compass = new Compass();
 
 		player = new Player();
-		
+
 		camera = new Camera(player);
 		mousePicker = new MousePicker(camera);
 
@@ -106,9 +104,7 @@ public class Renderer {
 
 		tree_1 = new Tree_1();
 
-		cubes = new Cubes();
-		cube = new Cube();
-
+		testCube = new Test();
 //		((Player) player).addIntersector(cottage);
 //		((Player) player).addIntersector(tree_1);
 	}
@@ -118,7 +114,7 @@ public class Renderer {
 				"skybox/front.png", "skybox/back.png", };
 		return new Skybox(paths);
 	}
-	
+
 	private void generateFirstTerrain() {
 		TerrainGenerator generator = new TerrainGenerator(64, 2, -32, -32);
 		generator.generate();
@@ -155,7 +151,7 @@ public class Renderer {
 	public void renderScene() {
 
 		glEnable(GL_CULL_FACE);
-		
+
 //		if(first) {
 //			proceduralTerrain.update(camera);
 //		}
@@ -163,6 +159,8 @@ public class Renderer {
 		for (IRenderObject terrain : terrains) {
 			terrain.render();
 		}
+
+		testCube.render();
 
 //		terrainModel.render();
 //		lightSourcePass.render();
@@ -199,7 +197,7 @@ public class Renderer {
 		compass.dispose();
 		tree_1.dispose();
 
-		cubes.dispose();
+		testCube.dispose();
 	}
 
 }

@@ -21,7 +21,6 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.util.HashMap;
 
 import glm.mat._4.Mat4;
-import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
 import main.java.render.model.MultiTextureTerrain;
@@ -33,7 +32,7 @@ public class NormalDrawing<E> {
 	private Float[] vertices;
 	private Float[] normals;
 
-	private HashMap<String, Integer> uniforms = new HashMap<String, Integer>();
+	private HashMap<String, Integer> uniforms = new HashMap<>();
 
 	private float[] data;
 	private ShaderProgram program;
@@ -61,7 +60,7 @@ public class NormalDrawing<E> {
 
 			this.modelMatrix = ((MultiTextureTerrain) model).getModelMatrix();
 		}
-		
+
 		bind();
 		initShader();
 	}

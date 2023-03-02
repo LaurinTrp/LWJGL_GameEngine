@@ -6,7 +6,6 @@ import java.util.List;
 
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
-import main.java.gui.Engine_Main;
 import main.java.render.Camera;
 import main.java.render.IRenderObject;
 import main.java.render.passes.TerrainModel;
@@ -18,7 +17,7 @@ public class ProceduralTerrain {
 	private List<IRenderObject> terrainList;
 	private List<IRenderObject> tempTerrainList;
 
-	public static List<String> ids = new ArrayList<String>();
+	public static List<String> ids = new ArrayList<>();
 
 	public boolean first = true;
 
@@ -67,7 +66,7 @@ public class ProceduralTerrain {
 			distances.w = MathFunctions.VECTOR_MATH.distance(camera.getCameraPosition(), terrainEdges[3]);
 
 			if (distances.x <= 70 || distances.y <= 70 || distances.z <= 70 || distances.w <= 70) {
-				tempTerrainList = new ArrayList<IRenderObject>();
+				tempTerrainList = new ArrayList<>();
 				createTerrain(new TerrainGenerator(64, 2, terrainEdges[0].x + 64, terrainEdges[0].z + 0));
 //				createTerrain(new TerrainGenerator(64, 2, terrainEdges[0].x, terrainEdges[0].z + 64));
 			}

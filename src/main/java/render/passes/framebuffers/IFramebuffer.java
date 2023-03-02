@@ -1,7 +1,7 @@
 package main.java.render.passes.framebuffers;
 
 public interface IFramebuffer {
-	
+
 	/**
 	 * Initializing the Frame Buffer Object
 	 */

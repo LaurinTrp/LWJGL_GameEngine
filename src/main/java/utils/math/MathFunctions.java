@@ -4,7 +4,7 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 
 public class MathFunctions {
-	
+
 	public static float barryCentric(Vec3 p1, Vec3 p2, Vec3 p3, Vec2 pos) {
 		float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
 		float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
@@ -12,12 +12,12 @@ public class MathFunctions {
 		float l3 = 1.0f - l1 - l2;
 		return l1 * p1.y + l2 * p2.y + l3 * p3.y;
 	}
-	
+
 	public static float map(float value, float istart, float istop, float ostart, float ostop) {
-		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart)); 
+		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 	}
-	
-	
+
+
 	public static class VECTOR_MATH{
 		public static float distance(Vec3 v0, Vec3 v1) {
 			return (float)Math.sqrt(Math.pow(v0.x - v1.x, 2) + Math.pow(v0.y - v1.y, 2) + Math.pow(v0.z - v1.z, 2));

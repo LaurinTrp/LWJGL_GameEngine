@@ -4,20 +4,20 @@ import static org.lwjgl.opengl.GL11.glDeleteTextures;
 
 public class Material {
 	private int texture = 0;
-	
+
 	private float ambient;
 	private float diffuse;
 	private float specular;
-	
+
 	private float reflectance;
-	
+
 	public Material() {
 		ambient = 0.3f;
 		diffuse = 0.5f;
 		specular = 0.2f;
 		reflectance = 1.0f;
 	}
-	
+
 	public Material(int texture) {
 		ambient = 0.3f;
 		diffuse = 0.5f;
@@ -25,7 +25,7 @@ public class Material {
 		reflectance = 1.0f;
 		this.texture = texture;
 	}
-	
+
 	public int getTexture() {
 		return texture;
 	}
@@ -70,7 +70,7 @@ public class Material {
 	public void dispose() {
 		glDeleteTextures(texture);
 	}
-	
+
 	public boolean hasTexture() {
 		return texture != 0;
 	}

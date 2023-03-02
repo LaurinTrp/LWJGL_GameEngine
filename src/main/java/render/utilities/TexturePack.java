@@ -1,6 +1,6 @@
 package main.java.render.utilities;
 
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
 
 import main.java.utils.loaders.ImageLoader;
 

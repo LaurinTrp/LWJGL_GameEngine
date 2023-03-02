@@ -2,7 +2,8 @@ package main.java.utils.loaders;
 
 import static org.lwjgl.opengl.GL11.GL_LINEAR;
 import static org.lwjgl.opengl.GL11.GL_NEAREST;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_RGB;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_BORDER_COLOR;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
@@ -15,12 +16,15 @@ import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameterfv;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
-import static org.lwjgl.opengl.GL14.*;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+import static org.lwjgl.opengl.GL12.GL_TEXTURE_WRAP_R;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+import static org.lwjgl.opengl.GL14.GL_MIRRORED_REPEAT;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
@@ -31,7 +35,7 @@ public class ImageLoader {
 
 	/**
 	 * Load a image from the memory
-	 * 
+	 *
 	 * @param path The path to the image
 	 * @return Returning the OpenGL texture id
 	 * @throws Exception if the image could not be loaded
@@ -57,7 +61,7 @@ public class ImageLoader {
 
 	/**
 	 * Loading a texture from the resources
-	 * 
+	 *
 	 * @param fileName Filename of the image in the res/Textures folder
 	 * @return Returning the OpenGL texture id
 	 */
@@ -72,7 +76,7 @@ public class ImageLoader {
 
 	/**
 	 * Load a texture from a byte buffer
-	 * 
+	 *
 	 * @param data The data of the image as an byte buffer
 	 * @return Returning the OpenGL texture id
 	 * @throws Exception if the image loading failed
@@ -124,14 +128,14 @@ public class ImageLoader {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);  
-		
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
 		return textureID;
 	}
 
 	/**
 	 * Setting the image parameter
-	 * 
+	 *
 	 * @param width  Image width
 	 * @param height Image height
 	 * @param buffer Image Data

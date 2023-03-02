@@ -40,7 +40,7 @@ public class DepthMap implements IFramebuffer {
 	private int vao = 0, vbo = 0, fbo = 0, rbo = 0, texture = 0;
 	private ShaderProgram program;
 	private int uniformLightSpaceMatrix = 0;
-	
+
 	public final int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 	Mat4 lightSpaceMatrix ;
 	@Override
@@ -61,7 +61,7 @@ public class DepthMap implements IFramebuffer {
 	public void initTexture() {
 		texture = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, texture);
-		
+
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -88,12 +88,12 @@ public class DepthMap implements IFramebuffer {
 	public void bindTexture() {
 		glBindTexture(GL_TEXTURE_2D, texture);
 	}
-	
+
 	public void unbindTexture() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	
-	
+
+
 	@Override
 	public void bindRbo() {
 
@@ -108,7 +108,7 @@ public class DepthMap implements IFramebuffer {
 	public void init() {
 		initFbo();
 		initTexture();
-		
+
 		configureShaderAndMatrices();
 	}
 
@@ -119,22 +119,22 @@ public class DepthMap implements IFramebuffer {
 		}
 		glUseProgram(program.getProgramID());
 		glUniform4fv(uniformLightSpaceMatrix, lightSpaceMatrix.toFa_());
-		
+
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 		bindFbo();
 		glClear(GL_DEPTH_BUFFER_BIT);
 		Engine_Main.render.renderScene();
 		unbindFbo();
-		
+
 	}
 	private void configureShaderAndMatrices() {
 		float near_plane = 1.0f, far_plane = 7.5f;
 		Mat4 lightProjection = Glm.ortho_(-10f, 10f, -10f, 10f, near_plane, far_plane);
-		Mat4 lightView = Glm.lookAt_(new Vec3(-2f, 4f, -1f), new Vec3(0f, 0f, 0f), 
+		Mat4 lightView = Glm.lookAt_(new Vec3(-2f, 4f, -1f), new Vec3(0f, 0f, 0f),
 				new Vec3(0f, 1f, 0f));
-		
+
 		lightSpaceMatrix = new Mat4(lightProjection).mul(lightView);
-		
+
 		initShader();
 	}
 
@@ -144,7 +144,7 @@ public class DepthMap implements IFramebuffer {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture, 0);
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);  
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	@Override

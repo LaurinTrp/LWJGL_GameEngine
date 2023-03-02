@@ -19,19 +19,19 @@ public class ModelLoader {
 	private static ArrayList<Double[]> textures = new ArrayList<>();
 	private static ArrayList<Double[]> normals = new ArrayList<>();
 
-	private static ArrayList<Float> verticesFinal = new ArrayList<Float>();
-	private static ArrayList<Float> texturesFinal = new ArrayList<Float>();
-	private static ArrayList<Float> normalsFinal = new ArrayList<Float>();
+	private static ArrayList<Float> verticesFinal = new ArrayList<>();
+	private static ArrayList<Float> texturesFinal = new ArrayList<>();
+	private static ArrayList<Float> normalsFinal = new ArrayList<>();
 
 	private static String material = "";
 
 	private static int triangleCount = 0;
 
 	private static File file;
-	
 
-	private static ArrayList<IRenderObject> models = new ArrayList<IRenderObject>();
-	private static HashMap<String, Integer> materials = new HashMap<String, Integer>();
+
+	private static ArrayList<IRenderObject> models = new ArrayList<>();
+	private static HashMap<String, Integer> materials = new HashMap<>();
 
 	public ModelLoader() {
 	}
@@ -45,7 +45,7 @@ public class ModelLoader {
 		}
 		return models;
 	}
-	
+
 	public static ArrayList<Float[][]> loadMultipleFromObj(String path) {
 		clear();
 		file = new File(path);
@@ -66,14 +66,14 @@ public class ModelLoader {
 				};
 				output.add(newData);
 			}
-			
+
 			return output;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	public static Float[][] loadObj(String path) {
 		clear();
 		file = new File(path);
@@ -85,7 +85,7 @@ public class ModelLoader {
 		}
 		return null;
 	}
-	
+
 	private static Float[][] loadObj(ArrayList<String> lines, String path) {
 		Float[] minmax = new Float[6];
 		minmax[0] = Float.MAX_VALUE;
@@ -133,7 +133,7 @@ public class ModelLoader {
 				break;
 			}
 		}
-		
+
 		return new Float[][] { getVertices(), getTextures(), getNormals(), minmax};
 	}
 
@@ -147,7 +147,7 @@ public class ModelLoader {
 		clear();
 		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + "/" + file);
 		IRenderObject model = new Model(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
-		
+
 		return model;
 	}
 
@@ -207,7 +207,7 @@ public class ModelLoader {
 		}
 		return 0;
 	}
-	
+
 	public static int loadMaterialFileFromResource(String parentFile, String fileName) {
 		return loadMaterial(ResourceLoader.loadMaterialFile(parentFile, fileName));
 	}

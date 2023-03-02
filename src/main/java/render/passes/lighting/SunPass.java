@@ -67,12 +67,12 @@ public class SunPass {
 			r = -653.553 * Math.pow(tempAngle, 5) + 2476.668 * Math.pow(tempAngle, 4) - 3329.971 * Math.pow(tempAngle, 3)
 					+ 1731.326 * Math.pow(tempAngle, 2) - 285.683 * tempAngle + 255;
 			r = Math.max(0, Math.min(255, r));
-			
-			
+
+
 			g = 68.078 * Math.pow(tempAngle, 5) - 81.272 * Math.pow(tempAngle, 4) - 192.165 * Math.pow(tempAngle, 3)
 					+ 220.796 * Math.pow(tempAngle, 2) - 124.486 * tempAngle + 255;
 			g = Math.max(0, Math.min(255, g));
-			
+
 			b = -381.239 * Math.pow(tempAngle, 5) + 1360.243 * Math.pow(tempAngle, 4) - 1682.455 * Math.pow(tempAngle, 3)
 					+ 1036.009 * Math.pow(tempAngle, 2) - 589.404 * tempAngle + 255;
 			b = Math.max(0, Math.min(255, b));

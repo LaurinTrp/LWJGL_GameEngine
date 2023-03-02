@@ -42,60 +42,60 @@ public class RectanglePass implements IRenderObject {
 	FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
 	private void initTextures() {
-		// Create a new OpenGL texture 
+		// Create a new OpenGL texture
 		int textureId = glGenTextures();
 		// Bind the texture
 		glBindTexture(GL_TEXTURE_2D, textureId);
-		
+
 //		texture = Loader.ImageLoader.getImage();
-		
+
 	}
-	
+
 	private void initVAOs() {
 
 		// create vertex array
 		float[] vertices = new float[] {
-				
+
 				// Coord					// Color 					// TexCoord
-				
+
 				// Triangle 0
 				// TL
-				-0.5f, 0.5f, 0.0f, 1.0f,	0.0f, 1.0f, 0.0f, 0.0f,		
-				
+				-0.5f, 0.5f, 0.0f, 1.0f,	0.0f, 1.0f, 0.0f, 0.0f,
+
 				// BL
-				-0.5f, -0.5f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f, 0.0f,		
-				
+				-0.5f, -0.5f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f, 0.0f,
+
 				//BR
-				0.5f, -0.5f, 0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 0.0f,		
-				
+				0.5f, -0.5f, 0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 0.0f,
+
 				// Triangle 1
 				// TL
-				-0.5f, 0.5f, 0.0f, 1.0f,	0.0f, 1.0f, 0.0f, 0.0f,		
-				
+				-0.5f, 0.5f, 0.0f, 1.0f,	0.0f, 1.0f, 0.0f, 0.0f,
+
 				// BR
-				0.5f, -0.5f, 0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 0.0f,		
-				
+				0.5f, -0.5f, 0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 0.0f,
+
 				// TR
-				0.5f, 0.5f, 0.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 0.0f, 	
+				0.5f, 0.5f, 0.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 0.0f,
 		};
 		/*
-		 * 1.0f, 0.0f, 0.0f, 1.0f, 
-                        
-                        
-		1.0f, 0.0f, 0.0f, 1.0f, 
-		                        
-		                        
-		1.0f, 0.0f, 0.0f, 1.0f, 
-		                        
-		                        
-		                        
-		1.0f, 0.0f, 0.0f, 1.0f, 
-		                        
-		                        
-		1.0f, 0.0f, 0.0f, 1.0f, 
-		                        
-		                        
-		1.0f, 0.0f, 0.0f, 1.0f, 
+		 * 1.0f, 0.0f, 0.0f, 1.0f,
+
+
+		1.0f, 0.0f, 0.0f, 1.0f,
+
+
+		1.0f, 0.0f, 0.0f, 1.0f,
+
+
+
+		1.0f, 0.0f, 0.0f, 1.0f,
+
+
+		1.0f, 0.0f, 0.0f, 1.0f,
+
+
+		1.0f, 0.0f, 0.0f, 1.0f,
 		 */
 
 		// create VAO
@@ -111,10 +111,10 @@ public class RectanglePass implements IRenderObject {
 			// define Vertex Attributes
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 4, GL_FLOAT, false, 8 * 4, 0 * 4);
-			
+
 			glEnableVertexAttribArray(1);
 			glVertexAttribPointer(1, 4, GL_FLOAT, false, 8 * 4, 4 * 4);
-			
+
 //			glEnableVertexAttribArray(2);
 //			glVertexAttribPointer(2, 4, GL_FLOAT, false, 12 * 4, 8 * 4);
 		}
@@ -124,7 +124,7 @@ public class RectanglePass implements IRenderObject {
 	@Override
 	public void init() {
 		initVAOs();
-		
+
 		program = new ShaderProgram("Rectangle");
 		offset = glGetUniformLocation(program.getProgramID(), "offset");
 
@@ -132,7 +132,7 @@ public class RectanglePass implements IRenderObject {
 
 		init = true;
 	}
-	
+
 	float offsetY = 0;
 	@Override
 	public void render() {
@@ -154,7 +154,7 @@ public class RectanglePass implements IRenderObject {
 				}
 				glBindVertexArray(0);
 			}
-			
+
 		}
 	}
 
