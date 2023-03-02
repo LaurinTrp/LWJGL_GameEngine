@@ -79,6 +79,14 @@ public class Model implements IRenderObject {
 	public Model() {
 		startMinmax = new Float[6];
 
+		colors = new Float[vertices.length];
+
+		for (int i = 0; i < colors.length; i += 4) {
+			colors[i] = 1.0f;
+			colors[i + 1] = 0.0f;
+			colors[i + 2] = 0.0f;
+			colors[i + 3] = 1.0f;
+		}
 	}
 
 	/**
@@ -110,6 +118,26 @@ public class Model implements IRenderObject {
 	 * @param material  Material object
 	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
 	 */
+	public Model(Float[] vertices, Float[] colors, Float[] uvs, Float[] normals, int triangles) {
+		this.startMinmax = new Float[6];
+		this.triangles = triangles;
+		this.vertices = vertices;
+		this.uvs = uvs;
+		this.normals = normals;
+		this.colors = colors;
+	}
+
+	/**
+	 * Model constructor without ebo
+	 *
+	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
+	 * @param uvs       The data of the uv coordinates
+	 * @param normals   The data of the normals
+	 * @param indices   The indices
+	 * @param triangles Number of triangles
+	 * @param material  Material object
+	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
+	 */
 	public Model(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax) {
 		this.triangles = triangles;
 		this.vertices = vertices;
@@ -119,7 +147,6 @@ public class Model implements IRenderObject {
 		this.startMinmax = minmax;
 		this.minmax = Arrays.copyOf(minmax, minmax.length);
 	}
-
 	/**
 	 * Constructor copying other model
 	 *
@@ -189,14 +216,7 @@ public class Model implements IRenderObject {
 	 */
 	private void bindModel() {
 
-		colors = new Float[vertices.length];
 
-		for (int i = 0; i < colors.length; i += 4) {
-			colors[i] = 1.0f;
-			colors[i + 1] = 0.0f;
-			colors[i + 2] = 0.0f;
-			colors[i + 3] = 1.0f;
-		}
 		float[] data = ModelUtils.flattenArrays(vertices, colors, uvs, normals);
 
 		vao = glGenVertexArrays();
@@ -348,6 +368,7 @@ public class Model implements IRenderObject {
 		}
 	}
 
+
 	/**
 	 * Get the material object
 	 *
@@ -462,11 +483,9 @@ public class Model implements IRenderObject {
 	 * @param scale scaling factor
 	 */
 	public void setScale(float scale) {
-		if (startMinmax != null && minmax != null) {
-			for (int i = 0; i < minmax.length; i++) {
-				minmax[i] *= scale;
-				startMinmax[i] *= scale;
-			}
+		for (int i = 0; i < minmax.length; i++) {
+			minmax[i] *= scale;
+			startMinmax[i] *= scale;
 		}
 		this.scale = scale;
 		modelMatrix.scale(scale);
