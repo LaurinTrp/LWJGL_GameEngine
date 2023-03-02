@@ -16,8 +16,7 @@ public class TerrainModel extends MultiTextureTerrain {
 	private TerrainGenerator generator;
 	
 	public TerrainModel(TerrainGenerator generator, TexturePack texturePack) {
-		super(generator.getVerticesBuffer(), generator.getUvsBuffer(), generator.getNormalsBuffer(), 
-				generator.getIndicesBuffer(), generator.getIndicesBuffer().length, new Material(), generator.getMinmax());
+		super(generator);
 		
 		this.generator = generator;
 		
@@ -79,5 +78,6 @@ public class TerrainModel extends MultiTextureTerrain {
 	public TerrainGenerator getGenerator() {
 		return generator;
 	}
+	
 	
 }

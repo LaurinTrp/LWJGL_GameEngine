@@ -38,13 +38,14 @@ import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.utilities.NormalDrawing;
 import main.java.render.utilities.TexturePack;
+import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
 public class MultiTextureTerrain implements IRenderObject {
 
 	protected boolean init = false;
-	protected boolean hasEbo = false;
+	protected boolean hasEbo = true;
 
 	protected int vao, vbo, ebo;
 	private int triangles;
@@ -77,63 +78,22 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	private TexturePack texturePack;
 
-	public MultiTextureTerrain() {
-		startMinmax = new Float[6];
-	}
-
-	/**
-	 * Model constructor with ebo
-	 * 
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
-	 */
-	public MultiTextureTerrain(Float[] vertices, Float[] uvs, Float[] normals, int[] indices, int triangles,
-			Material material, Float[] minmax) {
-		this(vertices, uvs, normals, triangles, minmax);
-		hasEbo = true;
-		this.indices = indices;
-	}
-
-	/**
-	 * Model constructor without ebo
-	 * 
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
-	 */
-	public MultiTextureTerrain(Float[] vertices, Float[] uvs, Float[] normals, int triangles, 
-			Float[] minmax) {
-		this.triangles = triangles;
-		this.vertices = vertices;
-		this.uvs = uvs;
-		this.normals = normals;
-		this.startMinmax = minmax;
-		this.minmax = Arrays.copyOf(minmax, minmax.length);
-	}
-
-	/**
-	 * Constructor copying other model
-	 * 
-	 * @param model Model to copy
-	 */
-	public MultiTextureTerrain(MultiTextureTerrain model) {
-		this(model.vertices, model.uvs, model.normals, model.triangles, new Float[] { model.minmax[0],
-				model.minmax[1], model.minmax[2], model.minmax[3], model.minmax[4], model.minmax[5], });
-
-		this.program = model.program;
-
-		this.modelMatrix = model.modelMatrix;
-
-		this.uniforms = model.uniforms;
+	public MultiTextureTerrain(TerrainGenerator generator) {
+		while(!generator.isReady()) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+//			System.out.println("TEST");
+		}
+		startMinmax = generator.getMinmax();
+		minmax = generator.getMinmax();
+		vertices = generator.getVerticesBuffer();
+		uvs = generator.getUvsBuffer();
+		normals = generator.getNormalsBuffer();
+		indices = generator.getIndicesBuffer();
+		triangles = generator.getIndicesBuffer().length;
 	}
 
 	@Override

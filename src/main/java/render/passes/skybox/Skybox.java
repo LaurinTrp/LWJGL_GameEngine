@@ -134,6 +134,7 @@ public class Skybox implements IRenderObject {
 			return;
 		}
 		glDepthMask(false);
+		glDisable(GL_CULL_FACE);
 		glUseProgram(program.getProgramID());
 		{
 			glUniformMatrix4fv(uniforms.get("proj"), false, Renderer.camera.getProjectionMatrix().toFa_());
@@ -156,6 +157,7 @@ public class Skybox implements IRenderObject {
 		}
 
 		glDepthMask(true);
+		glDisable(GL_CULL_FACE);
 	}
 
 	@Override

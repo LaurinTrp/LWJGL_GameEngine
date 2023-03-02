@@ -139,9 +139,7 @@ public class Engine_Main {
 		
 		while (!glfwWindowShouldClose(window)) {
 			
-
 			if(keyHandler.isPressed(GLFW_KEY_ESCAPE)) {
-				render.dispose();
 				glfwSetWindowShouldClose(window, true);
 				continue;
 			}
@@ -158,6 +156,7 @@ public class Engine_Main {
 			delta = currentFrameTime - lastFrameTime;
 			lastFrameTime = currentFrameTime;
 		}
+		render.dispose();
 	}
 	
 	public static long getDelta() {

@@ -26,6 +26,8 @@ public class TerrainGenerator {
 	
 	private Vec3[] edgePoints = new Vec3[4];
 	
+	private boolean isReady = false;
+	
 	public TerrainGenerator(float size, float density, float startX, float startZ) {
 		this.size = size;
 		this.density = density;
@@ -43,10 +45,16 @@ public class TerrainGenerator {
 		edgePoints[2] = new Vec3(startX, 0, startZ + size);
 		edgePoints[3] = new Vec3(startX + size, 0, startZ + size);
 		
-		generateMesh();
 	}
 
-	public void generateMesh() {
+	public void generate() {
+		new Thread(() -> {
+			generateMesh();
+			isReady = true;
+		}).start();
+	}
+	
+	private void generateMesh() {
 		double noise = 0;
 		ArrayList<Vec4> uvs = new ArrayList<>();
 
@@ -112,7 +120,6 @@ public class TerrainGenerator {
 			this.normalsBuffer[i * 4 + 2] = normalsList.get(i).z;
 			this.normalsBuffer[i * 4 + 3] = normalsList.get(i).w;
 		}
-		
 	}
 	
 	public Float[] getVerticesBuffer() {
@@ -155,6 +162,10 @@ public class TerrainGenerator {
 	
 	public Vec3[] getEdgePoints() {
 		return edgePoints;
+	}
+	
+	public boolean isReady() {
+		return isReady;
 	}
 	
 	
@@ -233,5 +244,10 @@ public class TerrainGenerator {
 		public void print() {
 			System.out.println("TRIANGLE: " + vertex1 + "\t" + vertex2 + "\t" + vertex3);
 		}
+	}
+	
+
+	public String id() {
+		return getStartX() + "|" + getStartZ() + "|" + getSize() + "|" + getDensity();
 	}
 }

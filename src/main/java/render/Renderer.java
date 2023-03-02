@@ -1,5 +1,13 @@
 package main.java.render;
 
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +34,6 @@ import main.java.render.utilities.terrain.ProceduralTerrain;
 import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.utils.math.MousePicker;
 
-import static org.lwjgl.opengl.GL11.*;
-
 public class Renderer {
 
 	public static IFramebuffer framebuffer;
@@ -53,9 +59,9 @@ public class Renderer {
 	private IRenderObject cube;
 
 	private ProceduralTerrain proceduralTerrain;
-	
+
 	private IRenderObject terrainModel;
-	
+
 	public static SunPass sun;
 
 	public static Camera camera;
@@ -63,15 +69,15 @@ public class Renderer {
 	public static ArrayList<Vec4> lightSourcePositions = new ArrayList<>();
 
 	private MousePicker mousePicker;
-	
+
 	private Skybox skybox;
 
 	public Renderer() {
 		skybox = createSkybox();
 		terrains = Collections.synchronizedList(new ArrayList<IRenderObject>());
-		
+
 		proceduralTerrain = new ProceduralTerrain(terrains);
-		
+
 		framebuffer = new Framebuffer();
 		depthBuffer = new DepthMap();
 
@@ -92,36 +98,39 @@ public class Renderer {
 		compass = new Compass();
 
 		player = new Player();
-
 		
-		TexturePack tp = new TexturePack("Terrain/BlendMap.png", "Terrain/Grass.png", "Terrain/Rocks.png", "Terrain/Mushroom.png", "Terrain/Flowers.png");
-		terrainModel = new TerrainModel(new TerrainGenerator(64, 2, -32, -32), tp);
-		terrains.add(terrainModel);
-
 		camera = new Camera(player);
 		mousePicker = new MousePicker(camera);
+
+		generateFirstTerrain();
 
 		tree_1 = new Tree_1();
 
 		cubes = new Cubes();
 		cube = new Cube();
-		
+
 //		((Player) player).addIntersector(cottage);
 //		((Player) player).addIntersector(tree_1);
 	}
 
 	private Skybox createSkybox() {
-		String[] paths = new String[] {
-				"skybox/right.png",
-				"skybox/left.png",
-				"skybox/top.png",
-				"skybox/bottom.png",
-				"skybox/front.png",
-				"skybox/back.png",
-		};
+		String[] paths = new String[] { "skybox/right.png", "skybox/left.png", "skybox/top.png", "skybox/bottom.png",
+				"skybox/front.png", "skybox/back.png", };
 		return new Skybox(paths);
 	}
 	
+	private void generateFirstTerrain() {
+		TerrainGenerator generator = new TerrainGenerator(64, 2, -32, -32);
+		generator.generate();
+		IRenderObject terrainModel = new TerrainModel(generator, TexturePack.DEFAULT_TERRAIN);
+		terrains.add(terrainModel);
+
+		TerrainGenerator generator1 = new TerrainGenerator(64, 2, -64, -32);
+		generator1.generate();
+		IRenderObject terrainModel1 = new TerrainModel(generator1, TexturePack.DEFAULT_TERRAIN);
+		terrains.add(terrainModel1);
+	}
+
 	/**
 	 * Main render method
 	 */
@@ -132,37 +141,38 @@ public class Renderer {
 		skybox.render();
 		glEnable(GL_DEPTH_TEST);
 		renderScene();
-		
-		camera.setFocusPoint(new Vec3(((Player) player).getPosition()).add(((Player) player).getPlayerFront()));
+
+		camera.setFocusPoint(new Vec3(((Player) player).getPosition()));
 		camera.moveCamera();
 //
 		sun.update();
-		
+
 		glDisable(GL_DEPTH_TEST);
 		((Framebuffer) framebuffer).renderColorAttachments();
 
 	}
-	
-	
+
 	public void renderScene() {
-		
+
 		glEnable(GL_CULL_FACE);
 		
-		proceduralTerrain.update(camera);
-		
+//		if(first) {
+//			proceduralTerrain.update(camera);
+//		}
+
 		for (IRenderObject terrain : terrains) {
 			terrain.render();
 		}
-		
+
 //		terrainModel.render();
 //		lightSourcePass.render();
 
 //		cottage.render();
 //		tree_1.render();
 		player.render();
-		
+
 //		cube.render();
-		
+
 		compass.render();
 		glDisable(GL_CULL_FACE);
 	}
@@ -187,7 +197,7 @@ public class Renderer {
 		player.dispose();
 
 		compass.dispose();
-			tree_1.dispose();
+		tree_1.dispose();
 
 		cubes.dispose();
 	}
