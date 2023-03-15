@@ -39,6 +39,7 @@ import main.java.render.utilities.TexturePack;
 import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
+import main.java.utils.loaders.ImageLoader;
 
 public class MultiTextureTerrain implements IRenderObject {
 
@@ -75,6 +76,8 @@ public class MultiTextureTerrain implements IRenderObject {
 	private Vec4 translation;
 
 	private TexturePack texturePack;
+	
+	private TerrainGenerator generator;
 
 	public MultiTextureTerrain(TerrainGenerator generator) {
 		while(!generator.isReady()) {
@@ -92,6 +95,8 @@ public class MultiTextureTerrain implements IRenderObject {
 		normals = generator.getNormalsBuffer();
 		indices = generator.getIndicesBuffer();
 		triangles = generator.getIndicesBuffer().length;
+		
+		this.generator = generator;
 	}
 
 	@Override
@@ -146,6 +151,7 @@ public class MultiTextureTerrain implements IRenderObject {
 		ModelUtils.createUniform(program, uniforms, "gTexture");
 		ModelUtils.createUniform(program, uniforms, "bTexture");
 
+		ModelUtils.createUniform(program, uniforms, "heightMap");
 	}
 
 	/**
@@ -285,6 +291,15 @@ public class MultiTextureTerrain implements IRenderObject {
 		glBindTexture(GL_TEXTURE_2D, texturePack.getgTexture());
 		glActiveTexture(GL_TEXTURE0 + 4);
 		glBindTexture(GL_TEXTURE_2D, texturePack.getbTexture());
+		
+		glUniform1i(uniforms.get("heightMap"), 5);
+		glActiveTexture(GL_TEXTURE0 + 5);
+		try {
+			glBindTexture(GL_TEXTURE_2D, ImageLoader.loadTextureFromMemory("/media/laurin/Laurin Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngine/imageOutputs/heightMap2.png"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override

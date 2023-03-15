@@ -23,8 +23,15 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 import static org.lwjgl.opengl.GL14.GL_MIRRORED_REPEAT;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DataBufferShort;
+import java.awt.image.DataBufferUShort;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
@@ -73,7 +80,46 @@ public class ImageLoader {
 			return 0;
 		}
 	}
+	
+	public static int loadTextureFromBufferedImage(BufferedImage bi) {
+		ByteBuffer buffer = bufferedImageToByteBuffer(bi);
+		try {
+			return loadTexture(buffer);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	private static ByteBuffer bufferedImageToByteBuffer(BufferedImage bi) {
+		ByteBuffer byteBuffer;
+		DataBuffer dataBuffer = bi.getRaster().getDataBuffer();
 
+		if (dataBuffer instanceof DataBufferByte) {
+		    byte[] pixelData = ((DataBufferByte) dataBuffer).getData();
+		    byteBuffer = ByteBuffer.wrap(pixelData);
+		}
+		else if (dataBuffer instanceof DataBufferUShort) {
+		    short[] pixelData = ((DataBufferUShort) dataBuffer).getData();
+		    byteBuffer = ByteBuffer.allocateDirect(pixelData.length * 2);
+		    byteBuffer.asShortBuffer().put(ShortBuffer.wrap(pixelData));
+		}
+		else if (dataBuffer instanceof DataBufferShort) {
+		    short[] pixelData = ((DataBufferShort) dataBuffer).getData();
+		    byteBuffer = ByteBuffer.allocateDirect(pixelData.length * 2);
+		    byteBuffer.asShortBuffer().put(ShortBuffer.wrap(pixelData));
+		}
+		else if (dataBuffer instanceof DataBufferInt) {
+		    int[] pixelData = ((DataBufferInt) dataBuffer).getData();
+		    byteBuffer = ByteBuffer.allocateDirect(pixelData.length * 4);
+		    byteBuffer.asIntBuffer().put(IntBuffer.wrap(pixelData));
+		}
+		else {
+		    throw new IllegalArgumentException("Not implemented for data buffer type: " + dataBuffer.getClass());
+		}
+		return byteBuffer;
+	}
+	
 	/**
 	 * Load a texture from a byte buffer
 	 *
@@ -82,6 +128,7 @@ public class ImageLoader {
 	 * @throws Exception if the image loading failed
 	 */
 	private static int loadTexture(ByteBuffer data) throws Exception {
+		System.out.println(data);
 		int width, height;
 		ByteBuffer buffer;
 		try (MemoryStack stack = MemoryStack.stackPush()) {

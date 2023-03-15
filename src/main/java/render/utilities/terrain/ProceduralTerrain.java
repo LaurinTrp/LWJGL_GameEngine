@@ -12,12 +12,12 @@ import main.java.utils.math.SimplexNoise;
 public class ProceduralTerrain {
 
 	private BufferedImage heightMap;
-	private float startX, startY, imageWidth, imageHeight, density;
+	private float startX, startY, density;
 
-	public ProceduralTerrain(float startX, float startY, int width, int height, float density) {
-		imageWidth = width / density;
-		imageHeight = height / density;
-		heightMap = new BufferedImage((int) imageWidth, (int) imageHeight, BufferedImage.TYPE_BYTE_GRAY);
+	public ProceduralTerrain(float startX, float startY, float size, float density) {
+		float imageWidth = size / density;
+		float imageHeight = size / density;
+		heightMap = new BufferedImage((int) imageWidth, (int) imageHeight, BufferedImage.TYPE_INT_ARGB);
 		this.startX = startX;
 		this.startY = startY;
 		this.density = density;
@@ -38,4 +38,8 @@ public class ProceduralTerrain {
 		}
 	}
 
+	public BufferedImage getHeightMap() {
+		return heightMap;
+	}
+	
 }

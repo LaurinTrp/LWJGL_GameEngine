@@ -112,15 +112,10 @@ public class Renderer {
 	}
 
 	private void generateFirstTerrain() {
-		TerrainGenerator generator = new TerrainGenerator(64, 2, -32, -32);
-		generator.generate();
+		TerrainGenerator generator = new TerrainGenerator(64, 1, 0, 0);
+		generator.generateProcedural();
 		IRenderObject terrainModel = new TerrainModel(generator, TexturePack.DEFAULT_TERRAIN);
 		terrains.add(terrainModel);
-
-		TerrainGenerator generator1 = new TerrainGenerator(64, 2, -64, -32);
-		generator1.generate();
-		IRenderObject terrainModel1 = new TerrainModel(generator1, TexturePack.DEFAULT_TERRAIN);
-		terrains.add(terrainModel1);
 	}
 
 	/**
