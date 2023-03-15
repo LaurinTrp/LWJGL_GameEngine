@@ -54,8 +54,6 @@ public class Renderer {
 
 	private IRenderObject tree_1;
 
-	private ProceduralTerrain proceduralTerrain;
-
 	private IRenderObject terrainModel;
 
 	public static SunPass sun;
@@ -68,13 +66,11 @@ public class Renderer {
 
 	private Skybox skybox;
 
-	private Test testCube;
+	private Test test;
 
 	public Renderer() {
 		skybox = createSkybox();
 		terrains = Collections.synchronizedList(new ArrayList<IRenderObject>());
-
-		proceduralTerrain = new ProceduralTerrain(terrains);
 
 		framebuffer = new Framebuffer();
 		depthBuffer = new DepthMap();
@@ -104,7 +100,7 @@ public class Renderer {
 
 		tree_1 = new Tree_1();
 
-		testCube = new Test();
+		test = new Test();
 //		((Player) player).addIntersector(cottage);
 //		((Player) player).addIntersector(tree_1);
 	}
@@ -152,20 +148,16 @@ public class Renderer {
 
 		glEnable(GL_CULL_FACE);
 
-//		if(first) {
-//			proceduralTerrain.update(camera);
-//		}
-
 		for (IRenderObject terrain : terrains) {
 			terrain.render();
 		}
 
-		testCube.render();
+		test.render();
 
 //		terrainModel.render();
 //		lightSourcePass.render();
 
-		cottage.render();
+//		cottage.render();
 //		tree_1.render();
 		player.render();
 
@@ -197,7 +189,7 @@ public class Renderer {
 		compass.dispose();
 		tree_1.dispose();
 
-		testCube.dispose();
+		test.dispose();
 	}
 
 }

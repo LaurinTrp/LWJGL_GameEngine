@@ -1,84 +1,41 @@
 package main.java.render.utilities.terrain;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
-import glm.vec._3.Vec3;
-import glm.vec._4.Vec4;
-import main.java.render.Camera;
-import main.java.render.IRenderObject;
-import main.java.render.passes.TerrainModel;
-import main.java.render.utilities.TexturePack;
-import main.java.utils.math.MathFunctions;
+import javax.imageio.ImageIO;
+
+import main.java.utils.math.SimplexNoise;
 
 public class ProceduralTerrain {
 
-	private List<IRenderObject> terrainList;
-	private List<IRenderObject> tempTerrainList;
+	private BufferedImage heightMap;
+	private float startX, startY, imageWidth, imageHeight, density;
 
-	public static List<String> ids = new ArrayList<>();
-
-	public boolean first = true;
-
-	public ProceduralTerrain(List<IRenderObject> terrains) {
-		this.terrainList = terrains;
+	public ProceduralTerrain(float startX, float startY, int width, int height, float density) {
+		imageWidth = width / density;
+		imageHeight = height / density;
+		heightMap = new BufferedImage((int) imageWidth, (int) imageHeight, BufferedImage.TYPE_BYTE_GRAY);
+		this.startX = startX;
+		this.startY = startY;
+		this.density = density;
 	}
 
-	public void update(Camera camera) {
-		if (terrainList == null) {
-			return;
-		}
-		if (tempTerrainList != null) {
-			terrainList.addAll(tempTerrainList);
-		}
-		removeTerrains(camera);
-		addTerrains(camera);
-	}
-
-	private void removeTerrains(Camera camera) {
-		Vec4 distances = new Vec4();
-		for (Iterator iterator = terrainList.iterator(); iterator.hasNext();) {
-			TerrainModel terrainModel = (TerrainModel) iterator.next();
-			Vec3[] terrainEdges = terrainModel.getGenerator().getEdgePoints();
-			distances.x = MathFunctions.VECTOR_MATH.distance(camera.getCameraPosition(), terrainEdges[0]);
-			distances.y = MathFunctions.VECTOR_MATH.distance(camera.getCameraPosition(), terrainEdges[1]);
-			distances.z = MathFunctions.VECTOR_MATH.distance(camera.getCameraPosition(), terrainEdges[2]);
-			distances.w = MathFunctions.VECTOR_MATH.distance(camera.getCameraPosition(), terrainEdges[3]);
-
-			if (distances.x > 50 && distances.y > 50 && distances.z > 50 && distances.w > 50) {
-				terrainModel.dispose();
-				iterator.remove();
-				ids.remove(terrainModel.getGenerator().id());
-				first = true;
+	public void generateHeightMap() {
+		for (int x = 0; x < heightMap.getWidth(); x++) {
+			for (int y = 0; y < heightMap.getHeight(); y++) {
+				double noise = (SimplexNoise.noise(x + startX / density, y + startY / density) + 1) / 2d;
+				heightMap.setRGB(x, y,
+						new Color((int) (noise * 255), (int) (noise * 255), (int) (noise * 255)).getRGB());
 			}
 		}
-	}
-
-	private void addTerrains(Camera camera) {
-		Vec4 distances = new Vec4();
-		for (IRenderObject listObject : terrainList) {
-			TerrainModel terrainModel = (TerrainModel) listObject;
-			Vec3[] terrainEdges = terrainModel.getGenerator().getEdgePoints();
-			distances.x = MathFunctions.VECTOR_MATH.distance(camera.getCameraPosition(), terrainEdges[0]);
-			distances.y = MathFunctions.VECTOR_MATH.distance(camera.getCameraPosition(), terrainEdges[1]);
-			distances.z = MathFunctions.VECTOR_MATH.distance(camera.getCameraPosition(), terrainEdges[2]);
-			distances.w = MathFunctions.VECTOR_MATH.distance(camera.getCameraPosition(), terrainEdges[3]);
-
-			if (distances.x <= 70 || distances.y <= 70 || distances.z <= 70 || distances.w <= 70) {
-				tempTerrainList = new ArrayList<>();
-				createTerrain(new TerrainGenerator(64, 2, terrainEdges[0].x + 64, terrainEdges[0].z + 0));
-//				createTerrain(new TerrainGenerator(64, 2, terrainEdges[0].x, terrainEdges[0].z + 64));
-			}
+		try {
+			ImageIO.write(heightMap, "PNG", new File("imageOutputs/heightMap2.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	private void createTerrain(TerrainGenerator generator) {
-		if (!ids.contains(generator.id())) {
-			generator.generate();
-			TerrainModel terrainModel = new TerrainModel(generator, TexturePack.DEFAULT_TERRAIN);
-			tempTerrainList.add(terrainModel);
-			ids.add(generator.id());
-		}
-	}
 }

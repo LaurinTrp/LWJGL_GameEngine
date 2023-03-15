@@ -14,8 +14,8 @@ import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 import static org.lwjgl.opengl.GL20.glGetShaderi;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glValidateProgram;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,12 +36,12 @@ public class ShaderProgram {
 		this.path = path;
 
 		vertexID = loadShader(ResourceLoader.loadShader(path, "vertex.glsl"), GL_VERTEX_SHADER);
-//		geometryID = loadShader(ResourceLoader.loadShader(path, "geometry.glsl"), GL_GEOMETRY_SHADER);
+		geometryID = loadShader(ResourceLoader.loadShader(path, "geometry.glsl"), GL_GEOMETRY_SHADER);
 		fragmentID = loadShader(ResourceLoader.loadShader(path, "fragment.glsl"), GL_FRAGMENT_SHADER);
 
 		programID = glCreateProgram();
 		glAttachShader(programID, vertexID);
-//		glAttachShader(programID, geometryID);
+		glAttachShader(programID, geometryID);
 		glAttachShader(programID, fragmentID);
 		glLinkProgram(programID);
 		glValidateProgram(programID);
@@ -53,7 +53,7 @@ public class ShaderProgram {
 			return 0;
 		}
 		String shaderSource = "";
-		try {
+		try (stream) {
 			shaderSource = new String(stream.readAllBytes());
 			shaderSource = shaderSource.replaceAll("\\/\\/.*", "");
 		} catch (IOException e) {
@@ -109,7 +109,7 @@ public class ShaderProgram {
 
 	public void dispose() {
 		glDeleteShader(vertexID);
-//		glDeleteShader(geometryID);
+		glDeleteShader(geometryID);
 		glDeleteShader(fragmentID);
 		glDeleteProgram(programID);
 		glDeleteProgram(textureID);

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import glm.vec._3.Vec3;
@@ -84,7 +85,7 @@ public class ModelUtils {
 		return array;
 	}
 
-	public static void createUniform(ShaderProgram program, HashMap<String, Integer> uniforms, String name) {
+	public static void createUniform(ShaderProgram program, Map<String, Integer> uniforms, String name) {
 		if (program == null) {
 			return;
 		}

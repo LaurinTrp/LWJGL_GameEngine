@@ -25,7 +25,6 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
@@ -36,15 +35,15 @@ import glm.vec._4.Vec4;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.utilities.NormalDrawing;
+import main.java.render.utilities.TexturePack;
+import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class Model implements IRenderObject {
-
-	private Material material;
+public class MultiTextureTerrainProcedural implements IRenderObject {
 
 	protected boolean init = false;
-	protected boolean hasEbo = false;
+	protected boolean hasEbo = true;
 
 	protected int vao, vbo, ebo;
 	private int triangles;
@@ -58,7 +57,6 @@ public class Model implements IRenderObject {
 	protected Float[] vertices;
 	protected Float[] uvs;
 	protected Float[] normals;
-	protected Float[] colors;
 
 	protected int[] indices;
 
@@ -70,89 +68,30 @@ public class Model implements IRenderObject {
 
 	private String shaderFolder;
 
-	private NormalDrawing<Model> normalDrawing;
+	private NormalDrawing<MultiTextureTerrainProcedural> normalDrawing;
 
 	private boolean showNormals;
 
 	private Vec4 translation;
 
-	public Model() {
-		startMinmax = new Float[6];
+	private TexturePack texturePack;
 
-	}
-
-	/**
-	 * Model constructor with ebo
-	 *
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
-	 */
-	public Model(Float[] vertices, Float[] uvs, Float[] normals, int[] indices, int triangles, Material material,
-			Float[] minmax) {
-		this(vertices, uvs, normals, triangles, material, minmax);
-		hasEbo = true;
-		this.indices = indices;
-	}
-
-	/**
-	 * Model constructor without ebo
-	 *
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
-	 */
-	public Model(Float[] vertices, Float[] colors, Float[] uvs, Float[] normals, int triangles) {
-		this.startMinmax = new Float[6];
-		this.triangles = triangles;
-		this.vertices = vertices;
-		this.uvs = uvs;
-		this.normals = normals;
-		this.colors = colors;
-	}
-
-	/**
-	 * Model constructor without ebo
-	 *
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
-	 */
-	public Model(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax) {
-		this.triangles = triangles;
-		this.vertices = vertices;
-		this.uvs = uvs;
-		this.normals = normals;
-		this.material = material;
-		this.startMinmax = minmax;
-		this.minmax = Arrays.copyOf(minmax, minmax.length);
-	}
-	/**
-	 * Constructor copying other model
-	 *
-	 * @param model Model to copy
-	 */
-	public Model(Model model) {
-		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, new Float[] { model.minmax[0],
-				model.minmax[1], model.minmax[2], model.minmax[3], model.minmax[4], model.minmax[5], });
-
-		this.program = model.program;
-
-		this.modelMatrix = model.modelMatrix;
-
-		this.uniforms = model.uniforms;
+	public MultiTextureTerrainProcedural(TerrainGenerator generator) {
+		while(!generator.isReady()) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+//			System.out.println("TEST");
+		}
+		startMinmax = generator.getMinmax();
+		minmax = generator.getMinmax();
+		vertices = generator.getVerticesBuffer();
+		uvs = generator.getUvsBuffer();
+		normals = generator.getNormalsBuffer();
+		indices = generator.getIndicesBuffer();
+		triangles = generator.getIndicesBuffer().length;
 	}
 
 	@Override
@@ -201,6 +140,12 @@ public class Model implements IRenderObject {
 		ModelUtils.createUniform(program, uniforms, "sunPosition");
 		ModelUtils.createUniform(program, uniforms, "sunColor");
 
+		ModelUtils.createUniform(program, uniforms, "blendMap");
+		ModelUtils.createUniform(program, uniforms, "backgroundTexture");
+		ModelUtils.createUniform(program, uniforms, "rTexture");
+		ModelUtils.createUniform(program, uniforms, "gTexture");
+		ModelUtils.createUniform(program, uniforms, "bTexture");
+
 	}
 
 	/**
@@ -208,7 +153,7 @@ public class Model implements IRenderObject {
 	 */
 	private void bindModel() {
 
-		colors = new Float[vertices.length];
+		Float[] colors = new Float[vertices.length];
 
 		for (int i = 0; i < colors.length; i += 4) {
 			colors[i] = 1.0f;
@@ -216,7 +161,7 @@ public class Model implements IRenderObject {
 			colors[i + 2] = 0.0f;
 			colors[i + 3] = 1.0f;
 		}
-		
+
 		float[] data = ModelUtils.flattenArrays(vertices, colors, uvs, normals);
 
 		vao = glGenVertexArrays();
@@ -323,6 +268,25 @@ public class Model implements IRenderObject {
 		minmax = ModelUtils.calculateMinmax(startMinmax, translation);
 	}
 
+	private void uploadTextures() {
+		glUniform1i(uniforms.get("blendMap"), 0);
+		glUniform1i(uniforms.get("backgroundTexture"), 1);
+		glUniform1i(uniforms.get("rTexture"), 2);
+		glUniform1i(uniforms.get("gTexture"), 3);
+		glUniform1i(uniforms.get("bTexture"), 4);
+
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, texturePack.getBlendMap());
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, texturePack.getBackground());
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glBindTexture(GL_TEXTURE_2D, texturePack.getrTexture());
+		glActiveTexture(GL_TEXTURE0 + 3);
+		glBindTexture(GL_TEXTURE_2D, texturePack.getgTexture());
+		glActiveTexture(GL_TEXTURE0 + 4);
+		glBindTexture(GL_TEXTURE_2D, texturePack.getbTexture());
+	}
+
 	@Override
 	public void render() {
 		if (!init) {
@@ -335,10 +299,7 @@ public class Model implements IRenderObject {
 		{
 			glUseProgram(program.getProgramID());
 			{
-				if (material != null) {
-					glActiveTexture(GL_TEXTURE0 + 0);
-					glBindTexture(GL_TEXTURE_2D, material.getTexture());
-				}
+				uploadTextures();
 				glBindVertexArray(vao);
 				{
 //					updateMinmax();
@@ -366,25 +327,6 @@ public class Model implements IRenderObject {
 		if (showNormals) {
 			normalDrawing.render();
 		}
-	}
-
-
-	/**
-	 * Get the material object
-	 *
-	 * @return material object
-	 */
-	public Material getMaterial() {
-		return material;
-	}
-
-	/**
-	 * Set the material object
-	 *
-	 * @param material material for the model
-	 */
-	public void setMaterial(Material material) {
-		this.material = material;
 	}
 
 	/**
@@ -477,6 +419,10 @@ public class Model implements IRenderObject {
 		return minmax;
 	}
 
+	public void setTexturePack(TexturePack texturePack) {
+		this.texturePack = texturePack;
+	}
+
 	/**
 	 * set the scale of the model
 	 *
@@ -501,8 +447,9 @@ public class Model implements IRenderObject {
 		if (program != null) {
 			program.dispose();
 		}
-		if (material != null) {
-			material.dispose();
+
+		if(texturePack != null) {
+			texturePack.dispose();
 		}
 
 		vao = 0;
