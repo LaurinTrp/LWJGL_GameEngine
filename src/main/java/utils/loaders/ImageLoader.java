@@ -29,13 +29,23 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 import java.awt.image.DataBufferShort;
 import java.awt.image.DataBufferUShort;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
+import main.java.utils.Inputs;
 import resources.ResourceLoader;
 
 public class ImageLoader {
@@ -82,44 +92,24 @@ public class ImageLoader {
 	}
 	
 	public static int loadTextureFromBufferedImage(BufferedImage bi) {
-		ByteBuffer buffer = bufferedImageToByteBuffer(bi);
 		try {
-			return loadTexture(buffer);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(bi, "png", baos);
+			InputStream imageFile = new ByteArrayInputStream(baos.toByteArray());
+			
+			byte[] imageData;
+			
+			imageData = IOUtils.toByteArray(imageFile);
+			ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
+			imageBuffer.put(imageData);
+			imageBuffer.flip();
+			
+			return loadTexture(imageBuffer);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
 		}
 	}
-	
-	private static ByteBuffer bufferedImageToByteBuffer(BufferedImage bi) {
-		ByteBuffer byteBuffer;
-		DataBuffer dataBuffer = bi.getRaster().getDataBuffer();
-
-		if (dataBuffer instanceof DataBufferByte) {
-		    byte[] pixelData = ((DataBufferByte) dataBuffer).getData();
-		    byteBuffer = ByteBuffer.wrap(pixelData);
-		}
-		else if (dataBuffer instanceof DataBufferUShort) {
-		    short[] pixelData = ((DataBufferUShort) dataBuffer).getData();
-		    byteBuffer = ByteBuffer.allocateDirect(pixelData.length * 2);
-		    byteBuffer.asShortBuffer().put(ShortBuffer.wrap(pixelData));
-		}
-		else if (dataBuffer instanceof DataBufferShort) {
-		    short[] pixelData = ((DataBufferShort) dataBuffer).getData();
-		    byteBuffer = ByteBuffer.allocateDirect(pixelData.length * 2);
-		    byteBuffer.asShortBuffer().put(ShortBuffer.wrap(pixelData));
-		}
-		else if (dataBuffer instanceof DataBufferInt) {
-		    int[] pixelData = ((DataBufferInt) dataBuffer).getData();
-		    byteBuffer = ByteBuffer.allocateDirect(pixelData.length * 4);
-		    byteBuffer.asIntBuffer().put(IntBuffer.wrap(pixelData));
-		}
-		else {
-		    throw new IllegalArgumentException("Not implemented for data buffer type: " + dataBuffer.getClass());
-		}
-		return byteBuffer;
-	}
-	
 	/**
 	 * Load a texture from a byte buffer
 	 *
@@ -128,7 +118,6 @@ public class ImageLoader {
 	 * @throws Exception if the image loading failed
 	 */
 	private static int loadTexture(ByteBuffer data) throws Exception {
-		System.out.println(data);
 		int width, height;
 		ByteBuffer buffer;
 		try (MemoryStack stack = MemoryStack.stackPush()) {

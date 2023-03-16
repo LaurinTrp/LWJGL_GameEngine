@@ -4,7 +4,7 @@ import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -24,6 +24,8 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -31,6 +33,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 import glm.mat._4.Mat4;
+import glm.vec._2.Vec2;
+import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
@@ -39,12 +43,10 @@ import main.java.render.utilities.TexturePack;
 import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
-import main.java.utils.loaders.ImageLoader;
 
 public class MultiTextureTerrain implements IRenderObject {
 
 	protected boolean init = false;
-	protected boolean hasEbo = true;
 
 	protected int vao, vbo, ebo;
 	private int triangles;
@@ -76,17 +78,18 @@ public class MultiTextureTerrain implements IRenderObject {
 	private Vec4 translation;
 
 	private TexturePack texturePack;
-	
+
 	private TerrainGenerator generator;
 
+	private int heightMapId;
+
 	public MultiTextureTerrain(TerrainGenerator generator) {
-		while(!generator.isReady()) {
+		while (!generator.isReady()) {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-//			System.out.println("TEST");
 		}
 		startMinmax = generator.getMinmax();
 		minmax = generator.getMinmax();
@@ -95,7 +98,7 @@ public class MultiTextureTerrain implements IRenderObject {
 		normals = generator.getNormalsBuffer();
 		indices = generator.getIndicesBuffer();
 		triangles = generator.getIndicesBuffer().length;
-		
+
 		this.generator = generator;
 	}
 
@@ -110,6 +113,8 @@ public class MultiTextureTerrain implements IRenderObject {
 
 		normalDrawing = new NormalDrawing<>(this);
 
+		updateHeightMap();
+		
 		init = true;
 	}
 
@@ -174,35 +179,22 @@ public class MultiTextureTerrain implements IRenderObject {
 		vbo = glGenBuffers();
 
 		// create VAO
-		if (!hasEbo) {
+		ebo = glGenBuffers();
 
-			glBindVertexArray(vao);
-			{
-				// upload VBO
-				glBindBuffer(GL_ARRAY_BUFFER, vbo);
-				glBufferData(GL_ARRAY_BUFFER, data, GL_DYNAMIC_READ);
+		glBindVertexArray(vao);
+		{
+			// upload VBO
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, data, GL_DYNAMIC_READ);
 
-				setAttributePointers();
-			}
-			glBindVertexArray(0);
-		} else {
-			ebo = glGenBuffers();
+			glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
+			glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indices, GL15.GL_STATIC_DRAW);
 
-			glBindVertexArray(vao);
-			{
-				// upload VBO
-				glBindBuffer(GL_ARRAY_BUFFER, vbo);
-				glBufferData(GL_ARRAY_BUFFER, data, GL_DYNAMIC_READ);
-
-				glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
-				glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indices, GL15.GL_STATIC_DRAW);
-
-				setAttributePointers();
-
-			}
-			glBindVertexArray(0);
+			setAttributePointers();
 
 		}
+		glBindVertexArray(0);
+
 	}
 
 	/**
@@ -291,15 +283,15 @@ public class MultiTextureTerrain implements IRenderObject {
 		glBindTexture(GL_TEXTURE_2D, texturePack.getgTexture());
 		glActiveTexture(GL_TEXTURE0 + 4);
 		glBindTexture(GL_TEXTURE_2D, texturePack.getbTexture());
-		
+
 		glUniform1i(uniforms.get("heightMap"), 5);
 		glActiveTexture(GL_TEXTURE0 + 5);
 		try {
-			glBindTexture(GL_TEXTURE_2D, ImageLoader.loadTextureFromMemory("/media/laurin/Laurin Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngine/imageOutputs/heightMap2.png"));
+			glBindTexture(GL_TEXTURE_2D, heightMapId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
@@ -324,12 +316,7 @@ public class MultiTextureTerrain implements IRenderObject {
 					uploadLighting();
 					uploadMatrixes();
 
-					// draw the data (depends on if it has a ebo)
-					if (!hasEbo) {
-						glDrawArrays(GL_TRIANGLES, 0, triangles);
-					} else {
-						glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
-					}
+					glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
 
 					renderProcessEnd();
 
@@ -342,6 +329,51 @@ public class MultiTextureTerrain implements IRenderObject {
 		if (showNormals) {
 			normalDrawing.render();
 		}
+	}
+
+	public boolean isOnTerrain(Vec2 position) {
+//		float xPositionOnTerrain = position.x - generator.getStartX();
+//		float zPositionOnTerrain = position.y - generator.getStartZ();
+//		return xPositionOnTerrain >= 0.0 && zPositionOnTerrain >= 0.0 && xPositionOnTerrain <= generator.getSize()
+//				&& zPositionOnTerrain <= generator.getSize();
+		return true;
+	}
+
+	public float heightAtPosition(Vec2 position) {
+//		if (isOnTerrain(position)) {
+//			float xPositionOnTerrain = position.x - generator.getStartX();
+//			int xGridPosition = (int) Math.floor(xPositionOnTerrain / generator.getDensity());
+//			float zPositionOnTerrain = position.y - generator.getStartZ();
+//			int zGridPosition = (int) Math.floor(zPositionOnTerrain / generator.getDensity());
+//
+//			float xCoord = (xPositionOnTerrain % generator.getDensity()) / generator.getDensity();
+//			float zCoord = (zPositionOnTerrain % generator.getDensity()) / generator.getDensity();
+//			float currentTerrainHeight = 0;
+//			if (xCoord <= (1 - zCoord)) {
+//				currentTerrainHeight = MathFunctions.barryCentric(
+//						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition).y, 0),
+//						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition).y, 0),
+//						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition + 1).y, 1),
+//						new Vec2(zCoord, xCoord));
+//			} else {
+//				currentTerrainHeight = MathFunctions.barryCentric(
+//						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition).y, 0),
+//						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition + 1).y, 1),
+//						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition + 1).y, 1),
+//						new Vec2(zCoord, xCoord));
+//			}
+//			return currentTerrainHeight;
+//		}
+//		return -20f;
+		BufferedImage heightMap = generator.getHeightMap();
+		Color hmColor = new Color(heightMap.getRGB((int)(heightMap.getWidth()/2f), (int)(heightMap.getHeight()/2f)));
+		System.out.println("COLOR: " + hmColor);
+		return hmColor.getRed() * 4;
+	}
+
+	public void updateHeightMap() {
+		glDeleteTextures(uniforms.get("heightMap"));
+		heightMapId = generator.getUpdatedHeightMap();
 	}
 
 	/**
@@ -452,6 +484,22 @@ public class MultiTextureTerrain implements IRenderObject {
 		modelMatrix.scale(scale);
 	}
 
+	public void setStartX(float startX) {
+		generator.setStartX(startX);
+	}
+
+	public void setStartZ(float startZ) {
+		generator.setStartZ(startZ);
+	}
+
+	public void translate(Vec3 position) {
+		modelMatrix.cleanTranslation();
+		modelMatrix.translate(position);
+		generator.setStartX(position.x);
+		generator.setStartZ(position.z);
+		System.out.println(position);
+	}
+
 	@Override
 	public void dispose() {
 
@@ -463,7 +511,7 @@ public class MultiTextureTerrain implements IRenderObject {
 			program.dispose();
 		}
 
-		if(texturePack != null) {
+		if (texturePack != null) {
 			texturePack.dispose();
 		}
 

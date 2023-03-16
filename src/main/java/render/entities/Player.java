@@ -17,6 +17,7 @@ import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
+import main.java.render.model.MultiTextureTerrain;
 import main.java.render.passes.TerrainModel;
 import main.java.utils.ModelUtils;
 import main.java.utils.constants.CameraMode;
@@ -33,6 +34,8 @@ public class Player extends Model {
 	private Vec3 playerUp = new Vec3(0.0f, 1.0f, 0.0f);
 	private Vec3 playerRight = new Vec3(1.0f, 0.0f, 0.0f);
 	private Vec3 direction = new Vec3();
+	
+	private IRenderObject currentTerrain;
 
 	private float rotationAngle = 0;
 
@@ -50,14 +53,7 @@ public class Player extends Model {
 		super.renderProcessBegin();
 
 		rotation();
-		movement();
 
-		if (hasMoved) {
-			gravity();
-			modelMatrix = modelMatrix.cleanTranslation();
-			modelMatrix = modelMatrix.translation(position);
-			updateMinmax();
-		}
 	}
 
 	@Override
@@ -101,10 +97,9 @@ public class Player extends Model {
 	/**
 	 * Move the player model
 	 */
-	private void movement() {
+	public boolean checkMovement() {
 		direction = new Vec3();
 		hasMoved = false;
-
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
 			direction.add(new Vec3(playerFront).mul(speed));
@@ -145,29 +140,37 @@ public class Player extends Model {
 				hasMoved = true;
 			}
 		}
+		
+		return hasMoved;
+	}
+	
+	public void move() {
+		if (hasMoved) {
+			modelMatrix = modelMatrix.cleanTranslation();
+			modelMatrix = modelMatrix.translation(position);
+			updateMinmax();
+		}
 	}
 
 	/**
 	 * Applying gravity to the player
 	 */
-	private void gravity() {
+	public void gravity(IRenderObject terrain) {
+		if(!init) {
+			return;
+		}
+		if(terrain != null) {
+			currentTerrain = terrain;
+		}
 		boolean onTerrain = false;
 
-		IRenderObject terrain = null;
-		for (IRenderObject myTerrain : Renderer.terrains) {
-			onTerrain = ((TerrainModel) myTerrain).isOnTerrain(new Vec2(position.x, position.z));
+//		onTerrain = ((MultiTextureTerrain) terrain).isOnTerrain(new Vec2(position.x, position.z));
 
-			if (onTerrain) {
-				terrain = myTerrain;
-				break;
-			}
-		}
-
-		if (onTerrain) {
-			position.y = ((TerrainModel) terrain).heightAtPosition(new Vec2(position.x, position.z)) - startMinmax[2];
-		} else {
-//			position.y -= speed;
-		}
+//		if (onTerrain) {
+		System.out.println("LOOOOL");
+		position.y = ((MultiTextureTerrain) terrain).heightAtPosition(new Vec2(position.x, position.z)) - startMinmax[2];
+//		} else {
+//		}
 	}
 
 	/**
@@ -201,5 +204,9 @@ public class Player extends Model {
 
 	public void removeIntersector(Model intersector) {
 		intersectors.remove(intersector);
+	}
+	
+	public IRenderObject getCurrentTerrain() {
+		return currentTerrain;
 	}
 }

@@ -70,12 +70,8 @@ public class LightSourcePass implements IRenderObject {
 		float[] vertices = Shapes.Cube.buffer;
 
 		// create VAO
-		IntBuffer buffer = MemoryUtil.memAllocInt(1);
-		glGenVertexArrays(buffer);
-		vao = buffer.get(0);
-		glGenBuffers(buffer);
-		vbo = buffer.get(0);
-		MemoryUtil.memFree(buffer);
+		vao = glGenVertexArrays();
+		vbo = glGenBuffers();
 
 		glBindVertexArray(vao);
 		{

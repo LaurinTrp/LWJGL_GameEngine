@@ -6,6 +6,7 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.entities.Player;
+import main.java.render.model.MultiTextureTerrain;
 import main.java.render.passes.TerrainModel;
 import main.java.utils.constants.CameraMode;
 
@@ -97,10 +98,11 @@ public class Camera {
 		cameraPosition.y = focusPoint.y + verticalDistance;
 		cameraPosition.z = focusPoint.z - offsetZ;
 
-		for (IRenderObject terrain : Renderer.terrains) {
-			TerrainModel currTerrain = (TerrainModel) terrain;
-			if (currTerrain.isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
-				float terrainHeight = currTerrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
+		if (((Player) player).getCurrentTerrain() != null) {
+			IRenderObject currTerrain = ((Player) player).getCurrentTerrain();
+			if (((MultiTextureTerrain) currTerrain).isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
+				float terrainHeight = ((MultiTextureTerrain) currTerrain)
+						.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
 				if (cameraPosition.y < terrainHeight + 0.2f) {
 					cameraPosition.y = terrainHeight + 0.2f;
 				}

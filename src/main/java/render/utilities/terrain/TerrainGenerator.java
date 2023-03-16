@@ -52,87 +52,11 @@ public class TerrainGenerator {
 
 	}
 
-	public void generate() {
-		new Thread(() -> {
-			generateMesh();
-			isReady = true;
-		}).start();
-	}
-
-
 	public void generateProcedural() {
 		new Thread(() -> {
 			generateMeshProcedural();
 			isReady = true;
 		}).start();
-	}
-	
-	private void generateMesh() {
-		double noise = 0;
-		ArrayList<Vec4> uvs = new ArrayList<>();
-
-		for (int y = 0; y <= size / density; y++) {
-
-			ArrayList<Vec4> vertexRow = new ArrayList<>();
-
-			for (int x = 0; x <= size / density; x++) {
-				double worldX = startX + x * density;
-				double worldZ = startZ + y * density;
-
-				noise = SimplexNoise.noise(worldX / 5f, worldZ / 5f);
-
-				vertexRow.add(new Vec4(worldX, noise, worldZ, 1.0f));
-
-				uvs.add(new Vec4(x / (size/density), y / (size/density), 0.0f, 1.0f));
-			}
-			verticesList.add(vertexRow);
-		}
-		for (int i = 0; i < verticesList.size(); i++) {
-			for (int j = 0; j < verticesList.get(i).size(); j++) {
-				Triangle t = getTriangle(i, j);
-				Vec4 normal = calculateNormal(t).toVec4_();
-				normalsList.add(normal);
-			}
-		}
-
-		verticesBuffer = ModelUtils.flattenListOfListsStream(verticesList);
-
-		ArrayList<Integer> indices = new ArrayList<>();
-		for (int i = 0; i < verticesList.size() - 1; i++) {
-			for (int j = 0; j < verticesList.get(i).size() - 1; j++) {
-				Triangle t1 = getTriangle(i, j, true);
-
-				Triangle t2 = getTriangle(i, j, false);
-
-				indices.add(t1.point1);
-				indices.add(t1.point3);
-				indices.add(t1.point2);
-				indices.add(t2.point1);
-				indices.add(t2.point3);
-				indices.add(t2.point2);
-			}
-		}
-
-		indicesBuffer = new int[indices.size()];
-		for (int i = 0; i < indices.size(); i++) {
-			indicesBuffer[i] = indices.get(i);
-		}
-
-		this.uvsBuffer = new Float[uvs.size() * 4];
-		for (int i = 0; i < uvs.size(); i++) {
-			this.uvsBuffer[i * 4 + 0] = uvs.get(i).x;
-			this.uvsBuffer[i * 4 + 1] = uvs.get(i).y;
-			this.uvsBuffer[i * 4 + 2] = uvs.get(i).z;
-			this.uvsBuffer[i * 4 + 3] = uvs.get(i).w;
-		}
-
-		this.normalsBuffer = new Float[normalsList.size() * 4];
-		for (int i = 0; i < normalsList.size(); i++) {
-			this.normalsBuffer[i * 4 + 0] = normalsList.get(i).x;
-			this.normalsBuffer[i * 4 + 1] = normalsList.get(i).y;
-			this.normalsBuffer[i * 4 + 2] = normalsList.get(i).z;
-			this.normalsBuffer[i * 4 + 3] = normalsList.get(i).w;
-		}
 	}
 	
 	private void generateMeshProcedural() {
@@ -328,7 +252,22 @@ public class TerrainGenerator {
 		return pt.getHeightMap();
 	}
 	
+	public void setStartX(float startX) {
+		this.startX = startX/size;
+		pt.setStartX(startX);
+	}
+
+	public void setStartZ(float startZ) {
+		this.startZ = startZ/size;
+		pt.setStartY(startZ);
+	}
+
 	public String id() {
 		return getStartX() + "|" + getStartZ() + "|" + getSize() + "|" + getDensity();
+	}
+
+	public int getUpdatedHeightMap() {
+		pt.generateHeightMap();
+		return pt.getHeightMapId();
 	}
 }

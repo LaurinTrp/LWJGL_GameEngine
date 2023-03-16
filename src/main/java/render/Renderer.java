@@ -16,6 +16,7 @@ import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.entities.Player;
 import main.java.render.entities.Test;
+import main.java.render.model.MultiTextureTerrain;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.TerrainModel;
 import main.java.render.passes.framebuffers.DepthMap;
@@ -48,8 +49,6 @@ public class Renderer {
 
 	private IRenderObject compass;
 
-	public static List<IRenderObject> terrains;
-
 	private IRenderObject player;
 
 	private IRenderObject tree_1;
@@ -70,7 +69,6 @@ public class Renderer {
 
 	public Renderer() {
 		skybox = createSkybox();
-		terrains = Collections.synchronizedList(new ArrayList<IRenderObject>());
 
 		framebuffer = new Framebuffer();
 		depthBuffer = new DepthMap();
@@ -112,10 +110,9 @@ public class Renderer {
 	}
 
 	private void generateFirstTerrain() {
-		TerrainGenerator generator = new TerrainGenerator(64, 1, 0, 0);
+		TerrainGenerator generator = new TerrainGenerator(100, 1, 0, 0);
 		generator.generateProcedural();
-		IRenderObject terrainModel = new TerrainModel(generator, TexturePack.DEFAULT_TERRAIN);
-		terrains.add(terrainModel);
+		terrainModel = new TerrainModel(generator, TexturePack.DEFAULT_TERRAIN);
 	}
 
 	/**
@@ -143,17 +140,25 @@ public class Renderer {
 
 		glEnable(GL_CULL_FACE);
 
-		for (IRenderObject terrain : terrains) {
-			terrain.render();
-		}
-
-		test.render();
+//		test.render();
 
 //		terrainModel.render();
 //		lightSourcePass.render();
 
 //		cottage.render();
 //		tree_1.render();
+
+
+//		System.out.println("PLAYER POSITION: " + ((Player)player).getPosition());
+
+		if (((Player) player).checkMovement()) {
+			((Player)player).move();
+			((MultiTextureTerrain) terrainModel)
+					.translate(new Vec3(((Player) player).getPosition()).sub(new Vec3(50, 0, 50)));
+			((MultiTextureTerrain) terrainModel).updateHeightMap();
+		}
+		terrainModel.render();
+		((Player) player).gravity(terrainModel);
 		player.render();
 
 //		cube.render();
@@ -169,9 +174,8 @@ public class Renderer {
 
 		framebuffer.dispose();
 		skybox.dispose();
-		for (IRenderObject terrainPass : terrains) {
-			terrainPass.dispose();
-		}
+
+		terrainModel.dispose();
 
 		trianglePass.dispose();
 		rectanglePass.dispose();

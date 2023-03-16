@@ -9,7 +9,7 @@ public class TestClass extends Thread implements Runnable {
 	@Override
 	public void run() {
 		ProceduralTerrain pt = new ProceduralTerrain(0, 0, 100, 0.5f);
-		pt.generateHeightMap();
+//		pt.generateHeightMap();
 	}
 
 
