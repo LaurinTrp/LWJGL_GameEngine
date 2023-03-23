@@ -110,6 +110,32 @@ public class ImageLoader {
 			return 0;
 		}
 	}
+
+	/**
+	* @param image - BufferedImage with the type BufferedImage.TYPE_INT_ARGB
+	*/
+	private static ByteBuffer bufferedImage2ByteBufferTest(BufferedImage image) {
+		int width = image.getWidth(), height = image.getHeight();
+
+		int[] pixels = new int[width * height];
+		image.getRGB(0, 0, width, height, pixels, 0, width);
+
+		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4); // 4 because RGBA
+
+		for(int y = 0; y < height; ++y) {
+			for(int x = 0; x < width; ++x) {
+				int pixel = pixels[x + y * width];
+				buffer.put((byte) ((pixel >> 16) & 0xFF));
+				buffer.put((byte) ((pixel >> 8) & 0xFF));
+				buffer.put((byte) (pixel & 0xFF));
+				buffer.put((byte) ((pixel >> 24) & 0xFF));
+			}
+		}
+
+		buffer.flip();
+		return buffer;
+	}
+
 	/**
 	 * Load a texture from a byte buffer
 	 *
