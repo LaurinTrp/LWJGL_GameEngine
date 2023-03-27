@@ -58,9 +58,6 @@ public class Engine_Main {
 
 	public static void main(String[] args) throws IOException {
 
-		TestClass testClass = new TestClass();
-		testClass.start();
-
 		initWindow();
 
 		initObjects();

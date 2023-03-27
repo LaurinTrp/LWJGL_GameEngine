@@ -16,7 +16,7 @@ import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glUniform1i;
-import static org.lwjgl.opengl.GL20.glUniform4fv;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
@@ -26,11 +26,15 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
+import javax.imageio.ImageIO;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.*;
 
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
@@ -43,6 +47,8 @@ import main.java.render.utilities.TexturePack;
 import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
+import main.java.utils.loaders.ImageLoader;
+import main.java.utils.math.MathFunctions;
 
 public class MultiTextureTerrain implements IRenderObject {
 
@@ -114,7 +120,7 @@ public class MultiTextureTerrain implements IRenderObject {
 		normalDrawing = new NormalDrawing<>(this);
 
 		updateHeightMap();
-		
+
 		init = true;
 	}
 
@@ -157,6 +163,12 @@ public class MultiTextureTerrain implements IRenderObject {
 		ModelUtils.createUniform(program, uniforms, "bTexture");
 
 		ModelUtils.createUniform(program, uniforms, "heightMap");
+		
+		ModelUtils.createUniform(program, uniforms, "terrainSize");
+		
+		glUseProgram(program.getProgramID());
+		uploadTextures();
+		glUseProgram(0);
 	}
 
 	/**
@@ -187,8 +199,8 @@ public class MultiTextureTerrain implements IRenderObject {
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			glBufferData(GL_ARRAY_BUFFER, data, GL_DYNAMIC_READ);
 
-			glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
-			glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indices, GL15.GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
 
 			setAttributePointers();
 
@@ -267,31 +279,42 @@ public class MultiTextureTerrain implements IRenderObject {
 	}
 
 	private void uploadTextures() {
-		glUniform1i(uniforms.get("blendMap"), 0);
-		glUniform1i(uniforms.get("backgroundTexture"), 1);
-		glUniform1i(uniforms.get("rTexture"), 2);
-		glUniform1i(uniforms.get("gTexture"), 3);
-		glUniform1i(uniforms.get("bTexture"), 4);
+//		glUniform1i(uniforms.get("blendMap"), 0);
+//		glUniform1i(uniforms.get("backgroundTexture"), 1);
+//		glUniform1i(uniforms.get("rTexture"), 2);
+//		glUniform1i(uniforms.get("gTexture"), 3);
+//		glUniform1i(uniforms.get("bTexture"), 4);
+//
+//		glActiveTexture(GL_TEXTURE0 + 0);
+//		glBindTexture(GL_TEXTURE_2D, texturePack.getBlendMap());
+//		glActiveTexture(GL_TEXTURE0 + 1);
+//		glBindTexture(GL_TEXTURE_2D, texturePack.getBackground());
+//		glActiveTexture(GL_TEXTURE0 + 2);
+//		glBindTexture(GL_TEXTURE_2D, texturePack.getrTexture());
+//		glActiveTexture(GL_TEXTURE0 + 3);
+//		glBindTexture(GL_TEXTURE_2D, texturePack.getgTexture());
+//		glActiveTexture(GL_TEXTURE0 + 4);
+//		glBindTexture(GL_TEXTURE_2D, texturePack.getbTexture());
 
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, texturePack.getBlendMap());
-		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, texturePack.getBackground());
-		glActiveTexture(GL_TEXTURE0 + 2);
-		glBindTexture(GL_TEXTURE_2D, texturePack.getrTexture());
-		glActiveTexture(GL_TEXTURE0 + 3);
-		glBindTexture(GL_TEXTURE_2D, texturePack.getgTexture());
-		glActiveTexture(GL_TEXTURE0 + 4);
-		glBindTexture(GL_TEXTURE_2D, texturePack.getbTexture());
+//		glUniform1i(uniforms.get("heightMap"), 0);
+//		glActiveTexture(GL_TEXTURE0 + 0);
+//		try {
+//			glBindTexture(GL_TEXTURE_2D, heightMapId);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
+//		glUniform1i(uniforms.get("rTexture"), 0);
 
-		glUniform1i(uniforms.get("heightMap"), 5);
-		glActiveTexture(GL_TEXTURE0 + 5);
-		try {
-			glBindTexture(GL_TEXTURE_2D, heightMapId);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+//		glUniform1i(uniforms.get("heightMap"), 0);
+//		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, generator.getHeightMapID());
+//		try {
+//			glBindTexture(GL_TEXTURE_2D, ImageLoader.loadTextureFromMemory("imageOutputs/Test.png"));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
 	}
 
 	@Override
@@ -315,8 +338,11 @@ public class MultiTextureTerrain implements IRenderObject {
 					// Upload the uniforms
 					uploadLighting();
 					uploadMatrixes();
-
-					glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+					
+//					glUniform1f(uniforms.get("terrainSize"), generator.getSize());
+//					System.out.println(generator.getVerticesList());
+					
+					glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
 
 					renderProcessEnd();
 
@@ -340,40 +366,51 @@ public class MultiTextureTerrain implements IRenderObject {
 	}
 
 	public float heightAtPosition(Vec2 position) {
-//		if (isOnTerrain(position)) {
-//			float xPositionOnTerrain = position.x - generator.getStartX();
-//			int xGridPosition = (int) Math.floor(xPositionOnTerrain / generator.getDensity());
-//			float zPositionOnTerrain = position.y - generator.getStartZ();
-//			int zGridPosition = (int) Math.floor(zPositionOnTerrain / generator.getDensity());
-//
-//			float xCoord = (xPositionOnTerrain % generator.getDensity()) / generator.getDensity();
-//			float zCoord = (zPositionOnTerrain % generator.getDensity()) / generator.getDensity();
-//			float currentTerrainHeight = 0;
-//			if (xCoord <= (1 - zCoord)) {
-//				currentTerrainHeight = MathFunctions.barryCentric(
-//						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition).y, 0),
-//						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition).y, 0),
-//						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition + 1).y, 1),
-//						new Vec2(zCoord, xCoord));
-//			} else {
-//				currentTerrainHeight = MathFunctions.barryCentric(
-//						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition).y, 0),
-//						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition + 1).y, 1),
-//						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition + 1).y, 1),
-//						new Vec2(zCoord, xCoord));
-//			}
-//			return currentTerrainHeight;
-//		}
-//		return -20f;
-		BufferedImage heightMap = generator.getHeightMap();
-		Color hmColor = new Color(heightMap.getRGB((int)(heightMap.getWidth()/2f), (int)(heightMap.getHeight()/2f)));
-		System.out.println("COLOR: " + hmColor);
-		return hmColor.getRed() * 4;
+		if (isOnTerrain(position)) {
+			float xPositionOnTerrain = position.x - generator.getStartX();
+			int xGridPosition = (int) Math.floor(xPositionOnTerrain / generator.getDensity());
+			float zPositionOnTerrain = position.y - generator.getStartZ();
+			int zGridPosition = (int) Math.floor(zPositionOnTerrain / generator.getDensity());
+
+			float xCoord = (xPositionOnTerrain % generator.getDensity()) / generator.getDensity();
+			float zCoord = (zPositionOnTerrain % generator.getDensity()) / generator.getDensity();
+			float currentTerrainHeight = 0;
+			if (xCoord <= (1 - zCoord)) {
+				currentTerrainHeight = MathFunctions.barryCentric(
+						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition).y, 0),
+						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition).y, 0),
+						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition + 1).y, 1),
+						new Vec2(zCoord, xCoord));
+			} else {
+				currentTerrainHeight = MathFunctions.barryCentric(
+						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition).y, 0),
+						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition + 1).y, 1),
+						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition + 1).y, 1),
+						new Vec2(zCoord, xCoord));
+			}
+			return currentTerrainHeight;
+		}
+		return -20f;
 	}
 
+	public float heightAtPlayerPos() {
+		BufferedImage heightMap = generator.getHeightMap();
+		Color hmColor = new Color(
+				heightMap.getRGB((int) (heightMap.getWidth() / 2f), (int) (heightMap.getHeight() / 2f)));
+		return (hmColor.getRed() / 255f) * 4f;
+	}
+
+	int i = 0;
+
 	public void updateHeightMap() {
-		glDeleteTextures(uniforms.get("heightMap"));
 		heightMapId = generator.getUpdatedHeightMap();
+//		if (init) {
+//			try {
+//				ImageIO.write(generator.getHeightMap(), "PNG", new File("imageOutputs/" + (i++) + ".png"));
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 	/**
@@ -484,21 +521,20 @@ public class MultiTextureTerrain implements IRenderObject {
 		modelMatrix.scale(scale);
 	}
 
-	public void setStartX(float startX) {
-		generator.setStartX(startX);
-	}
-
-	public void setStartZ(float startZ) {
-		generator.setStartZ(startZ);
-	}
-
-	public void translate(Vec3 position) {
-		modelMatrix.cleanTranslation();
-		modelMatrix.translate(position);
-		generator.setStartX(position.x);
-		generator.setStartZ(position.z);
-		System.out.println(position);
-	}
+//	public void setStartX(float startX) {
+//		generator.setStartX(startX);
+//	}
+//
+//	public void setStartZ(float startZ) {
+//		generator.setStartZ(startZ);
+//	}
+//
+//	public void translate(Vec3 position) {
+//		modelMatrix.cleanTranslation();
+//		modelMatrix.translate(position);
+//		generator.setStartX(position.x);
+//		generator.setStartZ(position.z);
+//	}
 
 	@Override
 	public void dispose() {

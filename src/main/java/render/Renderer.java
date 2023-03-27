@@ -53,7 +53,7 @@ public class Renderer {
 
 	private IRenderObject tree_1;
 
-	private IRenderObject terrainModel;
+	private MultiTextureTerrain terrainModel;
 
 	public static SunPass sun;
 
@@ -110,7 +110,7 @@ public class Renderer {
 	}
 
 	private void generateFirstTerrain() {
-		TerrainGenerator generator = new TerrainGenerator(100, 1, 0, 0);
+		TerrainGenerator generator = new TerrainGenerator(100, 50, 0, 0);
 		generator.generateProcedural();
 		terrainModel = new TerrainModel(generator, TexturePack.DEFAULT_TERRAIN);
 	}
@@ -148,17 +148,15 @@ public class Renderer {
 //		cottage.render();
 //		tree_1.render();
 
-
 //		System.out.println("PLAYER POSITION: " + ((Player)player).getPosition());
 
 		if (((Player) player).checkMovement()) {
-			((Player)player).move();
-			((MultiTextureTerrain) terrainModel)
-					.translate(new Vec3(((Player) player).getPosition()).sub(new Vec3(50, 0, 50)));
-			((MultiTextureTerrain) terrainModel).updateHeightMap();
+//			terrainModel.updateHeightMap();
+//			terrainModel.translate(new Vec3(((Player) player).getPosition()).sub(new Vec3(256, 0, 256)));
 		}
 		terrainModel.render();
-		((Player) player).gravity(terrainModel);
+//		((Player) player).gravity(terrainModel);
+		((Player) player).move();
 		player.render();
 
 //		cube.render();

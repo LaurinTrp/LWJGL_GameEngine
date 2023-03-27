@@ -24,19 +24,13 @@ import static org.lwjgl.opengl.GL14.GL_MIRRORED_REPEAT;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DataBufferShort;
-import java.awt.image.DataBufferUShort;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -45,7 +39,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
-import main.java.utils.Inputs;
 import resources.ResourceLoader;
 
 public class ImageLoader {
@@ -73,6 +66,7 @@ public class ImageLoader {
 			width = w.get();
 			height = h.get();
 		}
+		System.out.println(path + "\t" + buffer);
 		return getImageID(width, height, buffer);
 	}
 
@@ -90,26 +84,32 @@ public class ImageLoader {
 			return 0;
 		}
 	}
-	
+
+	public static ByteBuffer bufferedImageToByteBuffer(BufferedImage image) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(image, "png", baos);
+		InputStream imageFile = new ByteArrayInputStream(baos.toByteArray());
+
+		byte[] imageData;
+
+		imageData = IOUtils.toByteArray(imageFile);
+		ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
+		imageBuffer.put(imageData);
+		imageBuffer.flip();
+
+		return imageBuffer;
+	}
+
 	public static int loadTextureFromBufferedImage(BufferedImage bi) {
 		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(bi, "png", baos);
-			InputStream imageFile = new ByteArrayInputStream(baos.toByteArray());
-			
-			byte[] imageData;
-			
-			imageData = IOUtils.toByteArray(imageFile);
-			ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
-			imageBuffer.put(imageData);
-			imageBuffer.flip();
-			
-			return loadTexture(imageBuffer);
+			ByteBuffer buffer = bufferedImageToByteBuffer(bi);
+			return loadTexture(buffer);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
 		}
 	}
+
 	/**
 	 * Load a texture from a byte buffer
 	 *
@@ -132,7 +132,6 @@ public class ImageLoader {
 
 			width = w.get();
 			height = h.get();
-
 		}
 		return getImageID(width, height, buffer);
 	}
@@ -157,8 +156,8 @@ public class ImageLoader {
 				width = w.get();
 				height = h.get();
 			}
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB,
-			GL_UNSIGNED_BYTE, buffer);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE,
+					buffer);
 		}
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -167,6 +166,20 @@ public class ImageLoader {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 		return textureID;
+	}
+
+	public static void updateTexture(int id, BufferedImage image) {
+		glBindTexture(GL_TEXTURE_2D, id);
+//		try {
+		try {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+					bufferedImageToByteBuffer(image));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	/**

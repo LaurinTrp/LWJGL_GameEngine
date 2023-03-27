@@ -9,18 +9,20 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
+//uniform float terrainSize;
+
 out vec4 fragPos;
 out vec4 color;
 out vec4 uvCoord;
 out vec4 normal;
 
-uniform sampler2D heightMap;
+//uniform highp sampler2D heightMap;
 
 void main()
 {
-	vec4 height = texture(heightMap, vec2(position.x/64, position.z/64));
+//	vec4 height = texture(heightMap, texCoord.xy);
 
-	vec4 newPosition = vec4(position.x, (height.x-0.5) * 4, position.z, position.w);
+	vec4 newPosition = vec4(position.x, 0, position.z, 1.0);
 
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * newPosition;
     fragPos = modelMatrix * newPosition;

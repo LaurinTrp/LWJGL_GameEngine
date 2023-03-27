@@ -11,14 +11,12 @@ import static org.lwjgl.opengl.GL11.glDisable;
 
 import java.util.ArrayList;
 
-import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
 import main.java.render.model.MultiTextureTerrain;
-import main.java.render.passes.TerrainModel;
 import main.java.utils.ModelUtils;
 import main.java.utils.constants.CameraMode;
 import main.java.utils.constants.Constants;
@@ -69,8 +67,10 @@ public class Player extends Model {
 	public void afterInit() {
 		super.afterInit();
 
-		position = new Vec3(5.0, 0.0, 0.0);
+		position = new Vec3(0.0, 0.0, 0.0);
 		prevPosition = new Vec3(position);
+		modelMatrix = modelMatrix.rotate((float)Math.toRadians(180), new Vec3(0.0, 1.0, 0.0));
+		rotationAngle = (float) Math.toRadians(180);
 		modelMatrix = modelMatrix.translation(position);
 		updateMinmax();
 	}
@@ -140,37 +140,29 @@ public class Player extends Model {
 				hasMoved = true;
 			}
 		}
-		
-		return hasMoved;
-	}
-	
-	public void move() {
 		if (hasMoved) {
 			modelMatrix = modelMatrix.cleanTranslation();
 			modelMatrix = modelMatrix.translation(position);
 			updateMinmax();
 		}
+		
+		return hasMoved;
+	}
+	
+	public void move() {
 	}
 
 	/**
 	 * Applying gravity to the player
 	 */
-	public void gravity(IRenderObject terrain) {
+	public void gravity(MultiTextureTerrain terrain) {
 		if(!init) {
 			return;
 		}
 		if(terrain != null) {
 			currentTerrain = terrain;
 		}
-		boolean onTerrain = false;
-
-//		onTerrain = ((MultiTextureTerrain) terrain).isOnTerrain(new Vec2(position.x, position.z));
-
-//		if (onTerrain) {
-		System.out.println("LOOOOL");
-		position.y = ((MultiTextureTerrain) terrain).heightAtPosition(new Vec2(position.x, position.z)) - startMinmax[2];
-//		} else {
-//		}
+		position.y = terrain.heightAtPlayerPos();
 	}
 
 	/**

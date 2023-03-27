@@ -30,20 +30,21 @@ public class TerrainGenerator {
 
 	private ProceduralTerrain pt;
 	
-	public TerrainGenerator(float size, float density, float startX, float startZ) {
-		pt = new ProceduralTerrain(startX, startZ, size, density);
+	public TerrainGenerator(int size, int density, int startX, int startZ) {
+		pt = new ProceduralTerrain(size, density, startX, startZ);
 		pt.generateHeightMap();
+		System.out.println(pt.getHeightMapId());
 		
 		this.size = size;
 		this.density = density;
 		this.startX = startX;
 		this.startZ = startZ;
 
-		minmax = new Float[] {
-				startX, startX + size,
-				0f, 0f,
-				startZ, startZ+size
-		};
+//		minmax = new Float[] {
+//				startX, startX + size,
+//				0f, 0f,
+//				startZ, startZ+size
+//		};
 
 		edgePoints[0] = new Vec3(startX, 0, startZ);
 		edgePoints[1] = new Vec3(startX + size, 0, startZ);
@@ -252,15 +253,19 @@ public class TerrainGenerator {
 		return pt.getHeightMap();
 	}
 	
-	public void setStartX(float startX) {
-		this.startX = startX/size;
-		pt.setStartX(startX);
+	public int getHeightMapID() {
+		return pt.getHeightMapId();
 	}
-
-	public void setStartZ(float startZ) {
-		this.startZ = startZ/size;
-		pt.setStartY(startZ);
-	}
+	
+//	public void setStartX(float startX) {
+//		this.startX = startX/size;
+//		pt.setStartX(startX);
+//	}
+//
+//	public void setStartZ(float startZ) {
+//		this.startZ = startZ/size;
+//		pt.setStartY(startZ);
+//	}
 
 	public String id() {
 		return getStartX() + "|" + getStartZ() + "|" + getSize() + "|" + getDensity();
