@@ -7,7 +7,6 @@ import glm.Glm;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.utils.ModelUtils;
-import main.java.utils.math.SimplexNoise;
 
 public class TerrainGenerator {
 
@@ -30,21 +29,13 @@ public class TerrainGenerator {
 
 	private ProceduralTerrain pt;
 	
-	public TerrainGenerator(int size, int density, int startX, int startZ) {
-		pt = new ProceduralTerrain(size, density, startX, startZ);
-		pt.generateHeightMap();
-		System.out.println(pt.getHeightMapId());
+	public TerrainGenerator(int size, float density, int startX, int startZ) {
+		pt = new ProceduralTerrain(size, density);
 		
 		this.size = size;
 		this.density = density;
 		this.startX = startX;
 		this.startZ = startZ;
-
-//		minmax = new Float[] {
-//				startX, startX + size,
-//				0f, 0f,
-//				startZ, startZ+size
-//		};
 
 		edgePoints[0] = new Vec3(startX, 0, startZ);
 		edgePoints[1] = new Vec3(startX + size, 0, startZ);
@@ -61,6 +52,8 @@ public class TerrainGenerator {
 	}
 	
 	private void generateMeshProcedural() {
+		verticesList.clear();
+		normalsList.clear();
 		ArrayList<Vec4> uvs = new ArrayList<>();
 
 		for (int y = 0; y <= size / density; y++) {
@@ -77,6 +70,7 @@ public class TerrainGenerator {
 			}
 			verticesList.add(vertexRow);
 		}
+		
 		for (int i = 0; i < verticesList.size(); i++) {
 			for (int j = 0; j < verticesList.get(i).size(); j++) {
 				Triangle t = getTriangle(i, j);
@@ -249,30 +243,8 @@ public class TerrainGenerator {
 		}
 	}
 
-	public BufferedImage getHeightMap() {
-		return pt.getHeightMap();
-	}
-	
-	public int getHeightMapID() {
-		return pt.getHeightMapId();
-	}
-	
-//	public void setStartX(float startX) {
-//		this.startX = startX/size;
-//		pt.setStartX(startX);
-//	}
-//
-//	public void setStartZ(float startZ) {
-//		this.startZ = startZ/size;
-//		pt.setStartY(startZ);
-//	}
-
-	public String id() {
-		return getStartX() + "|" + getStartZ() + "|" + getSize() + "|" + getDensity();
+	public ProceduralTerrain getProceduralTerrain() {
+		return pt;
 	}
 
-	public int getUpdatedHeightMap() {
-		pt.generateHeightMap();
-		return pt.getHeightMapId();
-	}
 }

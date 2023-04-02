@@ -1,29 +1,24 @@
-package main.java.utils;
+package main.java.utils.math;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
-import main.java.render.utilities.terrain.ProceduralTerrain;
 import main.java.utils.math.PerlinNoise.GPT_Generated;
 
-public class TestClass extends Thread implements Runnable {
-
-	@Override
-	public void run() {
-		createNoiseImage();
-	}
-	public static BufferedImage createNoiseImage() {
-		final int WIDTH = 2 * 256, HEIGHT = 2*256;
+public class Noise {
+	public static BufferedImage createNoiseImage(float width, float height, float offsetX, float offsetY) {
+		final int WIDTH = (int)width, HEIGHT = (int)height;
 
 		double[] data = new double[WIDTH * HEIGHT];
 		int count = 0;
 
 		for (int y = 0; y < HEIGHT; y++) {
 			for (int x = 0; x < WIDTH; x++) {
-				data[count++] = GPT_Generated.perlinNoise2D(20.0 * x / WIDTH, 10.0 * y / HEIGHT);
+				data[count++] = GPT_Generated.perlinNoise2D(8.0 * (x+offsetX) / WIDTH, 8.0 * (y+offsetY) / HEIGHT);
 			}
 		}
 
@@ -40,15 +35,20 @@ public class TestClass extends Thread implements Runnable {
 
 		BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
 		img.getRaster().setPixels(0, 0, WIDTH, HEIGHT, pixelData);
+		
+		return img;
+	}
+	
+	public static void main(String[] args) {
+		for (int i = 0; i < 20; i++) {
+			
+		BufferedImage img = Noise.createNoiseImage(200, 200, i, 0);
 		try {
-			ImageIO.write(img, "PNG", new File("imageOutputs/testImage.png"));
+			ImageIO.write(img, "PNG", new File("imageOutputs/testImage" + i + ".png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return img;
+		}
 	}
-	public static void main(String[] args) {
-		TestClass testClass = new TestClass();
-		testClass.start();
-	}
+	
 }

@@ -3,20 +3,22 @@ package main.java.render.model;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glDeleteTextures;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_READ;
+import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glUniform1i;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
@@ -33,9 +35,6 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
@@ -46,9 +45,10 @@ import main.java.render.utilities.NormalDrawing;
 import main.java.render.utilities.TexturePack;
 import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.shader.ShaderProgram;
+import main.java.utils.ImageUtils;
 import main.java.utils.ModelUtils;
-import main.java.utils.loaders.ImageLoader;
 import main.java.utils.math.MathFunctions;
+import main.java.utils.math.Noise;
 
 public class MultiTextureTerrain implements IRenderObject {
 
@@ -88,6 +88,8 @@ public class MultiTextureTerrain implements IRenderObject {
 	private TerrainGenerator generator;
 
 	private int heightMapId;
+	
+	private float x, y;
 
 	public MultiTextureTerrain(TerrainGenerator generator) {
 		while (!generator.isReady()) {
@@ -119,8 +121,8 @@ public class MultiTextureTerrain implements IRenderObject {
 
 		normalDrawing = new NormalDrawing<>(this);
 
-		updateHeightMap();
-
+		updateHeightMap(0, 0);
+		
 		init = true;
 	}
 
@@ -279,22 +281,26 @@ public class MultiTextureTerrain implements IRenderObject {
 	}
 
 	private void uploadTextures() {
-//		glUniform1i(uniforms.get("blendMap"), 0);
-//		glUniform1i(uniforms.get("backgroundTexture"), 1);
-//		glUniform1i(uniforms.get("rTexture"), 2);
-//		glUniform1i(uniforms.get("gTexture"), 3);
-//		glUniform1i(uniforms.get("bTexture"), 4);
-//
-//		glActiveTexture(GL_TEXTURE0 + 0);
-//		glBindTexture(GL_TEXTURE_2D, texturePack.getBlendMap());
-//		glActiveTexture(GL_TEXTURE0 + 1);
-//		glBindTexture(GL_TEXTURE_2D, texturePack.getBackground());
-//		glActiveTexture(GL_TEXTURE0 + 2);
-//		glBindTexture(GL_TEXTURE_2D, texturePack.getrTexture());
-//		glActiveTexture(GL_TEXTURE0 + 3);
-//		glBindTexture(GL_TEXTURE_2D, texturePack.getgTexture());
-//		glActiveTexture(GL_TEXTURE0 + 4);
-//		glBindTexture(GL_TEXTURE_2D, texturePack.getbTexture());
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, heightMapId);
+		glUniform1i(uniforms.get("heightMap"), 0);
+		
+		glUniform1i(uniforms.get("blendMap"), 1);
+		glUniform1i(uniforms.get("backgroundTexture"), 2);
+		glUniform1i(uniforms.get("rTexture"), 3);
+		glUniform1i(uniforms.get("gTexture"), 4);
+		glUniform1i(uniforms.get("bTexture"), 5);
+
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, texturePack.getBlendMap());
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glBindTexture(GL_TEXTURE_2D, texturePack.getBackground());
+		glActiveTexture(GL_TEXTURE0 + 3);
+		glBindTexture(GL_TEXTURE_2D, texturePack.getrTexture());
+		glActiveTexture(GL_TEXTURE0 + 4);
+		glBindTexture(GL_TEXTURE_2D, texturePack.getgTexture());
+		glActiveTexture(GL_TEXTURE0 + 5);
+		glBindTexture(GL_TEXTURE_2D, texturePack.getbTexture());
 
 //		glUniform1i(uniforms.get("heightMap"), 0);
 //		glActiveTexture(GL_TEXTURE0 + 0);
@@ -305,15 +311,6 @@ public class MultiTextureTerrain implements IRenderObject {
 //		}
 		
 //		glUniform1i(uniforms.get("rTexture"), 0);
-
-//		glUniform1i(uniforms.get("heightMap"), 0);
-//		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, generator.getHeightMapID());
-//		try {
-//			glBindTexture(GL_TEXTURE_2D, ImageLoader.loadTextureFromMemory("imageOutputs/Test.png"));
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 		
 	}
 
@@ -394,23 +391,18 @@ public class MultiTextureTerrain implements IRenderObject {
 	}
 
 	public float heightAtPlayerPos() {
-		BufferedImage heightMap = generator.getHeightMap();
-		Color hmColor = new Color(
-				heightMap.getRGB((int) (heightMap.getWidth() / 2f), (int) (heightMap.getHeight() / 2f)));
-		return (hmColor.getRed() / 255f) * 4f;
+//		BufferedImage heightMap = generator.getHeightMap();
+//		Color hmColor = new Color(
+//				heightMap.getRGB((int) (heightMap.getWidth() / 2f), (int) (heightMap.getHeight() / 2f)));
+//		return (hmColor.getRed() / 255f) * 4f;
+		return 0;
 	}
 
 	int i = 0;
 
-	public void updateHeightMap() {
-		heightMapId = generator.getUpdatedHeightMap();
-//		if (init) {
-//			try {
-//				ImageIO.write(generator.getHeightMap(), "PNG", new File("imageOutputs/" + (i++) + ".png"));
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
+	public void updateHeightMap(float x, float y) {
+		generator.getProceduralTerrain().generateHeightMap(x, y);
+		heightMapId = generator.getProceduralTerrain().getHeightMapID();
 	}
 
 	/**
@@ -529,12 +521,10 @@ public class MultiTextureTerrain implements IRenderObject {
 //		generator.setStartZ(startZ);
 //	}
 //
-//	public void translate(Vec3 position) {
-//		modelMatrix.cleanTranslation();
-//		modelMatrix.translate(position);
-//		generator.setStartX(position.x);
-//		generator.setStartZ(position.z);
-//	}
+	public void translate(Vec3 position) {
+		modelMatrix.cleanTranslation();
+		modelMatrix.translate(position);
+	}
 
 	@Override
 	public void dispose() {

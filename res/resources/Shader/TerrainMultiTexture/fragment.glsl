@@ -5,8 +5,8 @@
 //uniform sampler2D rTexture;
 //uniform sampler2D gTexture;
 //uniform sampler2D bTexture;
-uniform sampler2D heightMap;
 
+uniform sampler2D heightMap;
 uniform float size;
 
 in vec4 fragPos;
@@ -29,6 +29,7 @@ void main() {
 //	vec4 bColor = rgbValue.b * texture(bTexture, tiledCoord.xy);
 
 //	fragColor = (backgroundColor + rColor + gColor + bColor) * 0.5;
-	fragColor = texture(heightMap, uvCoord.xy);
+	float heightValue = texture(heightMap, uvCoord.xy).r;
+	fragColor = vec4(0, (heightValue * heightValue) * 0.5, 0, 1.0);
 }
 

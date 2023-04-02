@@ -1,32 +1,43 @@
 package main.java.render.passes.standard;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_DYNAMIC_READ;
+import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import java.nio.ByteBuffer;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.FloatBuffer;
+
+import javax.imageio.ImageIO;
 
 import org.lwjgl.BufferUtils;
 
 import main.java.render.IRenderObject;
+import main.java.render.utilities.terrain.ProceduralTerrain;
 import main.java.shader.ShaderProgram;
+import main.java.utils.ImageUtils;
+import main.java.utils.loaders.ImageLoader;
+import main.java.utils.loaders.ImageLoaderTest;
+import main.java.utils.math.Noise;
 
 public class RectanglePass implements IRenderObject {
 
@@ -37,17 +48,20 @@ public class RectanglePass implements IRenderObject {
     int modelID;
     int viewID;
     int projID;
-    ByteBuffer texture = null;
 	private ShaderProgram program;
 	FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+	private int textureId;
 
 	private void initTextures() {
-		// Create a new OpenGL texture
-		int textureId = glGenTextures();
+		
+//		ProceduralTerrain pt = new ProceduralTerrain(100, 1, 0, 0);
+		
+		
+		textureId = ImageUtils.createTextureFromImage(Noise.createNoiseImage(200, 200, 0, 0));
+		
 		// Bind the texture
-		glBindTexture(GL_TEXTURE_2D, textureId);
+//		glBindTexture(GL_TEXTURE_2D, ImageUtils.createTextureFromImage(image));
 
-//		texture = Loader.ImageLoader.getImage();
 
 	}
 
@@ -60,23 +74,23 @@ public class RectanglePass implements IRenderObject {
 
 				// Triangle 0
 				// TL
-				-0.5f, 0.5f, 0.0f, 1.0f,	0.0f, 1.0f, 0.0f, 0.0f,
-
-				// BL
-				-0.5f, -0.5f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f, 0.0f,
-
-				//BR
-				0.5f, -0.5f, 0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 0.0f,
-
-				// Triangle 1
-				// TL
-				-0.5f, 0.5f, 0.0f, 1.0f,	0.0f, 1.0f, 0.0f, 0.0f,
-
-				// BR
-				0.5f, -0.5f, 0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 0.0f,
-
-				// TR
-				0.5f, 0.5f, 0.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 0.0f,
+				-0.5f, 0.5f, 0.0f, 1.0f,	0.0f, 1.0f, 0.0f, 0.0f,    0.0f, 1.0f, 0.0f, 1.0f,
+                                                                                                 
+				// BL                                                                            
+				-0.5f, -0.5f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f, 0.0f,    0.0f, 0.0f, 0.0f, 1.0f,   
+                                                                                                 
+				//BR                                                                             
+				0.5f, -0.5f, 0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 0.0f,    1.0f, 0.0f, 0.0f, 1.0f,   
+                                                                                                 
+				// Triangle 1                                                                    
+				// TL                                                                            
+				-0.5f, 0.5f, 0.0f, 1.0f,	0.0f, 1.0f, 0.0f, 0.0f,    0.0f, 1.0f, 0.0f, 1.0f,   
+                                                                                                 
+				// BR                                                                            
+				0.5f, -0.5f, 0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 0.0f,    1.0f, 0.0f, 0.0f, 1.0f,   
+                                                                                                 
+				// TR                                                                            
+				0.5f, 0.5f, 0.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f, 1.0f,   
 		};
 		/*
 		 * 1.0f, 0.0f, 0.0f, 1.0f,
@@ -110,13 +124,13 @@ public class RectanglePass implements IRenderObject {
 
 			// define Vertex Attributes
 			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 4, GL_FLOAT, false, 8 * 4, 0 * 4);
+			glVertexAttribPointer(0, 4, GL_FLOAT, false, 12 * 4, 0 * 4);
 
 			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 4, GL_FLOAT, false, 8 * 4, 4 * 4);
+			glVertexAttribPointer(1, 4, GL_FLOAT, false, 12 * 4, 4 * 4);
 
-//			glEnableVertexAttribArray(2);
-//			glVertexAttribPointer(2, 4, GL_FLOAT, false, 12 * 4, 8 * 4);
+			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(2, 4, GL_FLOAT, false, 12 * 4, 8 * 4);
 		}
 		glBindVertexArray(0);
 	}
@@ -128,6 +142,7 @@ public class RectanglePass implements IRenderObject {
 		program = new ShaderProgram("Rectangle");
 		offset = glGetUniformLocation(program.getProgramID(), "offset");
 
+		initTextures();
 		// compile and upload shader
 
 		init = true;
@@ -148,6 +163,10 @@ public class RectanglePass implements IRenderObject {
 		{
 			glUseProgram(program.getProgramID());
 			{
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, textureId);
+				glUniform1i(glGetUniformLocation(program.getProgramID(), "tex"), 0);
+				
 				glBindVertexArray(vao);
 				{
 					glDrawArrays(GL_TRIANGLES, 0, 6);

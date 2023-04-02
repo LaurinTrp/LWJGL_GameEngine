@@ -18,8 +18,8 @@ public class ResourceLoader {
 		return Toolkit.getDefaultToolkit().getImage(rl.getClass().getResource("images/" + imageName));
 	}
 
-	public static InputStream loadFile(String fileName) {
-		InputStream is = rl.getClass().getResourceAsStream("Files/" + fileName);
+	public static InputStream loadFileAsStream(String fileName) {
+		InputStream is = rl.getClass().getResourceAsStream(fileName);
 		return is;
 	}
 

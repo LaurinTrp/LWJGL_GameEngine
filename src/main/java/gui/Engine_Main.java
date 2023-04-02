@@ -36,9 +36,9 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import main.java.render.Renderer;
+import main.java.utils.FPScounter;
 import main.java.utils.Inputs.KeyHandler;
 import main.java.utils.Inputs.MouseInputs;
-import main.java.utils.TestClass;
 
 public class Engine_Main {
 
@@ -56,6 +56,8 @@ public class Engine_Main {
 	private static long lastFrameTime;
 	private static long delta;
 
+	private static double old_time, new_time;
+
 	public static void main(String[] args) throws IOException {
 
 		initWindow();
@@ -68,13 +70,11 @@ public class Engine_Main {
 
 		loop();
 
-
 		render.dispose();
 
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
-
 
 	private static void initWindow() {
 		if (!glfwInit()) {
@@ -88,7 +88,8 @@ public class Engine_Main {
 		long monitor = 0;
 		try {
 			monitor = monitors.get(0);
-		}catch (IndexOutOfBoundsException e) {}
+		} catch (IndexOutOfBoundsException e) {
+		}
 		GLFWVidMode mode = glfwGetVideoMode(monitor);
 
 		glfwWindowHint(GLFW_RED_BITS, mode.redBits());
@@ -124,7 +125,6 @@ public class Engine_Main {
 		render = new Renderer();
 	}
 
-
 	private static void initCallbacks() {
 		glfwSetCursorPosCallback(window, mouseHandler.getCursorPosCallback());
 		glfwSetScrollCallback(window, mouseHandler.getScrollCallback());
@@ -136,7 +136,9 @@ public class Engine_Main {
 
 		while (!glfwWindowShouldClose(window)) {
 
-			if(keyHandler.isPressed(GLFW_KEY_ESCAPE)) {
+//			FPScounter.StartCounter();
+			
+			if (keyHandler.isPressed(GLFW_KEY_ESCAPE)) {
 				glfwSetWindowShouldClose(window, true);
 				continue;
 			}
@@ -152,6 +154,8 @@ public class Engine_Main {
 			currentFrameTime = System.nanoTime();
 			delta = currentFrameTime - lastFrameTime;
 			lastFrameTime = currentFrameTime;
+
+//			FPScounter.StopAndPost();
 		}
 		render.dispose();
 	}
@@ -159,5 +163,4 @@ public class Engine_Main {
 	public static long getDelta() {
 		return delta;
 	}
-
 }

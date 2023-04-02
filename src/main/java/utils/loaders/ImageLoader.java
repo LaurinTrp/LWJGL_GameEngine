@@ -2,6 +2,7 @@ package main.java.utils.loaders;
 
 import static org.lwjgl.opengl.GL11.GL_LINEAR;
 import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_RED;
 import static org.lwjgl.opengl.GL11.GL_RGB;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
@@ -16,6 +17,7 @@ import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameterfv;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
+import static org.lwjgl.opengl.GL11.glTexSubImage2D;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL12.GL_TEXTURE_WRAP_R;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
@@ -30,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -39,6 +40,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
+import main.java.utils.ImageUtils;
 import resources.ResourceLoader;
 
 public class ImageLoader {
@@ -66,7 +68,7 @@ public class ImageLoader {
 			width = w.get();
 			height = h.get();
 		}
-		System.out.println(path + "\t" + buffer);
+//		System.out.println(path + "\t" + buffer);
 		return getImageID(width, height, buffer);
 	}
 
@@ -100,9 +102,39 @@ public class ImageLoader {
 		return imageBuffer;
 	}
 
+	/**
+	 * @param image - BufferedImage with the type BufferedImage.TYPE_INT_ARGB
+	 */
+	private static ByteBuffer bufferedImage2ByteBufferTest(BufferedImage image) {
+		int width = image.getWidth(), height = image.getHeight();
+
+		int[] pixels = new int[width * height];
+		image.getRGB(0, 0, width, height, pixels, 0, width);
+
+//		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4); // 4 because RGBA
+		ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 4);
+
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; ++x) {
+				int pixel = pixels[x + y * width];
+				buffer.put((byte) ((pixel >> 16) & 0xFF));
+				buffer.put((byte) ((pixel >> 8) & 0xFF));
+				buffer.put((byte) (pixel & 0xFF));
+				buffer.put((byte) ((pixel >> 24) & 0xFF));
+			}
+		}
+
+		buffer.flip();
+		return buffer;
+	}
+
 	public static int loadTextureFromBufferedImage(BufferedImage bi) {
 		try {
-			ByteBuffer buffer = bufferedImageToByteBuffer(bi);
+			ByteBuffer buffer = bufferedImage2ByteBufferTest(bi);
+
+//			System.out.println(buffer);
+//			System.out.println(bufferedImage2ByteBufferTest(bi));
+
 			return loadTexture(buffer);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -117,7 +149,7 @@ public class ImageLoader {
 	 * @return Returning the OpenGL texture id
 	 * @throws Exception if the image loading failed
 	 */
-	private static int loadTexture(ByteBuffer data) throws Exception {
+	public static int loadTexture(ByteBuffer data) throws Exception {
 		int width, height;
 		ByteBuffer buffer;
 		try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -180,6 +212,18 @@ public class ImageLoader {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
+	}
+
+	public static void updateTextureHeightMap(int id, BufferedImage image) {
+		// Bind the texture
+	    glBindTexture(GL_TEXTURE_2D, id);
+
+	    ByteBuffer buffer = ImageUtils.imageToByteBuffer(image);
+	    // Update the texture data
+	    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, image.getWidth(), image.getHeight(), GL_RED, GL_UNSIGNED_BYTE, buffer);
+
+	    // Unbind the texture
+	    glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	/**

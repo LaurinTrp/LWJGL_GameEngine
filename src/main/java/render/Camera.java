@@ -7,7 +7,6 @@ import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.entities.Player;
 import main.java.render.model.MultiTextureTerrain;
-import main.java.render.passes.TerrainModel;
 import main.java.utils.constants.CameraMode;
 
 public class Camera {
@@ -32,10 +31,12 @@ public class Camera {
 	private Vec3 focusPoint;
 
 	public CameraMode cameraMode = CameraMode.PLAYER_CAMERA;
+	
+	private final float NEAR_CLIPPING_PLANE = 0.1f, FAR_CLIPPING_PLANE = 100f;
 
 	public Camera() {
 		projectionMatrix = Glm.perspective_(45.0f, (float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight,
-				0.1f, 100.0f);
+				NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
 		focusPoint = new Vec3();
 	}
 
@@ -112,12 +113,8 @@ public class Camera {
 
 	public void moveCamera() {
 
-		updateProjectionMatrix();
-
-//		if (distanceFromPlayer <= 100 && distanceFromPlayer >= 2) {
 		distanceFromPlayer = Math.min(100,
 				Math.max(2, distanceFromPlayer - Engine_Main.mouseHandler.getScrollY() * 0.4f));
-//		}
 
 		rotation();
 
@@ -130,7 +127,7 @@ public class Camera {
 
 	private void updateProjectionMatrix() {
 		projectionMatrix = Glm.perspective_((float) Math.toRadians(45),
-				(float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight, 0.1f, 100f);
+				(float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight, NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
 	}
 
 	public Mat4 getView() {

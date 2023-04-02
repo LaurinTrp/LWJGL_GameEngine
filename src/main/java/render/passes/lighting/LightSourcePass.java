@@ -26,10 +26,7 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import java.nio.IntBuffer;
 import java.util.ArrayList;
-
-import org.lwjgl.system.MemoryUtil;
 
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;

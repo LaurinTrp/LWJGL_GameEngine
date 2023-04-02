@@ -9,9 +9,8 @@ import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
+import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.entities.Player;
@@ -30,7 +29,6 @@ import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.passes.trees.Tree_1;
 import main.java.render.utilities.TexturePack;
-import main.java.render.utilities.terrain.ProceduralTerrain;
 import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.utils.math.MousePicker;
 
@@ -110,7 +108,7 @@ public class Renderer {
 	}
 
 	private void generateFirstTerrain() {
-		TerrainGenerator generator = new TerrainGenerator(100, 50, 0, 0);
+		TerrainGenerator generator = new TerrainGenerator(200, 1f, -100, -100);
 		generator.generateProcedural();
 		terrainModel = new TerrainModel(generator, TexturePack.DEFAULT_TERRAIN);
 	}
@@ -122,14 +120,16 @@ public class Renderer {
 		framebuffer.render();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+//		rectanglePass.render();
+		
 		skybox.render();
 		glEnable(GL_DEPTH_TEST);
 		renderScene();
-
+//
 		camera.setFocusPoint(new Vec3(((Player) player).getPosition()));
 		camera.moveCamera();
-//
-		sun.update();
+////
+//		sun.update();
 
 		glDisable(GL_DEPTH_TEST);
 		((Framebuffer) framebuffer).renderColorAttachments();
@@ -151,8 +151,11 @@ public class Renderer {
 //		System.out.println("PLAYER POSITION: " + ((Player)player).getPosition());
 
 		if (((Player) player).checkMovement()) {
-//			terrainModel.updateHeightMap();
-//			terrainModel.translate(new Vec3(((Player) player).getPosition()).sub(new Vec3(256, 0, 256)));
+			Vec2 playerPosXZ = ((Player)player).getPlayerPosXZ();
+			terrainModel.updateHeightMap(playerPosXZ.x, playerPosXZ.y);
+			terrainModel.translate(new Vec3(playerPosXZ.x, 0, playerPosXZ.y));
+			
+			playerPosXZ.print();
 		}
 		terrainModel.render();
 //		((Player) player).gravity(terrainModel);

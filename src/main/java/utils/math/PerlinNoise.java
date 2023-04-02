@@ -70,7 +70,7 @@ public class PerlinNoise {
 
 		for (int y = 0; y < HEIGHT; y++) {
 			for (int x = 0; x < WIDTH; x++) {
-				data[count++] = PerlinNoise.noise(20.0 * x / WIDTH, 10.0 * y / HEIGHT, 0);
+				data[count++] = GPT_Generated.perlinNoise2D(20.0 * x / WIDTH, 10.0 * y / HEIGHT);
 			}
 		}
 
@@ -93,6 +93,60 @@ public class PerlinNoise {
 			ImageIO.write(img, "PNG", output);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static class GPT_Generated{
+		public static double perlinNoise2D(double x, double y) {
+		    // Define the grid cell coordinates
+		    int x0 = (int) Math.floor(x);
+		    int x1 = x0 + 1;
+		    int y0 = (int) Math.floor(y);
+		    int y1 = y0 + 1;
+
+		    // Compute the fractional part of the coordinates
+		    double xf = x - x0;
+		    double yf = y - y0;
+
+		    // Get the noise values for each corner of the grid cell
+		    double n00 = dotGridGradient(x0, y0, x, y);
+		    double n01 = dotGridGradient(x0, y1, x, y);
+		    double n10 = dotGridGradient(x1, y0, x, y);
+		    double n11 = dotGridGradient(x1, y1, x, y);
+
+		    // Interpolate the noise values using smoothstep interpolation
+		    double nx0 = lerp(n00, n10, smoothstep(xf));
+		    double nx1 = lerp(n01, n11, smoothstep(xf));
+		    double nxy = lerp(nx0, nx1, smoothstep(yf));
+
+		    return nxy;
+		}
+
+		private static double dotGridGradient(int ix, int iy, double x, double y) {
+		    // Compute the distance vector from the grid cell corner to the input coordinate
+		    double dx = x - (double) ix;
+		    double dy = y - (double) iy;
+
+		    // Generate a random gradient vector for the grid cell corner
+		    int random = 2920 * ix + 21942 * iy;
+		    double randomGradient = Math.sin(random) * 43758.5453123;
+		    double gradientX = Math.cos(randomGradient);
+		    double gradientY = Math.sin(randomGradient);
+
+		    // Compute the dot product between the distance vector and gradient vector
+		    double dotProduct = dx * gradientX + dy * gradientY;
+
+		    return dotProduct;
+		}
+
+		private static double smoothstep(double t) {
+		    // Perform smoothstep interpolation on the input value
+		    return t * t * (3 - 2 * t);
+		}
+
+		private static double lerp(double a, double b, double t) {
+		    // Perform linear interpolation between two values
+		    return (1 - t) * a + t * b;
 		}
 	}
 }

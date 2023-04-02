@@ -11,6 +11,7 @@ import static org.lwjgl.opengl.GL11.glDisable;
 
 import java.util.ArrayList;
 
+import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
@@ -26,7 +27,7 @@ public class Player extends Model {
 
 	private Vec3 position;
 	private Vec3 prevPosition;
-	private final float speed = 0.1f;
+	private final float speed = 0.5f;
 	private boolean hasMoved;
 	private Vec3 playerFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 playerUp = new Vec3(0.0f, 1.0f, 0.0f);
@@ -121,7 +122,7 @@ public class Player extends Model {
 			direction.add(new Vec3(playerUp).mul(speed));
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_X)) {
-			direction.add(new Vec3(playerUp).mul(speed));
+			direction.sub(new Vec3(playerUp).mul(speed));
 		}
 
 		if (!direction.equals(new Vec3())) {
@@ -188,6 +189,10 @@ public class Player extends Model {
 
 	public Vec3 getPlayerUp() {
 		return playerUp;
+	}
+	
+	public Vec2 getPlayerPosXZ() {
+		return new Vec2(position.x, position.z);
 	}
 
 	public void addIntersector(IRenderObject intersector) {

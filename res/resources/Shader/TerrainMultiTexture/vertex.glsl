@@ -16,13 +16,13 @@ out vec4 color;
 out vec4 uvCoord;
 out vec4 normal;
 
-//uniform highp sampler2D heightMap;
+uniform highp sampler2D heightMap;
 
 void main()
 {
-//	vec4 height = texture(heightMap, texCoord.xy);
+	float height = (texture(heightMap, texCoord.xy).r - 0.5) * 5;
 
-	vec4 newPosition = vec4(position.x, 0, position.z, 1.0);
+	vec4 newPosition = vec4(position.x, height, position.z, 1.0);
 
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * newPosition;
     fragPos = modelMatrix * newPosition;

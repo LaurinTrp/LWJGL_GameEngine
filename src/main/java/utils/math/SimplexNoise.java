@@ -1,7 +1,13 @@
 package main.java.utils.math;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 /*
- * A speed-improved simplex noise algorithm for 2D, 3D and 4D in Java.
+ * A speed-improved simplex Math algorithm for 2D, 3D and 4D in Java.
  *
  * Based on example code by Stefan Gustavson (stegu@itn.liu.se).
  * Optimisations by Peter Eastman (peastman@drizzle.stanford.edu).
@@ -17,7 +23,7 @@ package main.java.utils.math;
  *
  */
 
-public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
+public class SimplexNoise { // Simplex Math in 2D, 3D and 4D
 	private static Grad grad3[] = { new Grad(1, 1, 0), new Grad(-1, 1, 0), new Grad(1, -1, 0), new Grad(-1, -1, 0),
 			new Grad(1, 0, 1), new Grad(-1, 0, 1), new Grad(1, 0, -1), new Grad(-1, 0, -1), new Grad(0, 1, 1),
 			new Grad(0, -1, 1), new Grad(0, 1, -1), new Grad(0, -1, -1) };
@@ -58,9 +64,9 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 		return g.x * x + g.y * y;
 	}
 
-	// 2D simplex noise
-	public static double noise(double xin, double yin) {
-		double n0, n1, n2; // Noise contributions from the three corners
+	// 2D simplex Math
+	public static double Math(double xin, double yin) {
+		double n0, n1, n2; // Math contributions from the three corners
 		// Skew the input space to determine which simplex cell we're in
 		double s = (xin + yin) * F2; // Hairy factor for 2D
 		int i = fastfloor(xin + s);
@@ -116,7 +122,7 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 			t2 *= t2;
 			n2 = t2 * t2 * dot(grad3[gi2], x2, y2);
 		}
-		// Add contributions from each corner to get the final noise value.
+		// Add contributions from each corner to get the final Math value.
 		// The result is scaled to return values in the interval [-1,1].
 		return 70.0 * (n0 + n1 + n2);
 	}
@@ -133,4 +139,39 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 		}
 
 	}
+	
+	public static void main(String[] args) {
+		final int WIDTH = 100, HEIGHT = 100;
+
+		double[] data = new double[WIDTH * HEIGHT];
+		int count = 0;
+
+		for (int y = 0; y < HEIGHT; y++) {
+			for (int x = 0; x < WIDTH; x++) {
+				data[count++] = SimplexNoise.Math(20.0 * x / WIDTH, 10.0 * y / HEIGHT);
+			}
+		}
+
+		double minValue = data[0], maxValue = data[0];
+		for (int i = 0; i < data.length; i++) {
+			minValue = Math.min(data[i], minValue);
+			maxValue = Math.max(data[i], maxValue);
+		}
+
+		int[] pixelData = new int[WIDTH * HEIGHT];
+		for (int i = 0; i < data.length; i++) {
+			pixelData[i] = (int) (255 * (data[i] - minValue) / (maxValue - minValue));
+		}
+
+		BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
+		img.getRaster().setPixels(0, 0, WIDTH, HEIGHT, pixelData);
+
+		File output = new File("imageOutputs/Simplex.png");
+		try {
+			ImageIO.write(img, "PNG", output);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
