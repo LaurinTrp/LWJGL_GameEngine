@@ -17,10 +17,13 @@ out vec4 uvCoord;
 out vec4 normal;
 
 uniform highp sampler2D heightMap;
+uniform float yOffset;
+uniform float multiplier;
 
 void main()
 {
-	float height = (texture(heightMap, texCoord.xy).r - 0.5) * 5;
+	float height = (texture(heightMap, texCoord.xy).r * 2.0 - 1.0);
+//	float height = (texture(heightMap, texCoord.xy).r + yOffset) * multiplier;
 
 	vec4 newPosition = vec4(position.x, height, position.z, 1.0);
 

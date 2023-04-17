@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glUniform1i;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
@@ -88,9 +88,10 @@ public class MultiTextureTerrain implements IRenderObject {
 	private TerrainGenerator generator;
 
 	private int heightMapId;
-	
-	private float x, y;
 
+	private final float heightMapYOffset = -0.5f;
+	private final float heightMapMultiplier = 5f;
+	
 	public MultiTextureTerrain(TerrainGenerator generator) {
 		while (!generator.isReady()) {
 			try {
@@ -167,6 +168,9 @@ public class MultiTextureTerrain implements IRenderObject {
 		ModelUtils.createUniform(program, uniforms, "heightMap");
 		
 		ModelUtils.createUniform(program, uniforms, "terrainSize");
+
+		ModelUtils.createUniform(program, uniforms, "yOffset");
+		ModelUtils.createUniform(program, uniforms, "multiplier");
 		
 		glUseProgram(program.getProgramID());
 		uploadTextures();
@@ -302,16 +306,8 @@ public class MultiTextureTerrain implements IRenderObject {
 		glActiveTexture(GL_TEXTURE0 + 5);
 		glBindTexture(GL_TEXTURE_2D, texturePack.getbTexture());
 
-//		glUniform1i(uniforms.get("heightMap"), 0);
-//		glActiveTexture(GL_TEXTURE0 + 0);
-//		try {
-//			glBindTexture(GL_TEXTURE_2D, heightMapId);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-		
-//		glUniform1i(uniforms.get("rTexture"), 0);
-		
+		glUniform1f(uniforms.get("yOffset"), heightMapYOffset);
+		glUniform1f(uniforms.get("multiplier"), heightMapMultiplier);
 	}
 
 	@Override
@@ -391,11 +387,11 @@ public class MultiTextureTerrain implements IRenderObject {
 	}
 
 	public float heightAtPlayerPos() {
-//		BufferedImage heightMap = generator.getHeightMap();
-//		Color hmColor = new Color(
-//				heightMap.getRGB((int) (heightMap.getWidth() / 2f), (int) (heightMap.getHeight() / 2f)));
-//		return (hmColor.getRed() / 255f) * 4f;
-		return 0;
+		BufferedImage heightMap = generator.getProceduralTerrain().getHeightMap();
+		float value = ImageUtils.getFloatValueFromByteGrayImage(heightMap, (int)(heightMap.getWidth()/2f),
+				(int)(heightMap.getHeight()/2f));
+		value = value * 2f - 1f;
+		return value;
 	}
 
 	int i = 0;
@@ -513,17 +509,9 @@ public class MultiTextureTerrain implements IRenderObject {
 		modelMatrix.scale(scale);
 	}
 
-//	public void setStartX(float startX) {
-//		generator.setStartX(startX);
-//	}
-//
-//	public void setStartZ(float startZ) {
-//		generator.setStartZ(startZ);
-//	}
-//
 	public void translate(Vec3 position) {
 		modelMatrix.cleanTranslation();
-		modelMatrix.translate(position);
+		modelMatrix.translate(position.x, 0, position.z);
 	}
 
 	@Override

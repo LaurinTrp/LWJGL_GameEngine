@@ -30,5 +30,9 @@ public class ProceduralTerrain {
 		ImageUtils.updateTextureWithGrayImage(heightMapID, heightMap);
 		return heightMapID;
 	}
+	
+	public BufferedImage getHeightMap() {
+		return heightMap;
+	}
 
 }

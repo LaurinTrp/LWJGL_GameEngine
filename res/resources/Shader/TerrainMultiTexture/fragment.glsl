@@ -30,6 +30,7 @@ void main() {
 
 //	fragColor = (backgroundColor + rColor + gColor + bColor) * 0.5;
 	float heightValue = texture(heightMap, uvCoord.xy).r;
-	fragColor = vec4(0, (heightValue * heightValue) * 0.5, 0, 1.0);
+	float calculatedColor = (heightValue * heightValue) * 0.5;
+	fragColor = vec4(vec3(calculatedColor), 1.0);
 }
 

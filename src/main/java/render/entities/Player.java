@@ -10,6 +10,7 @@ import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.glDisable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
@@ -42,7 +43,7 @@ public class Player extends Model {
 
 	public Player() {
 		super((Model) ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
-
+		System.out.println(Arrays.toString(startMinmax));
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
 	}
@@ -137,20 +138,20 @@ public class Player extends Model {
 				}
 			}
 			if (!isIntersecting) {
-				position.add(direction);
 				hasMoved = true;
 			}
-		}
-		if (hasMoved) {
-			modelMatrix = modelMatrix.cleanTranslation();
-			modelMatrix = modelMatrix.translation(position);
-			updateMinmax();
 		}
 		
 		return hasMoved;
 	}
 	
 	public void move() {
+		if (hasMoved) {
+			position.add(direction);
+			modelMatrix = modelMatrix.cleanTranslation();
+			modelMatrix = modelMatrix.translation(position);
+			updateMinmax();
+		}
 	}
 
 	/**
@@ -163,7 +164,7 @@ public class Player extends Model {
 		if(terrain != null) {
 			currentTerrain = terrain;
 		}
-		position.y = terrain.heightAtPlayerPos();
+		position.y = terrain.heightAtPlayerPos() - startMinmax[2];
 	}
 
 	/**

@@ -84,4 +84,18 @@ public class ImageUtils {
 
 	    return buffer;
 	}
+	
+	public static float getFloatValueFromByteGrayImage(BufferedImage image, int x, int y) {
+	    // Get the raster of the image
+	    WritableRaster raster = image.getRaster();
+	    
+	    // Get the byte value of the pixel at the specified position
+	    byte[] pixelData = new byte[1];
+	    raster.getDataElements(x, y, pixelData);
+	    
+	    // Convert the byte value to a float between 0 and 1
+	    float floatValue = ((float)(pixelData[0] & 0xff)) / 255.0f;
+	    
+	    return floatValue;
+	}
 }

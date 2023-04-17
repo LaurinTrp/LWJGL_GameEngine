@@ -138,7 +138,7 @@ public class Renderer {
 
 	public void renderScene() {
 
-		glEnable(GL_CULL_FACE);
+//		glEnable(GL_CULL_FACE);
 
 //		test.render();
 
@@ -153,19 +153,17 @@ public class Renderer {
 		if (((Player) player).checkMovement()) {
 			Vec2 playerPosXZ = ((Player)player).getPlayerPosXZ();
 			terrainModel.updateHeightMap(playerPosXZ.x, playerPosXZ.y);
+			((Player) player).move();
 			terrainModel.translate(new Vec3(playerPosXZ.x, 0, playerPosXZ.y));
-			
-			playerPosXZ.print();
 		}
 		terrainModel.render();
-//		((Player) player).gravity(terrainModel);
-		((Player) player).move();
+		((Player) player).gravity(terrainModel);
 		player.render();
 
 //		cube.render();
 
 		compass.render();
-		glDisable(GL_CULL_FACE);
+//		glDisable(GL_CULL_FACE);
 	}
 
 	/**
