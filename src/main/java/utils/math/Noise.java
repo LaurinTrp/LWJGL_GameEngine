@@ -9,15 +9,6 @@ import javax.imageio.ImageIO;
 import main.java.utils.math.PerlinNoise.GPT_Generated;
 
 public class Noise {
-//	public static BufferedImage createNoiseImage(float width, float height, float offsetX, float offsetY) {
-//		BufferedImage img = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_BYTE_GRAY);
-//		for (int i = 0; i < width; i++) {
-//			for (int j = 0; j < height; j++) {
-//				img.setRGB(i, j,  Color.BLACK.getRGB());
-//			}
-//		}
-//		return img;
-//	}
 	public static BufferedImage createNoiseImage(float width, float height, float offsetX, float offsetY) {
 		final int WIDTH = (int)width, HEIGHT = (int)height;
 

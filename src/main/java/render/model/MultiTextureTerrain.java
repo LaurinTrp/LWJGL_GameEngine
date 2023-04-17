@@ -89,8 +89,7 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	private int heightMapId;
 
-	private final float heightMapYOffset = -0.5f;
-	private final float heightMapMultiplier = 5f;
+	private final float heightMapMultiplier = 2f;
 	
 	public MultiTextureTerrain(TerrainGenerator generator) {
 		while (!generator.isReady()) {
@@ -306,7 +305,6 @@ public class MultiTextureTerrain implements IRenderObject {
 		glActiveTexture(GL_TEXTURE0 + 5);
 		glBindTexture(GL_TEXTURE_2D, texturePack.getbTexture());
 
-		glUniform1f(uniforms.get("yOffset"), heightMapYOffset);
 		glUniform1f(uniforms.get("multiplier"), heightMapMultiplier);
 	}
 
@@ -351,10 +349,6 @@ public class MultiTextureTerrain implements IRenderObject {
 	}
 
 	public boolean isOnTerrain(Vec2 position) {
-//		float xPositionOnTerrain = position.x - generator.getStartX();
-//		float zPositionOnTerrain = position.y - generator.getStartZ();
-//		return xPositionOnTerrain >= 0.0 && zPositionOnTerrain >= 0.0 && xPositionOnTerrain <= generator.getSize()
-//				&& zPositionOnTerrain <= generator.getSize();
 		return true;
 	}
 
@@ -390,7 +384,7 @@ public class MultiTextureTerrain implements IRenderObject {
 		BufferedImage heightMap = generator.getProceduralTerrain().getHeightMap();
 		float value = ImageUtils.getFloatValueFromByteGrayImage(heightMap, (int)(heightMap.getWidth()/2f),
 				(int)(heightMap.getHeight()/2f));
-		value = value * 2f - 1f;
+		value = (value * 2f - 1f) * heightMapMultiplier;
 		return value;
 	}
 
