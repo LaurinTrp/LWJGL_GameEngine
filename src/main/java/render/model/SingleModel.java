@@ -39,7 +39,7 @@ import main.java.render.utilities.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class Model implements IRenderObject {
+public class SingleModel implements IRenderObject {
 
 	private Material material;
 
@@ -70,33 +70,14 @@ public class Model implements IRenderObject {
 
 	private String shaderFolder;
 
-	private NormalDrawing<Model> normalDrawing;
+	private NormalDrawing<SingleModel> normalDrawing;
 
 	private boolean showNormals;
 
 	private Vec4 translation;
 
-	public Model() {
+	public SingleModel() {
 		startMinmax = new Float[6];
-
-	}
-
-	/**
-	 * Model constructor with ebo
-	 *
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
-	 */
-	public Model(Float[] vertices, Float[] uvs, Float[] normals, int[] indices, int triangles, Material material,
-			Float[] minmax) {
-		this(vertices, uvs, normals, triangles, material, minmax);
-		hasEbo = true;
-		this.indices = indices;
 	}
 
 	/**
@@ -110,27 +91,7 @@ public class Model implements IRenderObject {
 	 * @param material  Material object
 	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
 	 */
-	public Model(Float[] vertices, Float[] colors, Float[] uvs, Float[] normals, int triangles) {
-		this.startMinmax = new Float[6];
-		this.triangles = triangles;
-		this.vertices = vertices;
-		this.uvs = uvs;
-		this.normals = normals;
-		this.colors = colors;
-	}
-
-	/**
-	 * Model constructor without ebo
-	 *
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
-	 */
-	public Model(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax) {
+	public SingleModel(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax) {
 		this.triangles = triangles;
 		this.vertices = vertices;
 		this.uvs = uvs;
@@ -144,7 +105,7 @@ public class Model implements IRenderObject {
 	 *
 	 * @param model Model to copy
 	 */
-	public Model(Model model) {
+	public SingleModel(SingleModel model) {
 		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, new Float[] { model.minmax[0],
 				model.minmax[1], model.minmax[2], model.minmax[3], model.minmax[4], model.minmax[5], });
 

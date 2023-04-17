@@ -1,14 +1,15 @@
-package main.java.render.passes.trees;
+package main.java.render.entities.trees;
 
-import glm.vec._3.Vec3;
-import main.java.render.model.Model;
+import glm.mat._4.Mat4;
+import main.java.render.model.MultiModel;
+import main.java.render.model.SingleModel;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
-public class Tree_1 extends Model {
+public class Tree_1 extends MultiModel {
 
-	public Tree_1() {
-		super((Model) ModelLoader.loadModelFromResource("Trees", "Tree1.obj"));
+	public Tree_1(Mat4[] matrices) {
+		super((MultiModel) ModelLoader.loadMultiModelFromResource("Trees", "Tree1.obj"), matrices);
 		setShaderFolder("Transformation");
 		try {
 			getMaterial().setTexture(ImageLoader
@@ -21,8 +22,6 @@ public class Tree_1 extends Model {
 	@Override
 	public void afterInit() {
 		super.afterInit();
-		modelMatrix.translate(new Vec3(10.0f, 0f, 0f));
-		updateMinmax();
 	}
 
 }
