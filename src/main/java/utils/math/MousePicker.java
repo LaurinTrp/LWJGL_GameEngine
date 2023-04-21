@@ -6,7 +6,7 @@ import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
 import main.java.render.Camera;
 import main.java.render.IRenderObject;
-import main.java.render.model.Model;
+import main.java.render.model.SingleModel;
 import main.java.render.passes.TerrainModel;
 
 public class MousePicker {
@@ -34,7 +34,7 @@ public class MousePicker {
 		currentRay = calculateMouseRay();
 	}
 
-	public Vec4 terrainIntersection(Model terrain) {
+	public Vec4 terrainIntersection(SingleModel terrain) {
 		update();
 		System.out.println(intersectionInRange(0, 200, currentRay, terrain));
 //		System.out.println(getCurrentRay());

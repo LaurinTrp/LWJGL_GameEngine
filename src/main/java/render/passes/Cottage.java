@@ -4,14 +4,14 @@ import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
-import main.java.render.model.Model;
+import main.java.render.model.SingleModel;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
-public class Cottage extends Model {
+public class Cottage extends SingleModel {
 
 	public Cottage() {
-		super((Model) ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
+		super((SingleModel) ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage_diffuse.png"));
 

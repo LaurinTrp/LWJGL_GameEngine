@@ -22,7 +22,8 @@ import java.util.HashMap;
 
 import glm.mat._4.Mat4;
 import main.java.render.Renderer;
-import main.java.render.model.Model;
+import main.java.render.model.SingleModel;
+import main.java.render.model.MultiModel;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
@@ -43,13 +44,13 @@ public class NormalDrawing<E> {
 	private boolean init = false;
 
 	public NormalDrawing(E model) {
-		if (model instanceof Model) {
-			this.vertices = ((Model) model).getVertices();
-			this.normals = ((Model) model).getNormals();
+		if (model instanceof SingleModel) {
+			this.vertices = ((SingleModel) model).getVertices();
+			this.normals = ((SingleModel) model).getNormals();
 
 			data = ModelUtils.createNormals(vertices, normals);
 
-			this.modelMatrix = ((Model) model).getModelMatrix();
+			this.modelMatrix = ((SingleModel) model).getModelMatrix();
 		}
 
 		if (model instanceof MultiTextureTerrain) {

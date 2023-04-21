@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.model.Material;
-import main.java.render.model.Model;
+import main.java.render.model.SingleModel;
 import main.java.shader.ShaderProgram;
 
 public class ModelUtils {
@@ -92,7 +92,7 @@ public class ModelUtils {
 		uniforms.put(name, id);
 	}
 
-	public static void compareModels(Model model0, Model model1) {
+	public static void compareModels(SingleModel model0, SingleModel model1) {
 		System.out.println("#########################");
 		System.out.println("Model Compare:");
 		System.out.println("Vertices: " + Arrays.equals(model0.getVertices(), model1.getVertices()));

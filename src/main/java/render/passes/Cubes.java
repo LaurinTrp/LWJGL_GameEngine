@@ -3,7 +3,7 @@ package main.java.render.passes;
 import java.util.ArrayList;
 
 import main.java.render.IRenderObject;
-import main.java.render.model.Model;
+import main.java.render.model.SingleModel;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
@@ -17,8 +17,8 @@ public class Cubes implements IRenderObject {
 	public void init() {
 		models = ModelLoader.loadMultipleModelsFromObj("/media/laurin/Laurin Festplatte/Blender/Models/Cubes.obj");
 		for (IRenderObject model : models) {
-			((Model)model).setShaderFolder("Transformation");
-			((Model)model).getMaterial().setTexture(ImageLoader.loadTextureFromResource("Warn.png"));
+			((SingleModel)model).setShaderFolder("Transformation");
+			((SingleModel)model).getMaterial().setTexture(ImageLoader.loadTextureFromResource("Warn.png"));
 		}
 	}
 

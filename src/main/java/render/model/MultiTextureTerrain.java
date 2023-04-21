@@ -91,6 +91,8 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	private final float heightMapMultiplier = 2f;
 	
+	private Vec2 globalPosition = new Vec2();
+
 	public MultiTextureTerrain(TerrainGenerator generator) {
 		while (!generator.isReady()) {
 			try {
@@ -122,7 +124,7 @@ public class MultiTextureTerrain implements IRenderObject {
 		normalDrawing = new NormalDrawing<>(this);
 
 		updateHeightMap(0, 0);
-		
+
 		init = true;
 	}
 
@@ -165,12 +167,12 @@ public class MultiTextureTerrain implements IRenderObject {
 		ModelUtils.createUniform(program, uniforms, "bTexture");
 
 		ModelUtils.createUniform(program, uniforms, "heightMap");
-		
+
 		ModelUtils.createUniform(program, uniforms, "terrainSize");
 
 		ModelUtils.createUniform(program, uniforms, "yOffset");
 		ModelUtils.createUniform(program, uniforms, "multiplier");
-		
+
 		glUseProgram(program.getProgramID());
 		uploadTextures();
 		glUseProgram(0);
@@ -287,7 +289,7 @@ public class MultiTextureTerrain implements IRenderObject {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, heightMapId);
 		glUniform1i(uniforms.get("heightMap"), 0);
-		
+
 		glUniform1i(uniforms.get("blendMap"), 1);
 		glUniform1i(uniforms.get("backgroundTexture"), 2);
 		glUniform1i(uniforms.get("rTexture"), 3);
@@ -329,10 +331,10 @@ public class MultiTextureTerrain implements IRenderObject {
 					// Upload the uniforms
 					uploadLighting();
 					uploadMatrixes();
-					
+
 //					glUniform1f(uniforms.get("terrainSize"), generator.getSize());
 //					System.out.println(generator.getVerticesList());
-					
+
 					glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
 
 					renderProcessEnd();
@@ -353,37 +355,16 @@ public class MultiTextureTerrain implements IRenderObject {
 	}
 
 	public float heightAtPosition(Vec2 position) {
-		if (isOnTerrain(position)) {
-			float xPositionOnTerrain = position.x - generator.getStartX();
-			int xGridPosition = (int) Math.floor(xPositionOnTerrain / generator.getDensity());
-			float zPositionOnTerrain = position.y - generator.getStartZ();
-			int zGridPosition = (int) Math.floor(zPositionOnTerrain / generator.getDensity());
-
-			float xCoord = (xPositionOnTerrain % generator.getDensity()) / generator.getDensity();
-			float zCoord = (zPositionOnTerrain % generator.getDensity()) / generator.getDensity();
-			float currentTerrainHeight = 0;
-			if (xCoord <= (1 - zCoord)) {
-				currentTerrainHeight = MathFunctions.barryCentric(
-						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition).y, 0),
-						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition).y, 0),
-						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition + 1).y, 1),
-						new Vec2(zCoord, xCoord));
-			} else {
-				currentTerrainHeight = MathFunctions.barryCentric(
-						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition).y, 0),
-						new Vec3(1, generator.getVerticesList().get(zGridPosition + 1).get(xGridPosition + 1).y, 1),
-						new Vec3(0, generator.getVerticesList().get(zGridPosition).get(xGridPosition + 1).y, 1),
-						new Vec2(zCoord, xCoord));
-			}
-			return currentTerrainHeight;
-		}
-		return -20f;
+		BufferedImage heightMap = generator.getProceduralTerrain().getHeightMap();
+		float value = ImageUtils.getFloatValueFromByteGrayImage(heightMap, (int) (position.x), (int) (position.y));
+		value = (value * 2f - 1f) * heightMapMultiplier;
+		return value;
 	}
 
 	public float heightAtPlayerPos() {
 		BufferedImage heightMap = generator.getProceduralTerrain().getHeightMap();
-		float value = ImageUtils.getFloatValueFromByteGrayImage(heightMap, (int)(heightMap.getWidth()/2f),
-				(int)(heightMap.getHeight()/2f));
+		float value = ImageUtils.getFloatValueFromByteGrayImage(heightMap, (int) (heightMap.getWidth() / 2f),
+				(int) (heightMap.getHeight() / 2f));
 		value = (value * 2f - 1f) * heightMapMultiplier;
 		return value;
 	}
@@ -488,6 +469,10 @@ public class MultiTextureTerrain implements IRenderObject {
 	public void setTexturePack(TexturePack texturePack) {
 		this.texturePack = texturePack;
 	}
+	
+	public Vec2 getGlobalPosition() {
+		return globalPosition;
+	}
 
 	/**
 	 * set the scale of the model
@@ -506,6 +491,9 @@ public class MultiTextureTerrain implements IRenderObject {
 	public void translate(Vec3 position) {
 		modelMatrix.cleanTranslation();
 		modelMatrix.translate(position.x, 0, position.z);
+
+		globalPosition.x = position.x;
+		globalPosition.y = position.z;
 	}
 
 	@Override

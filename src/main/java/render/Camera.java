@@ -31,7 +31,7 @@ public class Camera {
 	private Vec3 focusPoint;
 
 	public CameraMode cameraMode = CameraMode.PLAYER_CAMERA;
-	
+
 	private final float NEAR_CLIPPING_PLANE = 0.1f, FAR_CLIPPING_PLANE = 100f;
 
 	public Camera() {
@@ -103,7 +103,9 @@ public class Camera {
 			IRenderObject currTerrain = ((Player) player).getCurrentTerrain();
 			if (((MultiTextureTerrain) currTerrain).isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
 				float terrainHeight = ((MultiTextureTerrain) currTerrain)
-						.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
+						.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z)
+								.min(((MultiTextureTerrain) currTerrain).getGlobalPosition()));
+				System.out.println(terrainHeight);
 				if (cameraPosition.y < terrainHeight + 0.2f) {
 					cameraPosition.y = terrainHeight + 0.2f;
 				}
@@ -127,7 +129,8 @@ public class Camera {
 
 	private void updateProjectionMatrix() {
 		projectionMatrix = Glm.perspective_((float) Math.toRadians(45),
-				(float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight, NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
+				(float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight, NEAR_CLIPPING_PLANE,
+				FAR_CLIPPING_PLANE);
 	}
 
 	public Mat4 getView() {

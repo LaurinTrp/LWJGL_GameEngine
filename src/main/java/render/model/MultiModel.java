@@ -70,7 +70,7 @@ public class MultiModel implements IRenderObject {
 
 	private String shaderFolder;
 
-	private NormalDrawing<MultiModel> normalDrawing;
+	private NormalDrawing<MultiModel>[] normalDrawing;
 
 	private boolean showNormals;
 
@@ -92,7 +92,8 @@ public class MultiModel implements IRenderObject {
 	 * @param material  Material object
 	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
 	 */
-	public MultiModel(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax, Mat4[] modelMatrices) {
+	public MultiModel(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax,
+			Mat4[] modelMatrices) {
 		this.triangles = triangles;
 		this.vertices = vertices;
 		this.uvs = uvs;
@@ -102,6 +103,7 @@ public class MultiModel implements IRenderObject {
 		this.modelMatrices = modelMatrices;
 		this.minmax = Arrays.copyOf(minmax, minmax.length);
 	}
+
 	/**
 	 * Constructor copying other model
 	 *
@@ -120,12 +122,14 @@ public class MultiModel implements IRenderObject {
 	public void init() {
 
 		initShader(shaderFolder);
-		initMatrixes();
 		bindModel();
 
 		afterInit();
 
-		normalDrawing = new NormalDrawing<>(this);
+		normalDrawing = new NormalDrawing[modelMatrices.length];
+		for (int i = 0; i < modelMatrices.length; i++) {
+			normalDrawing[i] = new NormalDrawing<MultiModel>(vertices, normals, modelMatrices[i]);
+		}
 
 		init = true;
 	}
@@ -134,13 +138,6 @@ public class MultiModel implements IRenderObject {
 	 * Method that can be called after the initialization Needs override
 	 */
 	protected void afterInit() {
-	}
-
-	/**
-	 * Initializing the matrices
-	 */
-	public void initMatrixes() {
-		modelMatrix = new Mat4(1.0f);
 	}
 
 	/**
@@ -177,7 +174,7 @@ public class MultiModel implements IRenderObject {
 			colors[i + 2] = 0.0f;
 			colors[i + 3] = 1.0f;
 		}
-		
+
 		float[] data = ModelUtils.flattenArrays(vertices, colors, uvs, normals);
 
 		vao = glGenVertexArrays();
@@ -269,10 +266,10 @@ public class MultiModel implements IRenderObject {
 	/**
 	 * Upload the different matrices to the shader
 	 */
-	protected void uploadMatrixes() {
+	protected void uploadMatrixes(int index) {
 		glUniformMatrix4fv(uniforms.get("viewMatrix"), false, Renderer.camera.getView().toFa_());
 		glUniformMatrix4fv(uniforms.get("projectionMatrix"), false, Renderer.camera.getProjectionMatrix().toFa_());
-		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
+		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrices[index].toFa_());
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
 
@@ -280,8 +277,10 @@ public class MultiModel implements IRenderObject {
 	 * update the minmax for example after scaling
 	 */
 	protected void updateMinmax() {
-		translation = new Vec4(0.0f, 0.0f, 0.0f, 1.0f).mul(modelMatrix);
-		minmax = ModelUtils.calculateMinmax(startMinmax, translation);
+//		for (Mat4 matrix : modelMatrices) {
+//			translation = new Vec4(0.0f, 0.0f, 0.0f, 1.0f).mul(matrix);
+//		}
+//		minmax = ModelUtils.calculateMinmax(startMinmax, translation);
 	}
 
 	@Override
@@ -302,21 +301,23 @@ public class MultiModel implements IRenderObject {
 				}
 				glBindVertexArray(vao);
 				{
+					for (int i = 0; i < modelMatrices.length; i++) {
 //					updateMinmax();
-					renderProcessBegin();
+						renderProcessBegin();
 
-					// Upload the uniforms
-					uploadLighting();
-					uploadMatrixes();
+						// Upload the uniforms
+						uploadLighting();
+						uploadMatrixes(i);
 
-					// draw the data (depends on if it has a ebo)
-					if (!hasEbo) {
-						glDrawArrays(GL_TRIANGLES, 0, triangles);
-					} else {
-						glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+						// draw the data (depends on if it has a ebo)
+						if (!hasEbo) {
+							glDrawArrays(GL_TRIANGLES, 0, triangles);
+						} else {
+							glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+						}
+
+						renderProcessEnd();
 					}
-
-					renderProcessEnd();
 
 				}
 				glBindVertexArray(0);
@@ -325,10 +326,11 @@ public class MultiModel implements IRenderObject {
 		}
 		// draw normals if necessary
 		if (showNormals) {
-			normalDrawing.render();
+			for (NormalDrawing<MultiModel> normalDrawing : normalDrawing) {
+				normalDrawing.render();
+			}
 		}
 	}
-
 
 	/**
 	 * Get the material object
@@ -412,24 +414,6 @@ public class MultiModel implements IRenderObject {
 	}
 
 	/**
-	 * get the model matrix
-	 *
-	 * @return model matrix as mat4
-	 */
-	public Mat4 getModelMatrix() {
-		return modelMatrix;
-	}
-
-	/**
-	 * Set a new model matrix
-	 *
-	 * @param modelMatrix new Model matrix
-	 */
-	public void setModelMatrix(Mat4 modelMatrix) {
-		this.modelMatrix = modelMatrix;
-	}
-
-	/**
 	 * get the minmax values
 	 *
 	 * @return minmax values as an float array
@@ -449,7 +433,9 @@ public class MultiModel implements IRenderObject {
 			startMinmax[i] *= scale;
 		}
 		this.scale = scale;
-		modelMatrix.scale(scale);
+		for (Mat4 matrix : modelMatrices) {
+			matrix.scale(scale);
+		}
 	}
 
 	@Override
@@ -468,8 +454,10 @@ public class MultiModel implements IRenderObject {
 
 		vao = 0;
 
-		if (normalDrawing != null) {
-			normalDrawing.dispose();
+		for (NormalDrawing<MultiModel> normalDrawing : normalDrawing) {
+			if(normalDrawing != null) {
+				normalDrawing.dispose();
+			}
 		}
 
 		init = false;

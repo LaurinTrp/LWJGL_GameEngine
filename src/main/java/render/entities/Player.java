@@ -17,14 +17,14 @@ import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
-import main.java.render.model.Model;
+import main.java.render.model.SingleModel;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.utils.ModelUtils;
 import main.java.utils.constants.CameraMode;
 import main.java.utils.constants.Constants;
 import main.java.utils.loaders.ModelLoader;
 
-public class Player extends Model {
+public class Player extends SingleModel {
 
 	private Vec3 position;
 	private Vec3 prevPosition;
@@ -42,7 +42,7 @@ public class Player extends Model {
 	private ArrayList<IRenderObject> intersectors = new ArrayList<>();
 
 	public Player() {
-		super((Model) ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
+		super((SingleModel) ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
 	}
@@ -131,7 +131,7 @@ public class Player extends Model {
 			Float[] tempMinmax = ModelUtils.calculateMinmax(startMinmax, new Vec3(position).add(direction));
 
 			for (IRenderObject model : intersectors) {
-				if (ModelUtils.isIntersecting(tempMinmax, ((Model) model).getMinmax())) {
+				if (ModelUtils.isIntersecting(tempMinmax, ((SingleModel) model).getMinmax())) {
 					isIntersecting = true;
 					break;
 				}
@@ -199,7 +199,7 @@ public class Player extends Model {
 		intersectors.add(intersector);
 	}
 
-	public void removeIntersector(Model intersector) {
+	public void removeIntersector(SingleModel intersector) {
 		intersectors.remove(intersector);
 	}
 	

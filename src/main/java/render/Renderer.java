@@ -128,7 +128,8 @@ public class Renderer {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 //		rectanglePass.render();
-		
+
+		sun.update();
 		skybox.render();
 		glEnable(GL_DEPTH_TEST);
 		renderScene();
@@ -136,7 +137,6 @@ public class Renderer {
 		camera.setFocusPoint(new Vec3(((Player) player).getPosition()));
 		camera.moveCamera();
 ////
-//		sun.update();
 
 		glDisable(GL_DEPTH_TEST);
 		((Framebuffer) framebuffer).renderColorAttachments();
