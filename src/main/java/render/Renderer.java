@@ -18,6 +18,7 @@ import main.java.render.entities.Player;
 import main.java.render.entities.Test;
 import main.java.render.entities.trees.Tree_1;
 import main.java.render.model.MultiTextureTerrain;
+import main.java.render.model.RandomMatrixGenerator;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.TerrainModel;
 import main.java.render.passes.framebuffers.DepthMap;
@@ -95,13 +96,8 @@ public class Renderer {
 
 		generateFirstTerrain();
 
-		Mat4[] matrices = new Mat4[4];
-		for (int i = 0; i < matrices.length; i++) {
-			Mat4 matrix = new Mat4(5.0f);
-			matrix.translation(i * 5, 0, 0);
-			matrices[i]=matrix;
-		} 
-		tree_1 = new Tree_1(matrices);
+		tree_1 = new Tree_1(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f), 
+				new Vec2(3f, 6f)));
 
 		test = new Test();
 //		((Player) player).addIntersector(cottage);
@@ -136,11 +132,10 @@ public class Renderer {
 //
 		camera.setFocusPoint(new Vec3(((Player) player).getPosition()));
 		camera.moveCamera();
-////
 
 		glDisable(GL_DEPTH_TEST);
 		((Framebuffer) framebuffer).renderColorAttachments();
-
+		framebuffer.unbindFbo();
 	}
 
 	public void renderScene() {
