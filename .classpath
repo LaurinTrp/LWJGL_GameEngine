@@ -38,7 +38,8 @@
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-opengles-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-opengl-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-stb-natives-linux.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/GLM"/>
 	<classpathentry kind="src" path="res"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/GLM"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/LWJGL_GameEngineResource"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
