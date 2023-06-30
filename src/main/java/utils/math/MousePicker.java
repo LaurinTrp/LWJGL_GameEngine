@@ -5,9 +5,9 @@ import glm.vec._2.Vec2;
 import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
 import main.java.render.Camera;
-import main.java.render.IRenderObject;
 import main.java.render.model.SingleModel;
 import main.java.render.passes.TerrainModel;
+import main.java.render.renderobject.IRenderObject;
 
 public class MousePicker {
 	private Vec4 currentRay;

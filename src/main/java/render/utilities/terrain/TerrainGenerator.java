@@ -1,6 +1,5 @@
 package main.java.render.utilities.terrain;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import glm.Glm;

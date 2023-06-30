@@ -2,7 +2,6 @@ package main.java.render.entities.trees;
 
 import glm.mat._4.Mat4;
 import main.java.render.model.MultiModel;
-import main.java.render.model.SingleModel;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 

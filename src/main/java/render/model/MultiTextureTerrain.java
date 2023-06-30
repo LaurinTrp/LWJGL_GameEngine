@@ -17,7 +17,8 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glUniform1f;
+import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
@@ -26,31 +27,24 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.imageio.ImageIO;
 
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
-import main.java.render.IRenderObject;
 import main.java.render.Renderer;
+import main.java.render.renderobject.RenderObject;
 import main.java.render.utilities.NormalDrawing;
 import main.java.render.utilities.TexturePack;
 import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ImageUtils;
 import main.java.utils.ModelUtils;
-import main.java.utils.math.MathFunctions;
-import main.java.utils.math.Noise;
 
-public class MultiTextureTerrain implements IRenderObject {
+public class MultiTextureTerrain extends RenderObject {
 
 	protected boolean init = false;
 

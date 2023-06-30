@@ -27,13 +27,13 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.util.HashMap;
 
 import glm.mat._4.Mat4;
-import main.java.render.IRenderObject;
 import main.java.render.Renderer;
+import main.java.render.renderobject.RenderObject;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 import main.java.utils.loaders.ImageLoader;
 
-public class Skybox implements IRenderObject {
+public class Skybox extends RenderObject {
 
 	private int vao, vbo, textureID;
 	private int texture;

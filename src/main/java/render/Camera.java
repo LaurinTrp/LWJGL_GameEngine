@@ -7,6 +7,7 @@ import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.entities.Player;
 import main.java.render.model.MultiTextureTerrain;
+import main.java.render.renderobject.IRenderObject;
 import main.java.utils.constants.CameraMode;
 
 public class Camera {

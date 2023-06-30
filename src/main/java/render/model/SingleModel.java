@@ -25,7 +25,6 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
@@ -33,14 +32,14 @@ import org.lwjgl.opengl.GL15;
 
 import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
-import main.java.render.IRenderObject;
 import main.java.render.Renderer;
+import main.java.render.renderobject.RenderObject;
 import main.java.render.utilities.BoundingBox;
 import main.java.render.utilities.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class SingleModel implements IRenderObject {
+public class SingleModel extends RenderObject {
 
 	private Material material;
 
@@ -78,10 +77,6 @@ public class SingleModel implements IRenderObject {
 	private boolean showMinMax;
 
 	private Vec4 translation;
-
-	public SingleModel() {
-//		startMinmax = new Float[6];
-	}
 
 	/**
 	 * Model constructor without ebo

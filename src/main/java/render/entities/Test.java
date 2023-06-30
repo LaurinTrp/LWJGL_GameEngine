@@ -22,12 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import glm.mat._4.Mat4;
-import main.java.render.IRenderObject;
 import main.java.render.Renderer;
+import main.java.render.renderobject.RenderObject;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class Test implements IRenderObject{
+public class Test extends RenderObject{
 
 	private boolean init = false;
 	private int vao, vbo;

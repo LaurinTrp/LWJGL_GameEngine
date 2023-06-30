@@ -21,7 +21,6 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.util.HashMap;
 
 import glm.mat._4.Mat4;
-import glm.vec._3.Vec3;
 import main.java.render.Renderer;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.model.SingleModel;

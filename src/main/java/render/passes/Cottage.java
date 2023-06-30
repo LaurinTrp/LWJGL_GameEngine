@@ -1,7 +1,5 @@
 package main.java.render.passes;
 
-import java.util.Arrays;
-
 import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.Vec3;

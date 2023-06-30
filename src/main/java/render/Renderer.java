@@ -10,7 +10,6 @@ import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
 
-import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
@@ -31,7 +30,7 @@ import main.java.render.passes.skybox.Skybox;
 import main.java.render.passes.standard.RectanglePass;
 import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
-import main.java.render.utilities.BoundingBox;
+import main.java.render.renderobject.IRenderObject;
 import main.java.render.utilities.TexturePack;
 import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.utils.math.MousePicker;

@@ -1,4 +1,4 @@
-package main.java.render;
+package main.java.render.renderobject;
 
 public interface IRenderObject {
 	

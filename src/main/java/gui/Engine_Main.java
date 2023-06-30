@@ -36,7 +36,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import main.java.render.Renderer;
-import main.java.utils.FPScounter;
 import main.java.utils.Inputs.KeyHandler;
 import main.java.utils.Inputs.MouseInputs;
 

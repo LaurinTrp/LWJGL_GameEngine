@@ -23,11 +23,11 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import glm.mat._4.Mat4;
-import main.java.render.IRenderObject;
 import main.java.render.Renderer;
+import main.java.render.renderobject.RenderObject;
 import main.java.shader.ShaderProgram;
 
-public class Compass implements IRenderObject {
+public class Compass extends RenderObject {
 
 	private boolean init = false;
 

@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import main.java.render.utilities.terrain.ProceduralTerrain;
 import main.java.utils.math.PerlinNoise.GPT_Generated;
 
 public class TestClass extends Thread implements Runnable {

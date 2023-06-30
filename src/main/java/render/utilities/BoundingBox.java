@@ -22,14 +22,12 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.util.Arrays;
 
 import glm.mat._4.Mat4;
-import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
-import main.java.render.IRenderObject;
 import main.java.render.Renderer;
-import main.java.render.model.SingleModel;
+import main.java.render.renderobject.RenderObject;
 import main.java.shader.ShaderProgram;
 
-public class BoundingBox<E> implements IRenderObject {
+public class BoundingBox<E> extends RenderObject {
 
 	private boolean init = false;
 

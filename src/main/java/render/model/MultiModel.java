@@ -25,23 +25,21 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 import glm.mat._4.Mat4;
-import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
-import main.java.render.IRenderObject;
 import main.java.render.Renderer;
+import main.java.render.renderobject.RenderObject;
 import main.java.render.utilities.BoundingBox;
 import main.java.render.utilities.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class MultiModel implements IRenderObject {
+public class MultiModel extends RenderObject {
 
 	private Material material;
 

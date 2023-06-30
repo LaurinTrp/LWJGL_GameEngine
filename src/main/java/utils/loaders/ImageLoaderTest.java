@@ -1,11 +1,7 @@
 package main.java.utils.loaders;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-
-import javax.imageio.ImageIO;
 
 import main.java.utils.ImageUtils;
 

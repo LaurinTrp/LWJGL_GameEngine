@@ -2,12 +2,13 @@ package main.java.render.passes;
 
 import java.util.ArrayList;
 
-import main.java.render.IRenderObject;
 import main.java.render.model.SingleModel;
+import main.java.render.renderobject.IRenderObject;
+import main.java.render.renderobject.RenderObject;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
-public class Cubes implements IRenderObject {
+public class Cubes extends RenderObject {
 	ArrayList<IRenderObject> models = new ArrayList<>();
 
 	public Cubes() {

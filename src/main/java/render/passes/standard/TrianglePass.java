@@ -25,10 +25,10 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
 
-import main.java.render.IRenderObject;
+import main.java.render.renderobject.RenderObject;
 import main.java.shader.ShaderProgram;
 
-public class TrianglePass implements IRenderObject{
+public class TrianglePass extends RenderObject{
 
 	private boolean init = false;
 

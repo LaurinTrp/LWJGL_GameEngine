@@ -7,11 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import glm.mat._4.Mat4;
-import main.java.render.IRenderObject;
 import main.java.render.model.Material;
 import main.java.render.model.MultiModel;
 import main.java.render.model.SingleModel;
+import main.java.render.renderobject.IRenderObject;
 import main.java.render.utilities.BoundingBox;
 import main.java.utils.FileUtils;
 import resources.ResourceLoader;
