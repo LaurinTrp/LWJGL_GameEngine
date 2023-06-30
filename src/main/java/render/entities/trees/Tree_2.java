@@ -6,20 +6,18 @@ import main.java.render.model.SingleModel;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
-public class Tree_1 extends MultiModel {
+public class Tree_2 extends MultiModel {
 
-	public Tree_1(Mat4[] matrices) {
-		super((MultiModel) ModelLoader.loadMultiModelFromResource("Trees", "Tree1.obj"));
+	public Tree_2(Mat4[] matrices) {
+		super((MultiModel) ModelLoader.loadMultiModelFromResource("Trees", "Tree2.obj"));
 		setModelMatrices(matrices);
-		
 		setShaderFolder("Transformation");
 		try {
 			getMaterial().setTexture(ImageLoader
-					.loadTextureFromResource("trees/Tree1.png"));
+					.loadTextureFromResource("trees/Tree2.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		setShowMinMax(true);
 	}
 

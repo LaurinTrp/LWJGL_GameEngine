@@ -87,7 +87,7 @@ public class Compass implements IRenderObject {
 
 	private void initMatrixes() {
 		modelMatrix = new Mat4(1.0f);
-		modelMatrix.scale(1.5f);
+		modelMatrix.scale(10f);
 	}
 
 

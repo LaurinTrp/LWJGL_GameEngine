@@ -1,5 +1,7 @@
 package main.java.render.passes;
 
+import java.util.Arrays;
+
 import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.Vec3;
@@ -14,7 +16,7 @@ public class Cottage extends SingleModel {
 		super((SingleModel) ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage_diffuse.png"));
-
+		setShowMinMax(true);
 	}
 
 	@Override
@@ -30,10 +32,8 @@ public class Cottage extends SingleModel {
 
 	@Override
 	public void afterInit() {
-		modelMatrix.translate(new Vec3(10f, 0f, 10f));
+		modelMatrix.translate(new Vec3(10f, 1f, 10f));
 
-		setScale(0.2f);
-		updateMinmax();
-
+		scale(0.4f);
 	}
 }

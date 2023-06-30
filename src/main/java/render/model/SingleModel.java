@@ -35,6 +35,7 @@ import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
+import main.java.render.utilities.BoundingBox;
 import main.java.render.utilities.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
@@ -63,21 +64,23 @@ public class SingleModel implements IRenderObject {
 	protected int[] indices;
 
 	// min x, max x, min y, max y, min z, max z
-	protected final Float[] startMinmax;
-	protected Float[] minmax = new Float[6];
+//	protected final Float[] startMinmax;
+//	protected Float[] minmax = new Float[6];
 
 	private float scale = 1.0f;
 
 	private String shaderFolder;
 
 	private NormalDrawing<SingleModel> normalDrawing;
+	private BoundingBox<SingleModel> boundingBox;
 
 	private boolean showNormals;
+	private boolean showMinMax;
 
 	private Vec4 translation;
 
 	public SingleModel() {
-		startMinmax = new Float[6];
+//		startMinmax = new Float[6];
 	}
 
 	/**
@@ -91,14 +94,13 @@ public class SingleModel implements IRenderObject {
 	 * @param material  Material object
 	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
 	 */
-	public SingleModel(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax) {
+	public SingleModel(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, BoundingBox<SingleModel> minmax) {
 		this.triangles = triangles;
 		this.vertices = vertices;
 		this.uvs = uvs;
 		this.normals = normals;
 		this.material = material;
-		this.startMinmax = minmax;
-		this.minmax = Arrays.copyOf(minmax, minmax.length);
+		this.boundingBox = minmax;
 	}
 	/**
 	 * Constructor copying other model
@@ -106,8 +108,7 @@ public class SingleModel implements IRenderObject {
 	 * @param model Model to copy
 	 */
 	public SingleModel(SingleModel model) {
-		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, new Float[] { model.minmax[0],
-				model.minmax[1], model.minmax[2], model.minmax[3], model.minmax[4], model.minmax[5], });
+		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, model.boundingBox);
 
 		this.program = model.program;
 
@@ -126,6 +127,7 @@ public class SingleModel implements IRenderObject {
 		afterInit();
 
 		normalDrawing = new NormalDrawing<>(this);
+		boundingBox.setModelMatrix(modelMatrix);
 
 		init = true;
 	}
@@ -276,14 +278,6 @@ public class SingleModel implements IRenderObject {
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
 
-	/**
-	 * update the minmax for example after scaling
-	 */
-	protected void updateMinmax() {
-		translation = new Vec4(0.0f, 0.0f, 0.0f, 1.0f).mul(modelMatrix);
-		minmax = ModelUtils.calculateMinmax(startMinmax, translation);
-	}
-
 	@Override
 	public void render() {
 		if (!init) {
@@ -326,6 +320,9 @@ public class SingleModel implements IRenderObject {
 		// draw normals if necessary
 		if (showNormals) {
 			normalDrawing.render();
+		}
+		if(showMinMax) {
+			boundingBox.render();
 		}
 	}
 
@@ -401,6 +398,10 @@ public class SingleModel implements IRenderObject {
 	public void setShowNormals(boolean showNormals) {
 		this.showNormals = showNormals;
 	}
+	
+	public void setShowMinMax(boolean showMinMax) {
+		this.showMinMax = showMinMax;
+	}
 
 	/**
 	 * get the current scale of the model
@@ -429,29 +430,24 @@ public class SingleModel implements IRenderObject {
 		this.modelMatrix = modelMatrix;
 	}
 
-	/**
-	 * get the minmax values
-	 *
-	 * @return minmax values as an float array
-	 */
-	public Float[] getMinmax() {
-		return minmax;
-	}
 
 	/**
 	 * set the scale of the model
 	 *
 	 * @param scale scaling factor
 	 */
-	public void setScale(float scale) {
-		for (int i = 0; i < minmax.length; i++) {
-			minmax[i] *= scale;
-			startMinmax[i] *= scale;
-		}
-		this.scale = scale;
-		modelMatrix.scale(scale);
+	public void scale(float scale) {
+//		for (int i = 0; i < minmax.length; i++) {
+//			minmax[i] *= scale;
+//		}
+//		this.scale = scale;
+//		modelMatrix.scale(scale);
 	}
 
+	public BoundingBox<SingleModel> getBoundingBox() {
+		return boundingBox;
+	}
+	
 	@Override
 	public void dispose() {
 
@@ -470,6 +466,9 @@ public class SingleModel implements IRenderObject {
 
 		if (normalDrawing != null) {
 			normalDrawing.dispose();
+		}
+		if(boundingBox != null) {
+			boundingBox.dispose();
 		}
 
 		init = false;
