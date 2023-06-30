@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import glm.mat._4.Mat4;
 import main.java.render.IRenderObject;
 import main.java.render.model.Material;
 import main.java.render.model.MultiModel;
 import main.java.render.model.SingleModel;
+import main.java.render.utilities.BoundingBox;
 import main.java.utils.FileUtils;
 import resources.ResourceLoader;
 
@@ -41,7 +43,7 @@ public class ModelLoader {
 		ArrayList<IRenderObject> models = new ArrayList<>();
 		ArrayList<Float[][]> objects = loadMultipleFromObj(path);
 		for (Float[][] floats : objects) {
-			IRenderObject model = new SingleModel(floats[0], floats[1], floats[2], floats[4][0].intValue(), new Material(), floats[3]);
+			IRenderObject model = new SingleModel(floats[0], floats[1], floats[2], floats[4][0].intValue(), new Material(), new BoundingBox<SingleModel>(floats[3]));
 			models.add(model);
 		}
 		return models;
@@ -134,20 +136,20 @@ public class ModelLoader {
 				break;
 			}
 		}
-
+		
 		return new Float[][] { getVertices(), getTextures(), getNormals(), minmax};
 	}
 
-	public static IRenderObject loadModel(String path) {
-		Float[][] data = loadObj(path);
-		IRenderObject model = new SingleModel(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
-		return model;
-	}
+//	public static IRenderObject loadModel(String path) {
+//		Float[][] data = loadObj(path);
+//		IRenderObject model = new SingleModel(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
+//		return model;
+//	}
 
 	public static IRenderObject loadModelFromResource(String parent, String file) {
 		clear();
 		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
-		IRenderObject model = new SingleModel(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
+		IRenderObject model = new SingleModel(data[0], data[1], data[2], triangleCount, new Material(), new BoundingBox<SingleModel>(data[3]));
 
 		return model;
 	}
@@ -155,8 +157,7 @@ public class ModelLoader {
 	public static IRenderObject loadMultiModelFromResource(String parent, String file) {
 		clear();
 		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
-		IRenderObject model = new MultiModel(data[0], data[1], data[2], triangleCount, new Material(), data[3], null);
-
+		IRenderObject model = new MultiModel(data[0], data[1], data[2], triangleCount, new Material(), new BoundingBox<MultiModel>(data[3]));
 		return model;
 	}
 

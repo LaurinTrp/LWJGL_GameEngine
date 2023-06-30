@@ -32,9 +32,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 import glm.mat._4.Mat4;
+import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
+import main.java.render.utilities.BoundingBox;
 import main.java.render.utilities.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
@@ -63,45 +65,43 @@ public class MultiModel implements IRenderObject {
 	protected int[] indices;
 
 	// min x, max x, min y, max y, min z, max z
-	protected final Float[] startMinmax;
-	protected Float[] minmax = new Float[6];
+//	protected final Float[] startMinmaxForModel;
+//	protected Float[][] minmax;
 
 	private float scale = 1.0f;
 
 	private String shaderFolder;
 
+	
 	private NormalDrawing<MultiModel>[] normalDrawing;
+	private final BoundingBox<MultiModel> startMinmax;
+	private BoundingBox<MultiModel>[] boundingBoxes;
 
 	private boolean showNormals;
+	private boolean showMinMax;
 
 	private Vec4 translation;
-
-	public MultiModel() {
-		startMinmax = new Float[6];
-
-	}
 
 	/**
 	 * Model constructor without ebo
 	 *
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
+	 * @param vertices    The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
+	 * @param uvs         The data of the uv coordinates
+	 * @param normals     The data of the normals
+	 * @param indices     The indices
+	 * @param triangles   Number of triangles
+	 * @param material    Material object
+	 * @param startMinMax Min and Max coordinates (minX, maxX, minY, maxY, minZ,
+	 *                    maxZ)
 	 */
-	public MultiModel(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, Float[] minmax,
-			Mat4[] modelMatrices) {
+	public MultiModel(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material,
+			BoundingBox<MultiModel> initBoundingBox) {
 		this.triangles = triangles;
 		this.vertices = vertices;
 		this.uvs = uvs;
 		this.normals = normals;
 		this.material = material;
-		this.startMinmax = minmax;
-		this.modelMatrices = modelMatrices;
-		this.minmax = Arrays.copyOf(minmax, minmax.length);
+		this.startMinmax = initBoundingBox;
 	}
 
 	/**
@@ -109,9 +109,8 @@ public class MultiModel implements IRenderObject {
 	 *
 	 * @param model Model to copy
 	 */
-	public MultiModel(MultiModel model, Mat4[] modelMatrices) {
-		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, new Float[] { model.minmax[0],
-				model.minmax[1], model.minmax[2], model.minmax[3], model.minmax[4], model.minmax[5], }, modelMatrices);
+	public MultiModel(MultiModel model) {
+		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, model.startMinmax);
 
 		this.program = model.program;
 
@@ -122,13 +121,16 @@ public class MultiModel implements IRenderObject {
 	public void init() {
 
 		initShader(shaderFolder);
+		initMatrices();
 		bindModel();
 
 		afterInit();
 
 		normalDrawing = new NormalDrawing[modelMatrices.length];
+		boundingBoxes = new BoundingBox[modelMatrices.length];
 		for (int i = 0; i < modelMatrices.length; i++) {
 			normalDrawing[i] = new NormalDrawing<MultiModel>(vertices, normals, modelMatrices[i]);
+			boundingBoxes[i] = new BoundingBox<>(startMinmax.getStartMinmax(), modelMatrices[i]);
 		}
 
 		init = true;
@@ -138,6 +140,17 @@ public class MultiModel implements IRenderObject {
 	 * Method that can be called after the initialization Needs override
 	 */
 	protected void afterInit() {
+	}
+
+	private void initMatrices() {
+//		this.minmax = new Float[modelMatrices.length][6];
+//		for (int i = 0; i < minmax.length; i++) {
+//			minmax[i] = Arrays.copyOf(startMinmaxForModel, startMinmaxForModel.length);
+//		}
+//
+//		for (int i = 0; i < minmax.length; i++) {
+//			updateMinmax(i);
+//		}
 	}
 
 	/**
@@ -276,11 +289,22 @@ public class MultiModel implements IRenderObject {
 	/**
 	 * update the minmax for example after scaling
 	 */
-	protected void updateMinmax() {
-//		for (Mat4 matrix : modelMatrices) {
-//			translation = new Vec4(0.0f, 0.0f, 0.0f, 1.0f).mul(matrix);
-//		}
-//		minmax = ModelUtils.calculateMinmax(startMinmax, translation);
+	protected void updateMinmax(int i) {
+//		Vec3 scale = modelMatrices[i].scale;
+//		minmax[i][0] *= scale.x;
+//		minmax[i][1] *= scale.x;
+//		minmax[i][2] *= scale.y;
+//		minmax[i][3] *= scale.y;
+//		minmax[i][4] *= scale.z;
+//		minmax[i][5] *= scale.z;
+//
+//		Vec3 translation = modelMatrices[i].translation;
+//		minmax[i][0] += translation.x;
+//		minmax[i][1] += translation.x;
+//		minmax[i][2] += translation.y;
+//		minmax[i][3] += translation.y;
+//		minmax[i][4] += translation.z;
+//		minmax[i][5] += translation.z;
 	}
 
 	@Override
@@ -328,6 +352,11 @@ public class MultiModel implements IRenderObject {
 		if (showNormals) {
 			for (NormalDrawing<MultiModel> normalDrawing : normalDrawing) {
 				normalDrawing.render();
+			}
+		}
+		if (showMinMax) {
+			for (BoundingBox<MultiModel> minMax : boundingBoxes) {
+				minMax.render();
 			}
 		}
 	}
@@ -404,6 +433,10 @@ public class MultiModel implements IRenderObject {
 		this.showNormals = showNormals;
 	}
 
+	public void setShowMinMax(boolean showMinMax) {
+		this.showMinMax = showMinMax;
+	}
+
 	/**
 	 * get the current scale of the model
 	 *
@@ -413,29 +446,18 @@ public class MultiModel implements IRenderObject {
 		return scale;
 	}
 
-	/**
-	 * get the minmax values
-	 *
-	 * @return minmax values as an float array
-	 */
-	public Float[] getMinmax() {
-		return minmax;
+	public void scale(int index, float scale) {
+		Mat4 model = modelMatrices[index];
+		model.scale(scale);
+		updateMinmax(index);
 	}
 
-	/**
-	 * set the scale of the model
-	 *
-	 * @param scale scaling factor
-	 */
-	public void setScale(float scale) {
-		for (int i = 0; i < minmax.length; i++) {
-			minmax[i] *= scale;
-			startMinmax[i] *= scale;
-		}
-		this.scale = scale;
-		for (Mat4 matrix : modelMatrices) {
-			matrix.scale(scale);
-		}
+	public void setModelMatrices(Mat4[] modelMatrices) {
+		this.modelMatrices = modelMatrices;
+	}
+	
+	public BoundingBox<MultiModel>[] getBoundingBoxes() {
+		return boundingBoxes;
 	}
 
 	@Override
@@ -454,9 +476,14 @@ public class MultiModel implements IRenderObject {
 
 		vao = 0;
 
-		for (NormalDrawing<MultiModel> normalDrawing : normalDrawing) {
-			if(normalDrawing != null) {
+		if (normalDrawing != null) {
+			for (NormalDrawing<MultiModel> normalDrawing : normalDrawing) {
 				normalDrawing.dispose();
+			}
+		}
+		if (boundingBoxes != null) {
+			for (BoundingBox<MultiModel> minMax : boundingBoxes) {
+				minMax.dispose();
 			}
 		}
 

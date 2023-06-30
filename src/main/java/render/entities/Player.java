@@ -12,12 +12,16 @@ import static org.lwjgl.opengl.GL11.glDisable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import main.java.gui.Engine_Main;
 import main.java.render.IRenderObject;
 import main.java.render.Renderer;
 import main.java.render.model.SingleModel;
+import main.java.render.utilities.BoundingBox;
+import main.java.render.model.MultiModel;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.utils.ModelUtils;
 import main.java.utils.constants.CameraMode;
@@ -34,7 +38,7 @@ public class Player extends SingleModel {
 	private Vec3 playerUp = new Vec3(0.0f, 1.0f, 0.0f);
 	private Vec3 playerRight = new Vec3(1.0f, 0.0f, 0.0f);
 	private Vec3 direction = new Vec3();
-	
+
 	private IRenderObject currentTerrain;
 
 	private float rotationAngle = 0;
@@ -70,10 +74,9 @@ public class Player extends SingleModel {
 
 		position = new Vec3(0.0, 0.0, 0.0);
 		prevPosition = new Vec3(position);
-		modelMatrix = modelMatrix.rotate((float)Math.toRadians(180), new Vec3(0.0, 1.0, 0.0));
+		modelMatrix = modelMatrix.rotate((float) Math.toRadians(180), new Vec3(0.0, 1.0, 0.0));
 		rotationAngle = (float) Math.toRadians(180);
 		modelMatrix = modelMatrix.translation(position);
-		updateMinmax();
 	}
 
 	/**
@@ -126,30 +129,44 @@ public class Player extends SingleModel {
 		}
 
 		if (!direction.equals(new Vec3())) {
-			boolean isIntersecting = false;
+//			boolean isIntersecting = false;
 
-			Float[] tempMinmax = ModelUtils.calculateMinmax(startMinmax, new Vec3(position).add(direction));
-
-			for (IRenderObject model : intersectors) {
-				if (ModelUtils.isIntersecting(tempMinmax, ((SingleModel) model).getMinmax())) {
-					isIntersecting = true;
-					break;
-				}
-			}
-			if (!isIntersecting) {
+			if (!isFutureIntersecting(direction)) {
 				hasMoved = true;
 			}
 		}
-		
+
 		return hasMoved;
 	}
-	
+
+	private boolean isFutureIntersecting(Vec3 direction) {
+
+		Vec3 tempPosition = new Vec3(position).add(direction);
+		Mat4 tempModelMatrix = new Mat4(modelMatrix).cleanTranslation().translation(tempPosition);
+
+		BoundingBox<Player> tempBoundryBox = new BoundingBox<>(getBoundingBox().getStartMinmax(), tempModelMatrix);
+		for (IRenderObject model : intersectors) {
+			if (model instanceof SingleModel) {
+				if (BoundingBox.collision(tempBoundryBox, ((SingleModel) model).getBoundingBox())) {
+					return true;
+				}
+			} else if (model instanceof MultiModel) {
+				MultiModel multiModel = (MultiModel) model;
+				for (BoundingBox<?> boundingBox: multiModel.getBoundingBoxes()) {
+					if(BoundingBox.collision(tempBoundryBox, boundingBox)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	public void move() {
 		if (hasMoved) {
 			position.add(direction);
 			modelMatrix = modelMatrix.cleanTranslation();
 			modelMatrix = modelMatrix.translation(position);
-			updateMinmax();
 		}
 	}
 
@@ -157,13 +174,13 @@ public class Player extends SingleModel {
 	 * Applying gravity to the player
 	 */
 	public void gravity(MultiTextureTerrain terrain) {
-		if(!init) {
+		if (!init) {
 			return;
 		}
-		if(terrain != null) {
+		if (terrain != null) {
 			currentTerrain = terrain;
 		}
-		position.y = terrain.heightAtPlayerPos() - startMinmax[2];
+//		position.y = terrain.heightAtPlayerPos() - startMinmax[2];
 	}
 
 	/**
@@ -190,7 +207,7 @@ public class Player extends SingleModel {
 	public Vec3 getPlayerUp() {
 		return playerUp;
 	}
-	
+
 	public Vec2 getPlayerPosXZ() {
 		return new Vec2(position.x, position.z);
 	}
@@ -202,7 +219,7 @@ public class Player extends SingleModel {
 	public void removeIntersector(SingleModel intersector) {
 		intersectors.remove(intersector);
 	}
-	
+
 	public IRenderObject getCurrentTerrain() {
 		return currentTerrain;
 	}

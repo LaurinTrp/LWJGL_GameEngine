@@ -17,6 +17,7 @@ import glm.vec._4.Vec4;
 import main.java.render.entities.Player;
 import main.java.render.entities.Test;
 import main.java.render.entities.trees.Tree_1;
+import main.java.render.entities.trees.Tree_2;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.model.RandomMatrixGenerator;
 import main.java.render.passes.Cottage;
@@ -30,6 +31,7 @@ import main.java.render.passes.skybox.Skybox;
 import main.java.render.passes.standard.RectanglePass;
 import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
+import main.java.render.utilities.BoundingBox;
 import main.java.render.utilities.TexturePack;
 import main.java.render.utilities.terrain.TerrainGenerator;
 import main.java.utils.math.MousePicker;
@@ -52,6 +54,7 @@ public class Renderer {
 	private IRenderObject player;
 
 	private IRenderObject tree_1;
+	private IRenderObject tree_2;
 
 	private MultiTextureTerrain terrainModel;
 
@@ -98,10 +101,13 @@ public class Renderer {
 
 		tree_1 = new Tree_1(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f), 
 				new Vec2(3f, 6f)));
+		tree_2 = new Tree_2(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f), 
+				new Vec2(3f, 6f)));
 
 		test = new Test();
-//		((Player) player).addIntersector(cottage);
-//		((Player) player).addIntersector(tree_1);
+		
+		((Player) player).addIntersector(cottage);
+		((Player) player).addIntersector(tree_1);
 	}
 
 	private Skybox createSkybox() {
@@ -134,12 +140,12 @@ public class Renderer {
 		camera.moveCamera();
 
 		glDisable(GL_DEPTH_TEST);
+		compass.render();
 		((Framebuffer) framebuffer).renderColorAttachments();
 		framebuffer.unbindFbo();
 	}
 
 	public void renderScene() {
-
 		glEnable(GL_CULL_FACE);
 
 //		test.render();
@@ -147,8 +153,6 @@ public class Renderer {
 //		terrainModel.render();
 //		lightSourcePass.render();
 
-//		cottage.render();
-		tree_1.render();
 
 //		System.out.println("PLAYER POSITION: " + ((Player)player).getPosition());
 
@@ -164,8 +168,11 @@ public class Renderer {
 
 //		cube.render();
 
-		compass.render();
 		glDisable(GL_CULL_FACE);
+
+		cottage.render();
+		tree_1.render();
+//		tree_2.render();
 	}
 
 	/**
@@ -188,6 +195,7 @@ public class Renderer {
 
 		compass.dispose();
 		tree_1.dispose();
+		tree_2.dispose();
 
 		test.dispose();
 	}

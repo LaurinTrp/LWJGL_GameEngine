@@ -105,7 +105,7 @@ public class Camera {
 				float terrainHeight = ((MultiTextureTerrain) currTerrain)
 						.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z)
 								.min(((MultiTextureTerrain) currTerrain).getGlobalPosition()));
-				System.out.println(terrainHeight);
+//				System.out.println(terrainHeight);
 				if (cameraPosition.y < terrainHeight + 0.2f) {
 					cameraPosition.y = terrainHeight + 0.2f;
 				}
