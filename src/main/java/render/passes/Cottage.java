@@ -32,6 +32,6 @@ public class Cottage extends SingleModel {
 	public void afterInit() {
 		modelMatrix.translate(new Vec3(10f, 1f, 10f));
 
-		scale(0.4f);
+		scale(0.5f);
 	}
 }

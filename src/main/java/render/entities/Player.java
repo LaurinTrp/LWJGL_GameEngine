@@ -46,6 +46,8 @@ public class Player extends SingleModel {
 		super((SingleModel) ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
+		
+		setShowMinMax(true);
 	}
 
 	@Override
@@ -126,7 +128,6 @@ public class Player extends SingleModel {
 		}
 
 		if (!direction.equals(new Vec3())) {
-//			boolean isIntersecting = false;
 
 			if (!isFutureIntersecting(direction)) {
 				hasMoved = true;
@@ -177,7 +178,7 @@ public class Player extends SingleModel {
 		if (terrain != null) {
 			currentTerrain = terrain;
 		}
-//		position.y = terrain.heightAtPlayerPos() - startMinmax[2];
+		position.y = terrain.heightAtPlayerPos() - getBoundingBox().getStartMinmax()[2];
 	}
 
 	/**

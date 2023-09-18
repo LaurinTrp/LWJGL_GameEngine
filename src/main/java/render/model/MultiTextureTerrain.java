@@ -166,6 +166,8 @@ public class MultiTextureTerrain extends RenderObject {
 
 		ModelUtils.createUniform(program, uniforms, "yOffset");
 		ModelUtils.createUniform(program, uniforms, "multiplier");
+		
+		ModelUtils.createUniform(program, uniforms, "cameraPos");
 
 		glUseProgram(program.getProgramID());
 		uploadTextures();

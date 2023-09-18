@@ -432,11 +432,7 @@ public class SingleModel extends RenderObject {
 	 * @param scale scaling factor
 	 */
 	public void scale(float scale) {
-//		for (int i = 0; i < minmax.length; i++) {
-//			minmax[i] *= scale;
-//		}
-//		this.scale = scale;
-//		modelMatrix.scale(scale);
+		modelMatrix.scale(scale);
 	}
 
 	public BoundingBox<SingleModel> getBoundingBox() {

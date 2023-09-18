@@ -284,27 +284,6 @@ public class MultiModel extends RenderObject {
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
 
-	/**
-	 * update the minmax for example after scaling
-	 */
-	protected void updateMinmax(int i) {
-//		Vec3 scale = modelMatrices[i].scale;
-//		minmax[i][0] *= scale.x;
-//		minmax[i][1] *= scale.x;
-//		minmax[i][2] *= scale.y;
-//		minmax[i][3] *= scale.y;
-//		minmax[i][4] *= scale.z;
-//		minmax[i][5] *= scale.z;
-//
-//		Vec3 translation = modelMatrices[i].translation;
-//		minmax[i][0] += translation.x;
-//		minmax[i][1] += translation.x;
-//		minmax[i][2] += translation.y;
-//		minmax[i][3] += translation.y;
-//		minmax[i][4] += translation.z;
-//		minmax[i][5] += translation.z;
-	}
-
 	@Override
 	public void render() {
 		if (!init) {
@@ -324,7 +303,6 @@ public class MultiModel extends RenderObject {
 				glBindVertexArray(vao);
 				{
 					for (int i = 0; i < modelMatrices.length; i++) {
-//					updateMinmax();
 						renderProcessBegin();
 
 						// Upload the uniforms
@@ -447,7 +425,6 @@ public class MultiModel extends RenderObject {
 	public void scale(int index, float scale) {
 		Mat4 model = modelMatrices[index];
 		model.scale(scale);
-		updateMinmax(index);
 	}
 
 	public void setModelMatrices(Mat4[] modelMatrices) {
