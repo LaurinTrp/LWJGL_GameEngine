@@ -20,7 +20,7 @@ import main.java.render.model.MultiModel;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.model.SingleModel;
 import main.java.render.renderobject.IRenderObject;
-import main.java.render.utilities.BoundingBox;
+import main.java.render.utils.BoundingBox;
 import main.java.utils.constants.CameraMode;
 import main.java.utils.constants.Constants;
 import main.java.utils.loaders.ModelLoader;
@@ -52,16 +52,11 @@ public class Player extends SingleModel {
 
 	@Override
 	protected void renderProcessBegin() {
-		super.renderProcessBegin();
-
 		rotation();
-
 	}
 
 	@Override
 	protected void renderProcessEnd() {
-		super.renderProcessEnd();
-
 		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
 			glDisable(GL_CULL_FACE);
 		}

@@ -1,4 +1,4 @@
-package main.java.render.utilities;
+package main.java.render.utils;
 
 import static org.lwjgl.opengl.GL11.glDeleteTextures;
 

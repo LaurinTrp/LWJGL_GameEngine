@@ -1,6 +1,10 @@
-package main.java.render.utilities.terrain;
+package main.java.render.utils.terrain;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import main.java.utils.ImageUtils;
 import main.java.utils.math.Noise;

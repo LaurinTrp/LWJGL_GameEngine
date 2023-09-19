@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_LINEAR;
 import static org.lwjgl.opengl.GL11.GL_RGB;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
@@ -17,6 +18,7 @@ import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glReadPixels;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -25,7 +27,6 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glUniform2fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0;
@@ -48,18 +49,29 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.opengl.GL30.glRenderbufferStorage;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-import glm.vec._2.Vec2;
+import java.awt.Color;
+import java.nio.ByteBuffer;
+
+import org.lwjgl.BufferUtils;
+
 import main.java.gui.Engine_Main;
+import main.java.render.Renderer;
+import main.java.render.renderobject.RenderObjectSingle;
 import main.java.shader.ShaderProgram;
 
-public class Framebuffer implements IFramebuffer {
+public class ObjectPickBuffer implements IFramebuffer {
 
 	private boolean init = false;
 	private int vao = 0, vbo = 0, fbo = 0, rbo = 0, texture = 0;
 	private ShaderProgram program;
 	private int uniformScreenSize = 0;
+	
+	private boolean clickReady = true;
 
-	public Framebuffer() {
+	private ByteBuffer colorBuffer;
+
+	public ObjectPickBuffer() {
+		colorBuffer = BufferUtils.createByteBuffer(4);
 	}
 
 	/**
@@ -154,8 +166,7 @@ public class Framebuffer implements IFramebuffer {
 	 */
 	@Override
 	public void initShader() {
-		program = new ShaderProgram("Framebuffer");
-		uniformScreenSize = program.getUniformLocation("screenSize");
+		program = new ShaderProgram("ObjectPickBuffer");
 	}
 
 	/**
@@ -232,7 +243,7 @@ public class Framebuffer implements IFramebuffer {
 
 		{
 			bindFbo();
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			glClearColor(0.5f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			unbindFbo();
 		}
@@ -254,11 +265,31 @@ public class Framebuffer implements IFramebuffer {
 				glDisable(GL_DEPTH_TEST);
 				glBindTexture(GL_TEXTURE_2D, texture);
 				{
+					if (Engine_Main.mouseHandler.isLMB_Down()) {
+						if(!clickReady) {
+							return;
+						}
+						glDrawArrays(GL_TRIANGLES, 0, 6);
+						
+						glReadPixels((int) Engine_Main.mouseHandler.getMouseX(), (int) (-Engine_Main.mouseHandler.getMouseY() + Engine_Main.windowHeight), 1, 1,
+								GL_RGBA, GL_UNSIGNED_BYTE, colorBuffer);
 
-					glUniform2fv(uniformScreenSize,
-							new Vec2(Engine_Main.windowWidth, Engine_Main.windowHeight).toFA_());
-
-					glDrawArrays(GL_TRIANGLES, 0, 6);
+						int red = colorBuffer.get(0) & 0xFF;
+						int green = colorBuffer.get(1) & 0xFF;
+						int blue = colorBuffer.get(2) & 0xFF;
+						
+						int objectId = (red << 16) | (green << 8) | blue;
+						RenderObjectSingle object = Renderer.modelObserver.getObjectById(objectId);
+						if(object != null && !object.isSelected()) {
+							object.setSelected(true);
+						}else if(object != null && object.isSelected()) {
+							object.setSelected(false);
+						}
+						
+						clickReady = false;
+					}else {
+						clickReady = true;
+					}
 				}
 				glBindVertexArray(0);
 			}

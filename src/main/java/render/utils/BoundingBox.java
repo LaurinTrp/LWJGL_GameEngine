@@ -1,4 +1,4 @@
-package main.java.render.utilities;
+package main.java.render.utils;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_LINES;
@@ -21,13 +21,16 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.Arrays;
 
+import org.lwjgl.opengles.IMGMultisampledRenderToTexture;
+
 import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
-import main.java.render.renderobject.RenderObject;
+import main.java.render.renderobject.IRenderObject;
+import main.java.render.renderobject.RenderObjectSingle;
 import main.java.shader.ShaderProgram;
 
-public class BoundingBox<E> extends RenderObject {
+public class BoundingBox<E> implements IRenderObject {
 
 	private boolean init = false;
 

@@ -33,13 +33,13 @@ import org.lwjgl.opengl.GL15;
 import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
-import main.java.render.renderobject.RenderObject;
-import main.java.render.utilities.BoundingBox;
-import main.java.render.utilities.NormalDrawing;
+import main.java.render.renderobject.RenderObjectSingle;
+import main.java.render.utils.BoundingBox;
+import main.java.render.utils.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class MultiModel extends RenderObject {
+public class MultiModel extends RenderObjectSingle {
 
 	private Material material;
 
@@ -295,6 +295,7 @@ public class MultiModel extends RenderObject {
 
 		{
 			glUseProgram(program.getProgramID());
+			Renderer.framebuffer.bindFbo();
 			{
 				if (material != null) {
 					glActiveTexture(GL_TEXTURE0 + 0);
@@ -320,6 +321,7 @@ public class MultiModel extends RenderObject {
 					}
 
 				}
+				Renderer.framebuffer.unbindFbo();
 				glBindVertexArray(0);
 			}
 			glUseProgram(0);

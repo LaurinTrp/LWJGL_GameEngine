@@ -17,4 +17,12 @@ public class Cube extends SingleModel {
 		scale(3);
 	}
 
+	@Override
+	protected void renderProcessBegin() {
+	}
+
+	@Override
+	protected void renderProcessEnd() {
+	}
+
 }

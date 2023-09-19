@@ -28,12 +28,12 @@ import java.util.HashMap;
 
 import glm.mat._4.Mat4;
 import main.java.render.Renderer;
-import main.java.render.renderobject.RenderObject;
+import main.java.render.renderobject.RenderObjectSingle;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 import main.java.utils.loaders.ImageLoader;
 
-public class Skybox extends RenderObject {
+public class Skybox extends RenderObjectSingle {
 
 	private int vao, vbo, textureID;
 	private int texture;
@@ -147,6 +147,8 @@ public class Skybox extends RenderObject {
 		glDepthMask(false);
 		glDisable(GL_CULL_FACE);
 		glUseProgram(program.getProgramID());
+		Renderer.framebuffer.bindFbo();
+		
 		{
 			glUniformMatrix4fv(uniforms.get("proj"), false, Renderer.camera.getProjectionMatrix().toFa_());
 
@@ -166,6 +168,7 @@ public class Skybox extends RenderObject {
 				}
 			}
 		}
+		Renderer.framebuffer.unbindFbo();
 
 		glDepthMask(true);
 		glDisable(GL_CULL_FACE);

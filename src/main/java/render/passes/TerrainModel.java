@@ -3,9 +3,10 @@ package main.java.render.passes;
 import org.lwjgl.opengl.GL20;
 
 import glm.vec._2.Vec2;
+import main.java.render.Renderer;
 import main.java.render.model.MultiTextureTerrain;
-import main.java.render.utilities.TexturePack;
-import main.java.render.utilities.terrain.TerrainGenerator;
+import main.java.render.utils.TexturePack;
+import main.java.render.utils.terrain.TerrainGenerator;
 import main.java.utils.ModelUtils;
 
 public class TerrainModel extends MultiTextureTerrain {
@@ -33,8 +34,11 @@ public class TerrainModel extends MultiTextureTerrain {
 
 	@Override
 	protected void renderProcessBegin() {
-		super.renderProcessBegin();
 		GL20.glUniform1f(uniforms.get("size"), generator.getSize());
+	}
+
+	@Override
+	protected void renderProcessEnd() {
 	}
 
 	public boolean isOnTerrain(Vec2 position) {
@@ -47,6 +51,5 @@ public class TerrainModel extends MultiTextureTerrain {
 	public TerrainGenerator getGenerator() {
 		return generator;
 	}
-
 
 }

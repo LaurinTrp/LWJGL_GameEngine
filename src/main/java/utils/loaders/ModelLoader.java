@@ -11,7 +11,7 @@ import main.java.render.model.Material;
 import main.java.render.model.MultiModel;
 import main.java.render.model.SingleModel;
 import main.java.render.renderobject.IRenderObject;
-import main.java.render.utilities.BoundingBox;
+import main.java.render.utils.BoundingBox;
 import main.java.utils.FileUtils;
 import resources.ResourceLoader;
 

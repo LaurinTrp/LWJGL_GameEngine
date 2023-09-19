@@ -33,13 +33,13 @@ import org.lwjgl.opengl.GL15;
 import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
-import main.java.render.renderobject.RenderObject;
-import main.java.render.utilities.BoundingBox;
-import main.java.render.utilities.NormalDrawing;
+import main.java.render.renderobject.RenderObjectSingle;
+import main.java.render.utils.BoundingBox;
+import main.java.render.utils.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class SingleModel extends RenderObject {
+public class SingleModel extends RenderObjectSingle {
 
 	private Material material;
 
@@ -50,10 +50,12 @@ public class SingleModel extends RenderObject {
 	private int triangles;
 
 	protected ShaderProgram program;
+	protected ShaderProgram programObjectPick;
 
 	protected Mat4 modelMatrix;
 
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
+	protected HashMap<String, Integer> uniformsObjectPick = new HashMap<>();
 
 	protected Float[] vertices;
 	protected Float[] uvs;
@@ -158,7 +160,16 @@ public class SingleModel extends RenderObject {
 
 		ModelUtils.createUniform(program, uniforms, "sunPosition");
 		ModelUtils.createUniform(program, uniforms, "sunColor");
-
+		
+		ModelUtils.createUniform(program, uniforms, "selected");
+		
+		
+		programObjectPick = new ShaderProgram("TransformationObjectPick");
+		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "modelMatrix");
+		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "viewMatrix");
+		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "projectionMatrix");
+		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "cameraPos");
+		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "colorID");
 	}
 
 	/**
@@ -266,7 +277,7 @@ public class SingleModel extends RenderObject {
 	/**
 	 * Upload the different matrices to the shader
 	 */
-	protected void uploadMatrixes() {
+	protected void uploadMatrixes(HashMap<String, Integer> uniforms) {
 		glUniformMatrix4fv(uniforms.get("viewMatrix"), false, Renderer.camera.getView().toFa_());
 		glUniformMatrix4fv(uniforms.get("projectionMatrix"), false, Renderer.camera.getProjectionMatrix().toFa_());
 		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
@@ -281,9 +292,10 @@ public class SingleModel extends RenderObject {
 		if (!init) {
 			return;
 		}
-
+		
 		{
-			glUseProgram(program.getProgramID());
+			Renderer.objectPickBuffer.bindFbo();
+			glUseProgram(programObjectPick.getProgramID());
 			{
 				if (material != null) {
 					glActiveTexture(GL_TEXTURE0 + 0);
@@ -295,8 +307,8 @@ public class SingleModel extends RenderObject {
 					renderProcessBegin();
 
 					// Upload the uniforms
-					uploadLighting();
-					uploadMatrixes();
+					uploadMatrixes(uniforms);
+					glUniform4fv(uniformsObjectPick.get("colorID"), new Vec4(getObjectIdAsColor()).div(255f).toFA_());
 
 					// draw the data (depends on if it has a ebo)
 					if (!hasEbo) {
@@ -310,6 +322,42 @@ public class SingleModel extends RenderObject {
 				}
 				glBindVertexArray(0);
 			}
+			Renderer.objectPickBuffer.unbindFbo();
+			glUseProgram(0);
+		}
+
+		{
+			Renderer.framebuffer.bindFbo();
+			glUseProgram(program.getProgramID());
+			{
+				if (material != null) {
+					glActiveTexture(GL_TEXTURE0 + 0);
+					glBindTexture(GL_TEXTURE_2D, material.getTexture());
+				}
+				glBindVertexArray(vao);
+				{
+//					updateMinmax();
+					renderProcessBegin();
+
+					// Upload the uniforms
+					uploadLighting();
+					uploadMatrixes(uniforms);
+					
+					glUniform1i(uniforms.get("selected"), isSelected() ? 1 : 0);
+
+					// draw the data (depends on if it has a ebo)
+					if (!hasEbo) {
+						glDrawArrays(GL_TRIANGLES, 0, triangles);
+					} else {
+						glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+					}
+
+					renderProcessEnd();
+
+				}
+				glBindVertexArray(0);
+			}
+			Renderer.framebuffer.unbindFbo();
 			glUseProgram(0);
 		}
 		// draw normals if necessary
@@ -319,6 +367,8 @@ public class SingleModel extends RenderObject {
 		if(showMinMax) {
 			boundingBox.render();
 		}
+
+		
 	}
 
 

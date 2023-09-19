@@ -1,4 +1,4 @@
-package main.java.render.utilities.terrain;
+package main.java.render.utils.terrain;
 
 import java.util.ArrayList;
 

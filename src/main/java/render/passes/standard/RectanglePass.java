@@ -26,12 +26,12 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-import main.java.render.renderobject.RenderObject;
+import main.java.render.renderobject.RenderObjectSingle;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ImageUtils;
 import main.java.utils.math.Noise;
 
-public class RectanglePass extends RenderObject {
+public class RectanglePass extends RenderObjectSingle {
 
 	private boolean init = false;
 

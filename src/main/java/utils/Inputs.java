@@ -19,7 +19,9 @@ public class Inputs {
 		private float scrollY;
 
 		private boolean LMB_Down = false;
+		private boolean LMB_Ready = false;
 		private boolean RMB_Down = false;
+		private boolean RMB_Ready = false;
 
 		GLFWCursorPosCallback cursorPosCallback = new GLFWCursorPosCallback() {
 			@Override
@@ -113,6 +115,14 @@ public class Inputs {
 
 		public boolean isRMB_Down() {
 			return RMB_Down;
+		}
+		
+		public boolean isLMB_Ready() {
+			return LMB_Ready;
+		}
+		
+		public boolean isRMB_Ready() {
+			return RMB_Ready;
 		}
 
 	}

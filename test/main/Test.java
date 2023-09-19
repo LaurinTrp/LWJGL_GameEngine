@@ -6,19 +6,16 @@ import glm.vec._2.Vec2;
 
 public class Test {
 	public static void main(String[] args) {
-		for (int i = 0; i < 10; i++) {
-			test(new Vec2(0f, 10f));
-			try {
-				Thread.sleep(2);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		int value = 1;
 		
-	}
-	
-	public static void test(Vec2 xMinMax) {
-		Random random = new Random(System.currentTimeMillis());
+		int a = (value >> 24) & 0xFF;
+		int r = (value >> 16) & 0xFF;
+		int g = (value >> 8) & 0xFF;
+		int b = value & 0xFF;
 		
+		System.out.println((r + "\t" + g + "\t" + b + "\t" + a));
+		
+		int convertedBack = (a << 24) | (r << 16) | (g << 8) | b;
+		System.out.println(convertedBack);
 	}
 }

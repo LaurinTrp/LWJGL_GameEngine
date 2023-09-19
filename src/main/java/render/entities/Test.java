@@ -23,11 +23,11 @@ import java.util.Map;
 
 import glm.mat._4.Mat4;
 import main.java.render.Renderer;
-import main.java.render.renderobject.RenderObject;
+import main.java.render.renderobject.RenderObjectSingle;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class Test extends RenderObject{
+public class Test extends RenderObjectSingle{
 
 	private boolean init = false;
 	private int vao, vbo;

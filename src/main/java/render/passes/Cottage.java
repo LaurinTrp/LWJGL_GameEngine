@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
+import main.java.render.Renderer;
 import main.java.render.model.SingleModel;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
@@ -19,13 +20,16 @@ public class Cottage extends SingleModel {
 
 	@Override
 	protected void renderProcessBegin() {
-		super.renderProcessBegin();
 		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_LEFT)) {
 			modelMatrix.rotateY(Math.toRadians(-1));
 		}
 		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_RIGHT)) {
 			modelMatrix.rotateY(Math.toRadians(1));
 		}
+	}
+	
+	@Override
+	protected void renderProcessEnd() {
 	}
 
 	@Override

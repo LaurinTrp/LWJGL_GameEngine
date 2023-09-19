@@ -32,11 +32,11 @@ import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
-import main.java.render.renderobject.RenderObject;
+import main.java.render.renderobject.RenderObjectSingle;
 import main.java.shader.ShaderProgram;
 import main.java.utils.Shapes;
 
-public class LightSourcePass extends RenderObject {
+public class LightSourcePass extends RenderObjectSingle {
 
 	private boolean init = false;
 

@@ -17,6 +17,7 @@ import main.java.render.entities.Player;
 import main.java.render.entities.Test;
 import main.java.render.entities.trees.Tree_1;
 import main.java.render.entities.trees.Tree_2;
+import main.java.render.model.ModelObserver;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.model.RandomMatrixGenerator;
 import main.java.render.passes.Cottage;
@@ -24,6 +25,7 @@ import main.java.render.passes.TerrainModel;
 import main.java.render.passes.framebuffers.DepthMap;
 import main.java.render.passes.framebuffers.Framebuffer;
 import main.java.render.passes.framebuffers.IFramebuffer;
+import main.java.render.passes.framebuffers.ObjectPickBuffer;
 import main.java.render.passes.lighting.LightSourcePass;
 import main.java.render.passes.lighting.SunPass;
 import main.java.render.passes.skybox.Skybox;
@@ -31,13 +33,17 @@ import main.java.render.passes.standard.RectanglePass;
 import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.renderobject.IRenderObject;
-import main.java.render.utilities.TexturePack;
-import main.java.render.utilities.terrain.TerrainGenerator;
+import main.java.render.renderobject.RenderObjectSingle;
+import main.java.render.utils.TexturePack;
+import main.java.render.utils.terrain.TerrainGenerator;
 import main.java.utils.math.MousePicker;
 
 public class Renderer {
 
+	public static ModelObserver modelObserver;
+	
 	public static IFramebuffer framebuffer;
+	public static IFramebuffer objectPickBuffer;
 	public IFramebuffer depthBuffer;
 
 	private IRenderObject trianglePass;
@@ -70,9 +76,12 @@ public class Renderer {
 	private Test test;
 
 	public Renderer() {
+		modelObserver = new ModelObserver();
+		
 		skybox = createSkybox();
 
 		framebuffer = new Framebuffer();
+		objectPickBuffer = new ObjectPickBuffer();
 		depthBuffer = new DepthMap();
 
 		trianglePass = new TrianglePass();
@@ -98,13 +107,13 @@ public class Renderer {
 
 		generateFirstTerrain();
 
-		tree_1 = new Tree_1(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f), 
+		tree_1 = new Tree_1(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
 				new Vec2(3f, 6f)));
-		tree_2 = new Tree_2(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f), 
+		tree_2 = new Tree_2(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
 				new Vec2(3f, 6f)));
 
 		test = new Test();
-		
+
 		((Player) player).addIntersector(cottage);
 		((Player) player).addIntersector(tree_1);
 	}
@@ -126,6 +135,8 @@ public class Renderer {
 	 */
 	public void render() {
 		framebuffer.render();
+		objectPickBuffer.render();
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 //		rectanglePass.render();
@@ -139,9 +150,12 @@ public class Renderer {
 		camera.moveCamera();
 
 		glDisable(GL_DEPTH_TEST);
-		compass.render();
-		((Framebuffer) framebuffer).renderColorAttachments();
+//		compass.render();
+		objectPickBuffer.renderColorAttachments();
+		framebuffer.renderColorAttachments();
+
 		framebuffer.unbindFbo();
+		objectPickBuffer.unbindFbo();
 	}
 
 	public void renderScene() {
@@ -152,11 +166,10 @@ public class Renderer {
 //		terrainModel.render();
 //		lightSourcePass.render();
 
-
 //		System.out.println("PLAYER POSITION: " + ((Player)player).getPosition());
 
 		if (((Player) player).checkMovement()) {
-			Vec2 playerPosXZ = ((Player)player).getPlayerPosXZ();
+			Vec2 playerPosXZ = ((Player) player).getPlayerPosXZ();
 			terrainModel.updateHeightMap(playerPosXZ.x, playerPosXZ.y);
 			((Player) player).move();
 			terrainModel.translate(new Vec3(playerPosXZ.x, 0, playerPosXZ.y));
@@ -171,7 +184,7 @@ public class Renderer {
 
 		cottage.render();
 		tree_1.render();
-//		tree_2.render();
+		tree_2.render();
 	}
 
 	/**
@@ -180,6 +193,7 @@ public class Renderer {
 	public void dispose() {
 
 		framebuffer.dispose();
+		objectPickBuffer.dispose();
 		skybox.dispose();
 
 		terrainModel.dispose();
