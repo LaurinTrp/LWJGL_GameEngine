@@ -7,15 +7,13 @@ import main.java.render.Renderer;
 
 public abstract class RenderObjectSingle implements IRenderObject {
 	
-	private static int instanceCounter = 0;
 	private final int objectId;
 	private final Vec4 color;
 	
 	protected boolean selected;
 	
 	public RenderObjectSingle() {
-		instanceCounter++;
-		objectId = instanceCounter;
+		objectId = Renderer.modelObserver.instanceCounter++;
 		
 		color = new Vec4((objectId >> 16) & 0xFF, (objectId >> 8) & 0xFF, (objectId >> 0) & 0xFF, (objectId >> 24) & 0xFF);
 		

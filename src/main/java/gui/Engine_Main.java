@@ -104,7 +104,7 @@ public class Engine_Main {
 		glfwSwapInterval(1);
 
 		// ####### Disable cursor
-//		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		glfwShowWindow(window);
 		createCapabilities();

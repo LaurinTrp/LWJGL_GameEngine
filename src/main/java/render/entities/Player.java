@@ -8,6 +8,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
 
@@ -52,6 +53,9 @@ public class Player extends SingleModel {
 
 	@Override
 	protected void renderProcessBegin() {
+		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
+			glEnable(GL_CULL_FACE);
+		}
 		rotation();
 	}
 

@@ -32,6 +32,7 @@ public class Camera {
 	private Vec3 focusPoint;
 
 	public CameraMode cameraMode = CameraMode.PLAYER_CAMERA;
+//	public CameraMode cameraMode = CameraMode.POV_CAMERA;
 
 	private final float NEAR_CLIPPING_PLANE = 0.1f, FAR_CLIPPING_PLANE = 100f;
 

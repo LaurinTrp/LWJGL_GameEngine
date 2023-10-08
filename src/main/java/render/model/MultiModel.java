@@ -26,6 +26,7 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -33,13 +34,13 @@ import org.lwjgl.opengl.GL15;
 import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
-import main.java.render.renderobject.RenderObjectSingle;
+import main.java.render.renderobject.RenderObjectMulti;
 import main.java.render.utils.BoundingBox;
 import main.java.render.utils.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class MultiModel extends RenderObjectSingle {
+public class MultiModel extends RenderObjectMulti {
 
 	private Material material;
 
@@ -50,10 +51,12 @@ public class MultiModel extends RenderObjectSingle {
 	private int triangles;
 
 	protected ShaderProgram program;
-
+	protected ShaderProgram programObjectPick;
+	
 	protected Mat4[] modelMatrices;
 
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
+	protected HashMap<String, Integer> uniformsObjectPick = new HashMap<>();
 
 	protected Float[] vertices;
 	protected Float[] uvs;
@@ -92,8 +95,10 @@ public class MultiModel extends RenderObjectSingle {
 	 * @param startMinMax Min and Max coordinates (minX, maxX, minY, maxY, minZ,
 	 *                    maxZ)
 	 */
-	public MultiModel(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material,
+	public MultiModel(Mat4[] modelMatrices, Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material,
 			BoundingBox<MultiModel> initBoundingBox) {
+		super(modelMatrices);
+		this.modelMatrices = modelMatrices;
 		this.triangles = triangles;
 		this.vertices = vertices;
 		this.uvs = uvs;
@@ -107,8 +112,8 @@ public class MultiModel extends RenderObjectSingle {
 	 *
 	 * @param model Model to copy
 	 */
-	public MultiModel(MultiModel model) {
-		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, model.startMinmax);
+	public MultiModel(MultiModel model, Mat4[] modelMatrices) {
+		this(modelMatrices, model.vertices, model.uvs, model.normals, model.triangles, model.material, model.startMinmax);
 
 		this.program = model.program;
 
@@ -169,6 +174,14 @@ public class MultiModel extends RenderObjectSingle {
 
 		ModelUtils.createUniform(program, uniforms, "sunPosition");
 		ModelUtils.createUniform(program, uniforms, "sunColor");
+		ModelUtils.createUniform(program, uniforms, "selected");
+
+		programObjectPick = new ShaderProgram("TransformationObjectPick");
+		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "modelMatrix");
+		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "viewMatrix");
+		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "projectionMatrix");
+		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "cameraPos");
+		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "colorID");
 
 	}
 
@@ -293,6 +306,8 @@ public class MultiModel extends RenderObjectSingle {
 			return;
 		}
 
+		renderToObjectPickBuffer();
+		
 		{
 			glUseProgram(program.getProgramID());
 			Renderer.framebuffer.bindFbo();
@@ -309,7 +324,8 @@ public class MultiModel extends RenderObjectSingle {
 						// Upload the uniforms
 						uploadLighting();
 						uploadMatrixes(i);
-
+						glUniform1i(uniforms.get("selected"), isSelected(getObjectId(i)) ? 1 : 0);
+						
 						// draw the data (depends on if it has a ebo)
 						if (!hasEbo) {
 							glDrawArrays(GL_TRIANGLES, 0, triangles);
@@ -336,6 +352,35 @@ public class MultiModel extends RenderObjectSingle {
 			for (BoundingBox<MultiModel> minMax : boundingBoxes) {
 				minMax.render();
 			}
+		}
+	}
+	
+	private void renderToObjectPickBuffer() {
+		{
+			Renderer.objectPickBuffer.bindFbo();
+			glUseProgram(programObjectPick.getProgramID());
+			{
+				glBindVertexArray(vao);
+				{
+					for (int i = 0; i < modelMatrices.length; i++) {
+
+						uploadMatrixes(i);
+						glUniform4fv(uniformsObjectPick.get("colorID"), new Vec4(getObjectIdAsColor(getObjectId(i))).div(255f).toFA_());
+						
+						// draw the data (depends on if it has a ebo)
+						if (!hasEbo) {
+							glDrawArrays(GL_TRIANGLES, 0, triangles);
+						} else {
+							glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+						}
+
+					}
+
+				}
+				glBindVertexArray(0);
+			}
+			Renderer.objectPickBuffer.unbindFbo();
+			glUseProgram(0);
 		}
 	}
 

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import glm.mat._4.Mat4;
 import main.java.render.model.Material;
 import main.java.render.model.MultiModel;
 import main.java.render.model.SingleModel;
@@ -153,10 +154,10 @@ public class ModelLoader {
 		return model;
 	}
 
-	public static IRenderObject loadMultiModelFromResource(String parent, String file) {
+	public static IRenderObject loadMultiModelFromResource(String parent, String file, Mat4[] matrices) {
 		clear();
 		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
-		IRenderObject model = new MultiModel(data[0], data[1], data[2], triangleCount, new Material(), new BoundingBox<MultiModel>(data[3]));
+		IRenderObject model = new MultiModel(matrices, data[0], data[1], data[2], triangleCount, new Material(), new BoundingBox<MultiModel>(data[3]));
 		return model;
 	}
 

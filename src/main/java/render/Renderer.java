@@ -107,10 +107,10 @@ public class Renderer {
 
 		generateFirstTerrain();
 
-		tree_1 = new Tree_1(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
+		tree_1 = new Tree_1(RandomMatrixGenerator.generateRandomWithHeight(1, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
 				new Vec2(3f, 6f)));
-		tree_2 = new Tree_2(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
-				new Vec2(3f, 6f)));
+//		tree_2 = new Tree_2(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
+//				new Vec2(3f, 6f)));
 
 		test = new Test();
 
@@ -184,7 +184,7 @@ public class Renderer {
 
 		cottage.render();
 		tree_1.render();
-		tree_2.render();
+//		tree_2.render();
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class Renderer {
 
 		compass.dispose();
 		tree_1.dispose();
-		tree_2.dispose();
+//		tree_2.dispose();
 
 		test.dispose();
 	}

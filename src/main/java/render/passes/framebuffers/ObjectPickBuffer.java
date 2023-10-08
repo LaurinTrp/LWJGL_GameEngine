@@ -49,13 +49,14 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.opengl.GL30.glRenderbufferStorage;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-import java.awt.Color;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
 
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
+import main.java.render.renderobject.IRenderObject;
+import main.java.render.renderobject.RenderObjectMulti;
 import main.java.render.renderobject.RenderObjectSingle;
 import main.java.shader.ShaderProgram;
 
@@ -65,7 +66,7 @@ public class ObjectPickBuffer implements IFramebuffer {
 	private int vao = 0, vbo = 0, fbo = 0, rbo = 0, texture = 0;
 	private ShaderProgram program;
 	private int uniformScreenSize = 0;
-	
+
 	private boolean clickReady = true;
 
 	private ByteBuffer colorBuffer;
@@ -266,28 +267,43 @@ public class ObjectPickBuffer implements IFramebuffer {
 				glBindTexture(GL_TEXTURE_2D, texture);
 				{
 					if (Engine_Main.mouseHandler.isLMB_Down()) {
-						if(!clickReady) {
+						if (!clickReady) {
 							return;
 						}
 						glDrawArrays(GL_TRIANGLES, 0, 6);
-						
-						glReadPixels((int) Engine_Main.mouseHandler.getMouseX(), (int) (-Engine_Main.mouseHandler.getMouseY() + Engine_Main.windowHeight), 1, 1,
+
+//						glReadPixels((int) Engine_Main.mouseHandler.getMouseX(),
+//								(int) (-Engine_Main.mouseHandler.getMouseY() + Engine_Main.windowHeight), 1, 1, GL_RGBA,
+//								GL_UNSIGNED_BYTE, colorBuffer);
+
+						glReadPixels((int) (Engine_Main.windowWidth / 2f), (int) (Engine_Main.windowHeight / 2f), 1, 1,
 								GL_RGBA, GL_UNSIGNED_BYTE, colorBuffer);
 
 						int red = colorBuffer.get(0) & 0xFF;
 						int green = colorBuffer.get(1) & 0xFF;
 						int blue = colorBuffer.get(2) & 0xFF;
-						
+
 						int objectId = (red << 16) | (green << 8) | blue;
-						RenderObjectSingle object = Renderer.modelObserver.getObjectById(objectId);
-						if(object != null && !object.isSelected()) {
-							object.setSelected(true);
-						}else if(object != null && object.isSelected()) {
-							object.setSelected(false);
+						IRenderObject object = Renderer.modelObserver.getObjectById(objectId);
+
+						if (object instanceof RenderObjectSingle) {
+							RenderObjectSingle objectSingle = (RenderObjectSingle) object;
+							if (objectSingle != null && !objectSingle.isSelected()) {
+								objectSingle.setSelected(true);
+							} else if (objectSingle != null && objectSingle.isSelected()) {
+								objectSingle.setSelected(false);
+							}
+						} else if (object instanceof RenderObjectMulti) {
+							RenderObjectMulti objectMulti = (RenderObjectMulti) object;
+							if (objectMulti != null && !objectMulti.isSelected(objectId)) {
+								objectMulti.setSelected(objectId, true);
+							} else if (objectMulti != null && objectMulti.isSelected(objectId)) {
+								objectMulti.setSelected(objectId, false);
+							}
 						}
-						
+
 						clickReady = false;
-					}else {
+					} else {
 						clickReady = true;
 					}
 				}
