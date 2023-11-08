@@ -49,12 +49,14 @@ public class Player extends SingleModel {
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
 		
 		setShowMinMax(true);
+		
+//		playerFront = new Vec3(-Math.sin(rotationAngle), 0, -Math.cos(rotationAngle));
 	}
 
 	@Override
 	protected void renderProcessBegin() {
 		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
-			glEnable(GL_CULL_FACE);
+//			glEnable(GL_CULL_FACE);
 		}
 		rotation();
 	}
@@ -62,7 +64,7 @@ public class Player extends SingleModel {
 	@Override
 	protected void renderProcessEnd() {
 		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
-			glDisable(GL_CULL_FACE);
+//			glDisable(GL_CULL_FACE);
 		}
 	}
 
@@ -100,39 +102,40 @@ public class Player extends SingleModel {
 	 * Move the player model
 	 */
 	public boolean checkMovement() {
-		direction = new Vec3();
+		
+		direction = new Vec3(0.0f);
 		hasMoved = false;
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
-			direction.add(new Vec3(playerFront).mul(speed));
+			direction.add(new Vec3(playerFront)).mul(speed);
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_S)) {
-			direction.sub(new Vec3(playerFront).mul(speed));
+			direction.sub(new Vec3(playerFront)).mul(speed);
 		}
 
 		playerRight = new Vec3(playerFront).cross(playerUp);
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_A)) {
-			direction.sub(new Vec3(playerRight).mul(speed));
+			direction.sub(new Vec3(playerRight)).mul(speed);
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_D)) {
-			direction.add(new Vec3(playerRight).mul(speed));
+			direction.add(new Vec3(playerRight)).mul(speed);
 		}
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_Q)) {
-			direction.add(new Vec3(playerUp).mul(speed));
+			direction.add(new Vec3(playerUp)).mul(speed);
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_X)) {
-			direction.sub(new Vec3(playerUp).mul(speed));
+			direction.sub(new Vec3(playerUp)).mul(speed);
 		}
 
-		if (!direction.equals(new Vec3())) {
+		if (!direction.equals(new Vec3(0.0f))) {
 
 			if (!isFutureIntersecting(direction)) {
 				hasMoved = true;
 			}
 		}
-
+		
 		return hasMoved;
 	}
 
@@ -161,7 +164,7 @@ public class Player extends SingleModel {
 
 	public void move() {
 		if (hasMoved) {
-			position.add(direction);
+			position = position.add(direction);
 			modelMatrix = modelMatrix.cleanTranslation();
 			modelMatrix = modelMatrix.translation(position);
 		}

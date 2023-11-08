@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
+import main.java.render.camera.Camera;
 import main.java.render.entities.Player;
 import main.java.render.entities.Test;
 import main.java.render.entities.trees.Tree_1;
@@ -56,7 +57,7 @@ public class Renderer {
 
 	private IRenderObject compass;
 
-	private IRenderObject player;
+	private Player player;
 
 	private IRenderObject tree_1;
 	private IRenderObject tree_2;
@@ -109,13 +110,13 @@ public class Renderer {
 
 		tree_1 = new Tree_1(RandomMatrixGenerator.generateRandomWithHeight(1, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
 				new Vec2(3f, 6f)));
-//		tree_2 = new Tree_2(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
-//				new Vec2(3f, 6f)));
+		tree_2 = new Tree_2(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
+				new Vec2(3f, 6f)));
 
 		test = new Test();
 
-		((Player) player).addIntersector(cottage);
-		((Player) player).addIntersector(tree_1);
+		player.addIntersector(cottage);
+		player.addIntersector(tree_1);
 	}
 
 	private Skybox createSkybox() {
@@ -146,7 +147,7 @@ public class Renderer {
 		glEnable(GL_DEPTH_TEST);
 		renderScene();
 //
-		camera.setFocusPoint(new Vec3(((Player) player).getPosition()));
+		camera.setFocusPoint(new Vec3(player.getPosition()));
 		camera.moveCamera();
 
 		glDisable(GL_DEPTH_TEST);
@@ -168,14 +169,15 @@ public class Renderer {
 
 //		System.out.println("PLAYER POSITION: " + ((Player)player).getPosition());
 
-		if (((Player) player).checkMovement()) {
-			Vec2 playerPosXZ = ((Player) player).getPlayerPosXZ();
+		if (player.checkMovement()) {
+			Vec2 playerPosXZ = new Vec2(player.getPlayerPosXZ());
 			terrainModel.updateHeightMap(playerPosXZ.x, playerPosXZ.y);
-			((Player) player).move();
+			player.move();
 			terrainModel.translate(new Vec3(playerPosXZ.x, 0, playerPosXZ.y));
 		}
+		
 		terrainModel.render();
-		((Player) player).gravity(terrainModel);
+		player.gravity(terrainModel);
 		player.render();
 
 //		cube.render();
@@ -208,7 +210,7 @@ public class Renderer {
 
 		compass.dispose();
 		tree_1.dispose();
-//		tree_2.dispose();
+		tree_2.dispose();
 
 		test.dispose();
 	}
