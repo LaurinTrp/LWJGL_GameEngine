@@ -34,7 +34,6 @@ import main.java.render.passes.standard.RectanglePass;
 import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.renderobject.IRenderObject;
-import main.java.render.renderobject.RenderObjectSingle;
 import main.java.render.utils.TexturePack;
 import main.java.render.utils.terrain.TerrainGenerator;
 import main.java.utils.math.MousePicker;
@@ -70,11 +69,7 @@ public class Renderer {
 
 	public static ArrayList<Vec4> lightSourcePositions = new ArrayList<>();
 
-	private MousePicker mousePicker;
-
 	private Skybox skybox;
-
-	private Test test;
 
 	public Renderer() {
 		modelObserver = new ModelObserver();
@@ -104,7 +99,6 @@ public class Renderer {
 		player = new Player();
 
 		camera = new Camera(player);
-		mousePicker = new MousePicker(camera);
 
 		generateFirstTerrain();
 
@@ -113,10 +107,9 @@ public class Renderer {
 		tree_2 = new Tree_2(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
 				new Vec2(3f, 6f)));
 
-		test = new Test();
-
 		player.addIntersector(cottage);
 		player.addIntersector(tree_1);
+		
 	}
 
 	private Skybox createSkybox() {
@@ -140,16 +133,15 @@ public class Renderer {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//		rectanglePass.render();
-
 		sun.update();
 		skybox.render();
 		glEnable(GL_DEPTH_TEST);
-		renderScene();
-//
+		
+		renderModels();
+
 		camera.setFocusPoint(new Vec3(player.getPosition()));
 		camera.moveCamera();
-
+		
 		glDisable(GL_DEPTH_TEST);
 //		compass.render();
 		objectPickBuffer.renderColorAttachments();
@@ -159,7 +151,7 @@ public class Renderer {
 		objectPickBuffer.unbindFbo();
 	}
 
-	public void renderScene() {
+	public void renderModels() {
 		glEnable(GL_CULL_FACE);
 
 //		test.render();
@@ -179,14 +171,11 @@ public class Renderer {
 		terrainModel.render();
 		player.gravity(terrainModel);
 		player.render();
-
-//		cube.render();
-
+		
 		glDisable(GL_CULL_FACE);
 
 		cottage.render();
 		tree_1.render();
-//		tree_2.render();
 	}
 
 	/**
@@ -211,8 +200,6 @@ public class Renderer {
 		compass.dispose();
 		tree_1.dispose();
 		tree_2.dispose();
-
-		test.dispose();
 	}
 
 }

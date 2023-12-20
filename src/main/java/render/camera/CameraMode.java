@@ -1,4 +1,4 @@
-package main.java.utils.constants;
+package main.java.render.camera;
 
 public enum CameraMode {
 	POV_CAMERA,

@@ -123,7 +123,7 @@ public class DepthMap implements IFramebuffer {
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 		bindFbo();
 		glClear(GL_DEPTH_BUFFER_BIT);
-		Engine_Main.render.renderScene();
+		Engine_Main.render.renderModels();
 		unbindFbo();
 
 	}

@@ -8,16 +8,15 @@ import main.java.gui.Engine_Main;
 import main.java.render.entities.Player;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.renderobject.IRenderObject;
-import main.java.utils.constants.CameraMode;
 
 public class Camera {
 
-	private IRenderObject player;
+	private Player player;
 
 	private Vec3 cameraPosition = new Vec3(0.0f, 0.0f, 0.0f);
 	private Vec3 cameraFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 cameraUp = new Vec3(0.0f, 1.0f, 0.0f);
-	private Vec3 cameraRight = new Vec3(1.0f, 0.0f, 0.0f);
+//	private Vec3 cameraRight = new Vec3(1.0f, 0.0f, 0.0f);
 
 	private float angleHorizontal = 0.0f;
 	private float angleVertical = 0.0f;
@@ -32,7 +31,6 @@ public class Camera {
 	private Vec3 focusPoint;
 
 	public CameraMode cameraMode = CameraMode.PLAYER_CAMERA;
-//	public CameraMode cameraMode = CameraMode.POV_CAMERA;
 
 	private final float NEAR_CLIPPING_PLANE = 0.1f, FAR_CLIPPING_PLANE = 100f;
 
@@ -42,14 +40,12 @@ public class Camera {
 		focusPoint = new Vec3();
 	}
 
-	public Camera(IRenderObject player) {
+	public Camera(Player player) {
 		this();
 		this.player = player;
 	}
 
 	private void rotation() {
-
-		Player player = (Player) this.player;
 
 		switch (cameraMode) {
 		case PLAYER_CAMERA: {
@@ -76,7 +72,10 @@ public class Camera {
 			if (angleVertical >= 89f) {
 				angleVertical = 89f;
 			}
+			
+			
 			cameraFront = new Vec3(player.getPlayerFront());
+			cameraFront.y = (float) Math.sin(Math.toRadians(angleVertical));
 
 			cameraPosition = new Vec3(player.getPosition());
 
@@ -101,17 +100,17 @@ public class Camera {
 		cameraPosition.y = focusPoint.y + verticalDistance;
 		cameraPosition.z = focusPoint.z - offsetZ;
 
-		if (((Player) player).getCurrentTerrain() != null) {
-			IRenderObject currTerrain = ((Player) player).getCurrentTerrain();
-			if (((MultiTextureTerrain) currTerrain).isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
-				float terrainHeight = ((MultiTextureTerrain) currTerrain)
-						.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z)
-								.min(((MultiTextureTerrain) currTerrain).getGlobalPosition()));
-				if (cameraPosition.y < terrainHeight + 0.2f) {
-					cameraPosition.y = terrainHeight + 0.2f;
-				}
-			}
-		}
+//		if (((Player) player).getCurrentTerrain() != null) {
+//			IRenderObject currTerrain = ((Player) player).getCurrentTerrain();
+//			if (((MultiTextureTerrain) currTerrain).isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
+//				float terrainHeight = ((MultiTextureTerrain) currTerrain)
+//						.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z)
+//								.min(((MultiTextureTerrain) currTerrain).getGlobalPosition()));
+//				if (cameraPosition.y < terrainHeight + 0.2f) {
+//					cameraPosition.y = terrainHeight + 0.2f;
+//				}
+//			}
+//		}
 	}
 
 	public void moveCamera() {
@@ -121,17 +120,17 @@ public class Camera {
 
 		rotation();
 
-		view = Glm.lookAt_(new Vec3(cameraPosition), new Vec3(focusPoint).add(cameraFront), cameraUp);
-	}
-
-	public void setFocusPoint(Vec3 focusPoint) {
-		this.focusPoint = focusPoint;
+		view = Glm.lookAt_(cameraPosition, focusPoint, cameraUp);
 	}
 
 	private void updateProjectionMatrix() {
 		projectionMatrix = Glm.perspective_((float) Math.toRadians(45),
 				(float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight, NEAR_CLIPPING_PLANE,
 				FAR_CLIPPING_PLANE);
+	}
+
+	public void setFocusPoint(Vec3 focusPoint) {
+		this.focusPoint = focusPoint;
 	}
 
 	public Mat4 getView() {

@@ -10,6 +10,7 @@ import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import glm.mat._4.Mat4;
@@ -17,14 +18,16 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
+import main.java.render.camera.CameraMode;
 import main.java.render.model.MultiModel;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.model.SingleModel;
 import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.BoundingBox;
-import main.java.utils.constants.CameraMode;
 import main.java.utils.constants.Constants;
+import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
+import resources.ResourceLoader;
 
 public class Player extends SingleModel {
 
@@ -49,8 +52,6 @@ public class Player extends SingleModel {
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
 		
 		setShowMinMax(true);
-		
-//		playerFront = new Vec3(-Math.sin(rotationAngle), 0, -Math.cos(rotationAngle));
 	}
 
 	@Override
@@ -83,13 +84,15 @@ public class Player extends SingleModel {
 	 * Rotate the player around its axis
 	 */
 	private void rotation() {
+		double rotationSpeed = Renderer.camera.cameraMode == CameraMode.POV_CAMERA ? -Constants.PLAYER_ROTATION_SPEED : Constants.PLAYER_ROTATION_SPEED;
+		
 		if (Engine_Main.mouseHandler.getXoffset() > 0) {
-			modelMatrix.rotateY(Constants.PLAYER_ROTATION_SPEED);
-			rotationAngle += Constants.PLAYER_ROTATION_SPEED;
+			modelMatrix.rotateY(rotationSpeed);
+			rotationAngle += rotationSpeed;
 		}
 		if (Engine_Main.mouseHandler.getXoffset() < 0) {
-			modelMatrix.rotateY(-Constants.PLAYER_ROTATION_SPEED);
-			rotationAngle -= Constants.PLAYER_ROTATION_SPEED;
+			modelMatrix.rotateY(-rotationSpeed);
+			rotationAngle -= rotationSpeed;
 		}
 
 		rotationAngle %= Math.PI * 2;
