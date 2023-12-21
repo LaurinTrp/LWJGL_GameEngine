@@ -40,7 +40,7 @@ public class Player extends SingleModel {
 	private Vec3 playerRight = new Vec3(1.0f, 0.0f, 0.0f);
 	private Vec3 direction = new Vec3();
 
-	private IRenderObject currentTerrain;
+	private MultiTextureTerrain currentTerrain;
 
 	private float rotationAngle = 0;
 
@@ -180,7 +180,7 @@ public class Player extends SingleModel {
 		if (!init) {
 			return;
 		}
-		if (terrain != null) {
+		if (terrain != null || terrain != currentTerrain) {
 			currentTerrain = terrain;
 		}
 		position.y = terrain.heightAtPlayerPos() - getBoundingBox().getStartMinmax()[2];

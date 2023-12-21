@@ -354,7 +354,8 @@ public class MultiTextureTerrain extends RenderObjectSingle {
 
 	public float heightAtPosition(Vec2 position) {
 		BufferedImage heightMap = generator.getProceduralTerrain().getHeightMap();
-		float value = ImageUtils.getFloatValueFromByteGrayImage(heightMap, (int) (position.x), (int) (position.y));
+		float value = ImageUtils.getFloatValueFromByteGrayImage(heightMap, (int) (position.x + heightMap.getWidth() / 2f), 
+				(int) (position.y + heightMap.getHeight() / 2f));
 		value = (value * 2f - 1f) * heightMapMultiplier;
 		return value;
 	}

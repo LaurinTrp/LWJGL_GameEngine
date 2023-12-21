@@ -70,7 +70,6 @@ public class ImageLoader {
 			width = w.get();
 			height = h.get();
 		}
-//		System.out.println(path + "\t" + buffer);
 		return getImageID(width, height, buffer);
 	}
 
@@ -94,54 +93,12 @@ public class ImageLoader {
 		ImageIO.write(image, "png", baos);
 		InputStream imageFile = new ByteArrayInputStream(baos.toByteArray());
 
-		byte[] imageData;
-
-		imageData = IOUtils.toByteArray(imageFile);
+		byte[] imageData = IOUtils.toByteArray(imageFile);
 		ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
 		imageBuffer.put(imageData);
 		imageBuffer.flip();
 
 		return imageBuffer;
-	}
-
-	/**
-	 * @param image - BufferedImage with the type BufferedImage.TYPE_INT_ARGB
-	 */
-	private static ByteBuffer bufferedImage2ByteBufferTest(BufferedImage image) {
-		int width = image.getWidth(), height = image.getHeight();
-
-		int[] pixels = new int[width * height];
-		image.getRGB(0, 0, width, height, pixels, 0, width);
-
-//		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4); // 4 because RGBA
-		ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 4);
-
-		for (int y = 0; y < height; ++y) {
-			for (int x = 0; x < width; ++x) {
-				int pixel = pixels[x + y * width];
-				buffer.put((byte) ((pixel >> 16) & 0xFF));
-				buffer.put((byte) ((pixel >> 8) & 0xFF));
-				buffer.put((byte) (pixel & 0xFF));
-				buffer.put((byte) ((pixel >> 24) & 0xFF));
-			}
-		}
-
-		buffer.flip();
-		return buffer;
-	}
-
-	public static int loadTextureFromBufferedImage(BufferedImage bi) {
-		try {
-			ByteBuffer buffer = bufferedImage2ByteBufferTest(bi);
-
-//			System.out.println(buffer);
-//			System.out.println(bufferedImage2ByteBufferTest(bi));
-
-			return loadTexture(buffer);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return 0;
-		}
 	}
 
 	/**
@@ -204,16 +161,12 @@ public class ImageLoader {
 
 	public static void updateTexture(int id, BufferedImage image) {
 		glBindTexture(GL_TEXTURE_2D, id);
-//		try {
 		try {
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
 					bufferedImageToByteBuffer(image));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	public static void updateTextureHeightMap(int id, BufferedImage image) {

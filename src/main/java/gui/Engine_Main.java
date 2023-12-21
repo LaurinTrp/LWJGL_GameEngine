@@ -1,6 +1,6 @@
 package main.java.gui;
 
-import static org.lwjgl.glfw.GLFW.GLFW_BLUE_BITS;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED;
 import static org.lwjgl.glfw.GLFW.GLFW_GREEN_BITS;
@@ -29,15 +29,22 @@ import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glEnable;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import javax.imageio.ImageIO;
 
 import org.lwjgl.PointerBuffer;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import main.java.render.Renderer;
 import main.java.utils.Inputs.KeyHandler;
 import main.java.utils.Inputs.MouseInputs;
+import main.java.utils.loaders.ImageLoader;
 
 public class Engine_Main {
 
@@ -74,6 +81,23 @@ public class Engine_Main {
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
+	
+	private static void loadWindowIcon() throws IOException {
+
+		BufferedImage buffImage = ImageIO.read(new File("/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/Textures/wall.jpg"));
+		ByteBuffer imageData = ImageLoader.bufferedImageToByteBuffer(buffImage);
+		
+		GLFWImage.Buffer icons = GLFWImage.malloc(1);
+		GLFWImage icon = GLFWImage.malloc();
+		icon.set(buffImage.getWidth(), buffImage.getHeight(), imageData);
+		icons.put(icon);
+		icons.flip();
+		
+		glfwSetWindowIcon(window, icons);
+		
+		icon.free();
+		icons.free();
+	}
 
 	private static void initWindow() {
 		if (!glfwInit()) {
@@ -90,7 +114,7 @@ public class Engine_Main {
 		} catch (IndexOutOfBoundsException e) {
 		}
 		GLFWVidMode mode = glfwGetVideoMode(monitor);
-
+		
 		glfwWindowHint(GLFW_RED_BITS, mode.redBits());
 		glfwWindowHint(GLFW_GREEN_BITS, mode.greenBits());
 		glfwWindowHint(GLFW_BLUE_BITS, mode.blueBits());
@@ -108,6 +132,13 @@ public class Engine_Main {
 
 		glfwShowWindow(window);
 		createCapabilities();
+		
+
+//		try {
+//			loadWindowIcon();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public static void makeContextCurrent() {

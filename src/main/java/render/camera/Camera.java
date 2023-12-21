@@ -16,7 +16,6 @@ public class Camera {
 	private Vec3 cameraPosition = new Vec3(0.0f, 0.0f, 0.0f);
 	private Vec3 cameraFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 cameraUp = new Vec3(0.0f, 1.0f, 0.0f);
-//	private Vec3 cameraRight = new Vec3(1.0f, 0.0f, 0.0f);
 
 	private float angleHorizontal = 0.0f;
 	private float angleVertical = 0.0f;
@@ -99,24 +98,26 @@ public class Camera {
 		cameraPosition.x = focusPoint.x - offsetX;
 		cameraPosition.y = focusPoint.y + verticalDistance;
 		cameraPosition.z = focusPoint.z - offsetZ;
-
-//		if (((Player) player).getCurrentTerrain() != null) {
-//			IRenderObject currTerrain = ((Player) player).getCurrentTerrain();
-//			if (((MultiTextureTerrain) currTerrain).isOnTerrain(new Vec2(cameraPosition.x, cameraPosition.z))) {
-//				float terrainHeight = ((MultiTextureTerrain) currTerrain)
-//						.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z)
-//								.min(((MultiTextureTerrain) currTerrain).getGlobalPosition()));
-//				if (cameraPosition.y < terrainHeight + 0.2f) {
-//					cameraPosition.y = terrainHeight + 0.2f;
-//				}
-//			}
-//		}
+		
+		System.out.println(cameraPosition);
+		
+		float groundHeight = groundIntersection();
+		cameraPosition.y = Math.max(cameraPosition.y, groundHeight + 1f);
+	}
+	
+	private float groundIntersection() {
+		
+		MultiTextureTerrain terrain = (MultiTextureTerrain) player.getCurrentTerrain();
+		if(terrain == null) {
+			return 0f;
+		}
+		return terrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
 	}
 
 	public void moveCamera() {
 
-		distanceFromPlayer = Math.min(100,
-				Math.max(2, distanceFromPlayer - Engine_Main.mouseHandler.getScrollY() * 0.4f));
+		distanceFromPlayer = Math.min(20,
+				Math.max(3, distanceFromPlayer - Engine_Main.mouseHandler.getScrollY() * 0.4f));
 
 		rotation();
 

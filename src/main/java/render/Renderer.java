@@ -143,7 +143,7 @@ public class Renderer {
 		camera.moveCamera();
 		
 		glDisable(GL_DEPTH_TEST);
-//		compass.render();
+		
 		objectPickBuffer.renderColorAttachments();
 		framebuffer.renderColorAttachments();
 
@@ -157,7 +157,7 @@ public class Renderer {
 //		test.render();
 
 //		terrainModel.render();
-//		lightSourcePass.render();
+		lightSourcePass.render();
 
 //		System.out.println("PLAYER POSITION: " + ((Player)player).getPosition());
 
@@ -173,6 +173,7 @@ public class Renderer {
 		player.render();
 		
 		glDisable(GL_CULL_FACE);
+		compass.render();
 
 		cottage.render();
 		tree_1.render();
