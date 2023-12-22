@@ -142,7 +142,7 @@ public class Renderer {
 		renderModels();
 
 		camera.setFocusPoint(new Vec3(player.getPosition()));
-		camera.moveCamera();
+		camera.update();
 
 		glDisable(GL_DEPTH_TEST);
 

@@ -1,6 +1,7 @@
 package main.java.utils;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
 
 import org.lwjgl.glfw.GLFW;
@@ -33,14 +34,14 @@ public class Inputs {
 				lastY = ypos;
 
 
-				if(Math.abs(xoffset) <= 2) {
+				if(Math.abs(xoffset) <= 1) {
 					xoffset = 0;
 				}
-				if(Math.abs(yoffset) <= 2) {
+				if(Math.abs(yoffset) <= 1) {
 					yoffset = 0;
 				}
 
-				float sensitivity = 0.15f;
+				float sensitivity = 0.2f;
 				xoffset *= sensitivity;
 				yoffset *= sensitivity;
 
@@ -129,13 +130,16 @@ public class Inputs {
 
 	public static class KeyHandler {
 		private long window;
-
 		public KeyHandler(long window) {
 			this.window = window;
 		}
 
 		public boolean isPressed(int key) {
 			return glfwGetKey(window, key) == GLFW_PRESS;
+		}
+		
+		public boolean isReleased(int key) {
+			return glfwGetKey(window, key) == GLFW_RELEASE;
 		}
 	}
 
