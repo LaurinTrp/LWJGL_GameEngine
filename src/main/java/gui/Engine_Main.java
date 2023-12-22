@@ -1,28 +1,24 @@
 package main.java.gui;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_BLUE_BITS;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED;
 import static org.lwjgl.glfw.GLFW.GLFW_GREEN_BITS;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_RED_BITS;
 import static org.lwjgl.glfw.GLFW.GLFW_REFRESH_RATE;
-import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
 import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
 import static org.lwjgl.glfw.GLFW.glfwGetMonitors;
 import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowIcon;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
@@ -41,12 +37,18 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
+import lwjgui.LWJGUI;
+import lwjgui.LWJGUIApplication;
+import lwjgui.LWJGUIUtil;
+import lwjgui.scene.Scene;
+import lwjgui.scene.Window;
 import main.java.render.Renderer;
 import main.java.utils.Inputs.KeyHandler;
 import main.java.utils.Inputs.MouseInputs;
 import main.java.utils.loaders.ImageLoader;
+import openglPane.OpenGLPane;
 
-public class Engine_Main {
+public class Engine_Main extends LWJGUIApplication {
 
 	public static float x, y;
 	public static int windowWidth = 800, windowHeight = 800;
@@ -55,6 +57,8 @@ public class Engine_Main {
 	public static KeyHandler keyHandler;
 
 	public static Renderer render;
+	
+	private static Window lwjguiWindow;
 
 	private static long window = -1;
 
@@ -65,7 +69,7 @@ public class Engine_Main {
 	private static double old_time, new_time;
 
 	public static void main(String[] args) throws IOException {
-
+		
 		initWindow();
 
 		initObjects();
@@ -120,27 +124,38 @@ public class Engine_Main {
 		glfwWindowHint(GLFW_BLUE_BITS, mode.blueBits());
 		glfwWindowHint(GLFW_REFRESH_RATE, mode.refreshRate());
 
-		window = glfwCreateWindow(mode.width(), mode.height(), "Game", monitor, 0);
 		windowWidth = mode.width();
 		windowHeight = mode.height();
+		window = LWJGUIUtil.createOpenGLCoreWindow("Hello World", windowWidth, windowHeight, true, false);
 
-		makeContextCurrent();
-		glfwSwapInterval(1);
+		lwjguiWindow = LWJGUI.initialize(window);
+
+		render = new Renderer();
+		addComponents(lwjguiWindow.getScene());
+		
+		lwjguiWindow.show();
+		
+//		makeContextCurrent();
+//		glfwSwapInterval(1);
 
 		// ####### Disable cursor
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-		glfwShowWindow(window);
-		createCapabilities();
+//		glfwShowWindow(window);
+//		createCapabilities();
 		
-
-//		try {
-//			loadWindowIcon();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 
+
+	private static void addComponents(Scene scene) {
+		// Create a simple pane
+		OpenGLPane pane = new OpenGLPane(lwjguiWindow);
+		pane.setRendererCallback(render);
+		
+		// Set the pane as the scenes root
+		scene.setRoot(pane);
+	}
+	
 	public static void makeContextCurrent() {
 		glfwMakeContextCurrent(window);
 	}
@@ -152,7 +167,6 @@ public class Engine_Main {
 	private static void initObjects() {
 		mouseHandler = new MouseInputs();
 		keyHandler = new KeyHandler(window);
-		render = new Renderer();
 	}
 
 	private static void initCallbacks() {
@@ -174,16 +188,17 @@ public class Engine_Main {
 			}
 
 			// RENDER //
-			render.render();
+			LWJGUI.render();
+//			render.render();
 
-			mouseHandler.reset();
+//			mouseHandler.reset();
 
-			glfwSwapBuffers(window);
-			glfwPollEvents();
+//			glfwSwapBuffers(window);
+//			glfwPollEvents();
 
-			currentFrameTime = System.nanoTime();
-			delta = currentFrameTime - lastFrameTime;
-			lastFrameTime = currentFrameTime;
+//			currentFrameTime = System.nanoTime();
+//			delta = currentFrameTime - lastFrameTime;
+//			lastFrameTime = currentFrameTime;
 
 //			FPScounter.StopAndPost();
 		}
@@ -192,5 +207,10 @@ public class Engine_Main {
 
 	public static long getDelta() {
 		return delta;
+	}
+
+	@Override
+	public void start(String[] args, Window window) {
+		
 	}
 }

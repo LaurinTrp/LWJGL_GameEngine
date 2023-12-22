@@ -90,7 +90,7 @@ public class Model implements IRenderObject {
 	private Model(Mat4[] matrices, BoundingBox initBoundingBox) {
 		for (int i = 0; i < matrices.length; i++) {
 			int id = Renderer.modelObserver.instanceCounter++;
-
+			System.out.println(this);
 			objectIds.put(i, id);
 
 			colorsForSelection.put(id,
@@ -341,7 +341,7 @@ public class Model implements IRenderObject {
 		}
 
 		renderToObjectPickBuffer();
-
+		
 		{
 			glUseProgram(program.getProgramID());
 			Renderer.framebuffer.bindFbo();

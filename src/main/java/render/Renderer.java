@@ -1,8 +1,7 @@
 package main.java.render;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glDisable;
@@ -14,6 +13,7 @@ import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
+import lwjgui.scene.Context;
 import main.java.render.camera.Camera;
 import main.java.render.entities.Player;
 import main.java.render.entities.trees.Tree_1;
@@ -22,7 +22,9 @@ import main.java.render.model.ModelObserver;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.model.RandomMatrixGenerator;
 import main.java.render.passes.Cottage;
+import main.java.render.passes.Cube;
 import main.java.render.passes.TerrainModel;
+import main.java.render.passes.TrianglePass;
 import main.java.render.passes.framebuffers.DepthMap;
 import main.java.render.passes.framebuffers.Framebuffer;
 import main.java.render.passes.framebuffers.IFramebuffer;
@@ -35,7 +37,7 @@ import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.TexturePack;
 import main.java.render.utils.terrain.TerrainGenerator;
 
-public class Renderer {
+public class Renderer implements lwjgui.gl.Renderer {
 
 	public static ModelObserver modelObserver;
 
@@ -64,6 +66,10 @@ public class Renderer {
 	public static ArrayList<Mat4> lightSourcePositionsMats = new ArrayList<>();
 
 	private Skybox skybox;
+	
+	TrianglePass tp;
+	
+	Cube cube;
 
 	public Renderer() {
 		modelObserver = new ModelObserver();
@@ -97,7 +103,11 @@ public class Renderer {
 
 		player.addIntersector(cottage);
 		player.addIntersector(tree_1);
-
+		
+		tp = new TrianglePass();
+		
+		cube = new Cube();
+		
 	}
 
 	private void initLightSourcePositions() {
@@ -123,39 +133,42 @@ public class Renderer {
 		generator.generateProcedural();
 		terrainModel = new TerrainModel(generator, TexturePack.DEFAULT_TERRAIN);
 	}
-
+	
 	/**
 	 * Main render method
 	 */
-	public void render() {
-		framebuffer.render();
+	@Override
+	public void render(Context context) {
+//		framebuffer.render();
 		objectPickBuffer.render();
-
+		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-//		sun.update();
+		
+		sun.update();
 		skybox.render();
+		
 		glEnable(GL_DEPTH_TEST);
-
-		lightSourcePass.render();
-
+		
+//		lightSourcePass.render();
+		
 		renderModels();
-
+//
 		camera.setFocusPoint(new Vec3(player.getPosition()));
 		camera.update();
 
 		glDisable(GL_DEPTH_TEST);
 
 		objectPickBuffer.renderColorAttachments();
-		framebuffer.renderColorAttachments();
+//		framebuffer.renderColorAttachments();
 
-		framebuffer.unbindFbo();
+//		framebuffer.unbindFbo();
 		objectPickBuffer.unbindFbo();
 	}
 
 	public void renderModels() {
 		glEnable(GL_CULL_FACE);
 
+		cube.render();
 //		test.render();
 
 //		terrainModel.render();
@@ -169,16 +182,16 @@ public class Renderer {
 			player.move();
 			terrainModel.translate(new Vec3(playerPosXZ.x, 0, playerPosXZ.y));
 		}
-
+		
 		terrainModel.render();
 		player.gravity(terrainModel);
 		player.render();
-
-		glDisable(GL_CULL_FACE);
-		compass.render();
-
+		
 		cottage.render();
 		tree_1.render();
+		
+		glDisable(GL_CULL_FACE);
+
 	}
 
 	/**
@@ -201,6 +214,8 @@ public class Renderer {
 		compass.dispose();
 		tree_1.dispose();
 		tree_2.dispose();
+		
+		tp.dispose();
 	}
 
 }

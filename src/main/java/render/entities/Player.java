@@ -45,7 +45,7 @@ public class Player extends Model {
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
 
-		setShowMinMax(true);
+//		setShowMinMax(true);
 	}
 
 	@Override
@@ -145,6 +145,9 @@ public class Player extends Model {
 		BoundingBox tempBoundryBox = new BoundingBox(getBoundingBox().getStartMinmax(), tempModelMatrix);
 		for (IRenderObject model : intersectors) {
 			Model intersectorModel = (Model) model;
+			if(intersectorModel.getBoundingBoxes() == null) {
+				continue;
+			}
 			for (BoundingBox boundingBox : intersectorModel.getBoundingBoxes()) {
 				if (BoundingBox.collision(tempBoundryBox, boundingBox)) {
 					return true;

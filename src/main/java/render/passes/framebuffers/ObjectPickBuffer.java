@@ -1,6 +1,6 @@
 package main.java.render.passes.framebuffers;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -243,7 +243,7 @@ public class ObjectPickBuffer implements IFramebuffer {
 
 		{
 			bindFbo();
-			glClearColor(0.5f, 0.1f, 0.1f, 1.0f);
+			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			unbindFbo();
 		}
@@ -256,46 +256,42 @@ public class ObjectPickBuffer implements IFramebuffer {
 	public void renderColorAttachments() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		{
 			glUseProgram(program.getProgramID());
 			{
 				glBindVertexArray(vao);
-				glDisable(GL_DEPTH_TEST);
+				glEnable(GL_DEPTH_TEST);
 				glBindTexture(GL_TEXTURE_2D, texture);
 				{
-					if (Engine_Main.mouseHandler.isLMB_Down()) {
-						if (!clickReady) {
-							return;
-						}
-						glDrawArrays(GL_TRIANGLES, 0, 6);
+//					if (Engine_Main.mouseHandler.isLMB_Down()) {
+//						if (!clickReady) {
+//							return;
+//						}
+					glDrawArrays(GL_TRIANGLES, 0, 6);
 
-//						glReadPixels((int) Engine_Main.mouseHandler.getMouseX(),
-//								(int) (-Engine_Main.mouseHandler.getMouseY() + Engine_Main.windowHeight), 1, 1, GL_RGBA,
-//								GL_UNSIGNED_BYTE, colorBuffer);
+					glReadPixels((int) (Engine_Main.windowWidth / 2f), (int) (Engine_Main.windowHeight / 2f), 1, 1,
+							GL_RGBA, GL_UNSIGNED_BYTE, colorBuffer);
 
-						glReadPixels((int) (Engine_Main.windowWidth / 2f), (int) (Engine_Main.windowHeight / 2f), 1, 1,
-								GL_RGBA, GL_UNSIGNED_BYTE, colorBuffer);
+					int red = colorBuffer.get(0) & 0xFF;
+					int green = colorBuffer.get(1) & 0xFF;
+					int blue = colorBuffer.get(2) & 0xFF;
 
-						int red = colorBuffer.get(0) & 0xFF;
-						int green = colorBuffer.get(1) & 0xFF;
-						int blue = colorBuffer.get(2) & 0xFF;
-
-						int objectId = (red << 16) | (green << 8) | blue;
-						IRenderObject object = Renderer.modelObserver.getObjectById(objectId);
-
-						Model objectMulti = (Model) object;
-						if (objectMulti != null && !objectMulti.isSelected(objectId)) {
-							objectMulti.setSelected(objectId, true);
-						} else if (objectMulti != null && objectMulti.isSelected(objectId)) {
-							objectMulti.setSelected(objectId, false);
-						}
-
-						clickReady = false;
-					} else {
-						clickReady = true;
+					int objectId = (red << 16) | (green << 8) | blue;
+					IRenderObject object = Renderer.modelObserver.getObjectById(objectId);
+					System.out.println(objectId);
+					
+					Model objectMulti = (Model) object;
+					if (objectMulti != null && !objectMulti.isSelected(objectId)) {
+						objectMulti.setSelected(objectId, true);
 					}
+
+					System.out.println(object);
+
+					clickReady = false;
+//					} else {
+//						clickReady = true;
+//					}
 				}
 				glBindVertexArray(0);
 			}

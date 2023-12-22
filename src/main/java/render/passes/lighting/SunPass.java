@@ -1,5 +1,7 @@
 package main.java.render.passes.lighting;
 
+import static org.lwjgl.opengl.GL11.glClearColor;
+
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
@@ -80,6 +82,7 @@ public class SunPass {
 
 		color = new Vec4(r / 255f, g / 255f, b / 255f, 1.0);
 
+		glClearColor(color.x * 0.2f, color.y * 0.2f, color.z * 0.2f, 1.0f);
 	}
 
 	public Vec4 getColor() {
