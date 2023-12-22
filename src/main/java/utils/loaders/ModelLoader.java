@@ -1,6 +1,5 @@
 package main.java.utils.loaders;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,8 +8,7 @@ import java.util.HashMap;
 
 import glm.mat._4.Mat4;
 import main.java.render.model.Material;
-import main.java.render.model.MultiModel;
-import main.java.render.model.SingleModel;
+import main.java.render.model.Model;
 import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.BoundingBox;
 import main.java.utils.FileUtils;
@@ -32,22 +30,21 @@ public class ModelLoader {
 
 	private static File file;
 
-
 	private static ArrayList<IRenderObject> models = new ArrayList<>();
 	private static HashMap<String, Integer> materials = new HashMap<>();
 
 	public ModelLoader() {
 	}
 
-	public static ArrayList<IRenderObject> loadMultipleModelsFromObj(String path) {
-		ArrayList<IRenderObject> models = new ArrayList<>();
-		ArrayList<Float[][]> objects = loadMultipleFromObj(path);
-		for (Float[][] floats : objects) {
-			IRenderObject model = new SingleModel(floats[0], floats[1], floats[2], floats[4][0].intValue(), new Material(), new BoundingBox<SingleModel>(floats[3]));
-			models.add(model);
-		}
-		return models;
-	}
+//	public static ArrayList<IRenderObject> loadMultipleModelsFromObj(String path) {
+//		ArrayList<IRenderObject> models = new ArrayList<>();
+//		ArrayList<Float[][]> objects = loadMultipleFromObj(path);
+//		for (Float[][] floats : objects) {
+//			IRenderObject model = new Model(floats[0], floats[1], floats[2], floats[4][0].intValue(), new Material(), new BoundingBox(floats[3]));
+//			models.add(model);
+//		}
+//		return models;
+//	}
 
 	public static ArrayList<Float[][]> loadMultipleFromObj(String path) {
 		clear();
@@ -64,9 +61,8 @@ public class ModelLoader {
 				triangleCount = 0;
 				ArrayList<String> object = new ArrayList<>(Arrays.asList(string.split("\n")));
 				Float[][] data = loadObj(object, path);
-				Float[][] newData = new Float[][] {
-					data[0], data[1], data[2], data[3], new Float[] {(float) triangleCount}
-				};
+				Float[][] newData = new Float[][] { data[0], data[1], data[2], data[3],
+						new Float[] { (float) triangleCount } };
 				output.add(newData);
 			}
 
@@ -107,12 +103,12 @@ public class ModelLoader {
 				Double[] verticesVec = new Double[] { Double.parseDouble(splitted[1]), Double.parseDouble(splitted[2]),
 						Double.parseDouble(splitted[3]), 1.0 };
 				vertices.add(verticesVec);
-				minmax[0] = (float)Math.min(minmax[0], verticesVec[0]);
-				minmax[1] = (float)Math.max(minmax[1], verticesVec[0]);
-				minmax[2] = (float)Math.min(minmax[2], verticesVec[1]);
-				minmax[3] = (float)Math.max(minmax[3], verticesVec[1]);
-				minmax[4] = (float)Math.min(minmax[4], verticesVec[2]);
-				minmax[5] = (float)Math.max(minmax[5], verticesVec[2]);
+				minmax[0] = (float) Math.min(minmax[0], verticesVec[0]);
+				minmax[1] = (float) Math.max(minmax[1], verticesVec[0]);
+				minmax[2] = (float) Math.min(minmax[2], verticesVec[1]);
+				minmax[3] = (float) Math.max(minmax[3], verticesVec[1]);
+				minmax[4] = (float) Math.min(minmax[4], verticesVec[2]);
+				minmax[5] = (float) Math.max(minmax[5], verticesVec[2]);
 				break;
 			case "vt":
 				Double[] texVec = new Double[] { Double.parseDouble(splitted[1]), 1 - Double.parseDouble(splitted[2]),
@@ -136,29 +132,20 @@ public class ModelLoader {
 				break;
 			}
 		}
-		
-		return new Float[][] { getVertices(), getTextures(), getNormals(), minmax};
+
+		return new Float[][] { getVertices(), getTextures(), getNormals(), minmax };
+	}
+	
+	public static Model loadModelFromResource(String parent, String file, Mat4 matrix) {
+		return loadModelFromResource(parent, file, new Mat4[] { matrix });
 	}
 
-//	public static IRenderObject loadModel(String path) {
-//		Float[][] data = loadObj(path);
-//		IRenderObject model = new SingleModel(data[0], data[1], data[2], triangleCount, new Material(), data[3]);
-//		return model;
-//	}
-
-	public static SingleModel loadModelFromResource(String parent, String file) {
+	public static Model loadModelFromResource(String parent, String file, Mat4[] matrices) {
 		clear();
 		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
-		IRenderObject model = new SingleModel(data[0], data[1], data[2], triangleCount, new Material(), new BoundingBox<SingleModel>(data[3]));
-
-		return (SingleModel) model;
-	}
-
-	public static MultiModel loadMultiModelFromResource(String parent, String file, Mat4[] matrices) {
-		clear();
-		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
-		IRenderObject model = new MultiModel(matrices, data[0], data[1], data[2], triangleCount, new Material(), new BoundingBox<MultiModel>(data[3]));
-		return (MultiModel) model;
+		IRenderObject model = new Model(matrices, data[0], data[1], data[2], triangleCount, new Material(),
+				new BoundingBox(data[3]));
+		return (Model) model;
 	}
 
 	private static void clear() {
@@ -169,6 +156,7 @@ public class ModelLoader {
 		normalsFinal.clear();
 		texturesFinal.clear();
 	}
+
 	private static void clearFinalLists() {
 		verticesFinal.clear();
 		texturesFinal.clear();

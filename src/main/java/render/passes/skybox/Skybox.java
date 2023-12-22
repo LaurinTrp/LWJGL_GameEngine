@@ -28,12 +28,12 @@ import java.util.HashMap;
 
 import glm.mat._4.Mat4;
 import main.java.render.Renderer;
-import main.java.render.renderobject.RenderObjectSingle;
+import main.java.render.renderobject.IRenderObject;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 import main.java.utils.loaders.ImageLoader;
 
-public class Skybox extends RenderObjectSingle {
+public class Skybox implements IRenderObject {
 
 	private int vao, vbo, textureID;
 	private int texture;

@@ -1,13 +1,16 @@
 package main.java.render.passes;
 
-import main.java.render.model.SingleModel;
+import glm.mat._4.Mat4;
+import main.java.render.model.Model;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
-public class Cube extends SingleModel {
+public class Cube extends Model {
 
+	private static Mat4 modelMatrix = new Mat4(1.0f);
+	
 	public Cube() {
-		super((SingleModel) ModelLoader.loadModelFromResource("Cube", "cube.obj"));
+		super(ModelLoader.loadModelFromResource("Cube", "cube.obj", modelMatrix), modelMatrix);
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ImageLoader.loadTextureFromResource("Terrain/Terrain.png"));
 	}

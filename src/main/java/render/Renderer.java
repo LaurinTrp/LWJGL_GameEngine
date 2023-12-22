@@ -27,12 +27,9 @@ import main.java.render.passes.framebuffers.DepthMap;
 import main.java.render.passes.framebuffers.Framebuffer;
 import main.java.render.passes.framebuffers.IFramebuffer;
 import main.java.render.passes.framebuffers.ObjectPickBuffer;
-import main.java.render.passes.lighting.LightSourcePass;
 import main.java.render.passes.lighting.Lightsources;
 import main.java.render.passes.lighting.SunPass;
 import main.java.render.passes.skybox.Skybox;
-import main.java.render.passes.standard.RectanglePass;
-import main.java.render.passes.standard.TrianglePass;
 import main.java.render.passes.transformation.Compass;
 import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.TexturePack;
@@ -45,10 +42,6 @@ public class Renderer {
 	public static IFramebuffer framebuffer;
 	public static IFramebuffer objectPickBuffer;
 	public IFramebuffer depthBuffer;
-
-	private IRenderObject trianglePass;
-
-	private IRenderObject rectanglePass;
 
 	private IRenderObject lightSourcePass;
 
@@ -80,10 +73,6 @@ public class Renderer {
 		framebuffer = new Framebuffer();
 		objectPickBuffer = new ObjectPickBuffer();
 		depthBuffer = new DepthMap();
-
-		trianglePass = new TrianglePass();
-
-		rectanglePass = new RectanglePass();
 
 		initLightSourcePositions();
 
@@ -203,8 +192,6 @@ public class Renderer {
 
 		terrainModel.dispose();
 
-		trianglePass.dispose();
-		rectanglePass.dispose();
 		lightSourcePass.dispose();
 
 		cottage.dispose();

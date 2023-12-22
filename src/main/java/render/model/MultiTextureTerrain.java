@@ -36,7 +36,7 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
-import main.java.render.renderobject.RenderObjectSingle;
+import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.NormalDrawing;
 import main.java.render.utils.TexturePack;
 import main.java.render.utils.terrain.TerrainGenerator;
@@ -44,7 +44,7 @@ import main.java.shader.ShaderProgram;
 import main.java.utils.ImageUtils;
 import main.java.utils.ModelUtils;
 
-public class MultiTextureTerrain extends RenderObjectSingle {
+public class MultiTextureTerrain implements IRenderObject {
 
 	protected boolean init = false;
 
@@ -71,7 +71,7 @@ public class MultiTextureTerrain extends RenderObjectSingle {
 
 	private String shaderFolder;
 
-	private NormalDrawing<MultiTextureTerrain> normalDrawing;
+	private NormalDrawing normalDrawing;
 
 	private boolean showNormals;
 
@@ -115,7 +115,7 @@ public class MultiTextureTerrain extends RenderObjectSingle {
 
 		afterInit();
 
-		normalDrawing = new NormalDrawing<>(this);
+		normalDrawing = new NormalDrawing(this);
 
 		updateHeightMap(0, 0);
 

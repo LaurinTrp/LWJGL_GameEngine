@@ -55,9 +55,8 @@ import org.lwjgl.BufferUtils;
 
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
+import main.java.render.model.Model;
 import main.java.render.renderobject.IRenderObject;
-import main.java.render.renderobject.RenderObjectMulti;
-import main.java.render.renderobject.RenderObjectSingle;
 import main.java.shader.ShaderProgram;
 
 public class ObjectPickBuffer implements IFramebuffer {
@@ -286,20 +285,11 @@ public class ObjectPickBuffer implements IFramebuffer {
 						int objectId = (red << 16) | (green << 8) | blue;
 						IRenderObject object = Renderer.modelObserver.getObjectById(objectId);
 
-						if (object instanceof RenderObjectSingle) {
-							RenderObjectSingle objectSingle = (RenderObjectSingle) object;
-							if (objectSingle != null && !objectSingle.isSelected()) {
-								objectSingle.setSelected(true);
-							} else if (objectSingle != null && objectSingle.isSelected()) {
-								objectSingle.setSelected(false);
-							}
-						} else if (object instanceof RenderObjectMulti) {
-							RenderObjectMulti objectMulti = (RenderObjectMulti) object;
-							if (objectMulti != null && !objectMulti.isSelected(objectId)) {
-								objectMulti.setSelected(objectId, true);
-							} else if (objectMulti != null && objectMulti.isSelected(objectId)) {
-								objectMulti.setSelected(objectId, false);
-							}
+						Model objectMulti = (Model) object;
+						if (objectMulti != null && !objectMulti.isSelected(objectId)) {
+							objectMulti.setSelected(objectId, true);
+						} else if (objectMulti != null && objectMulti.isSelected(objectId)) {
+							objectMulti.setSelected(objectId, false);
 						}
 
 						clickReady = false;

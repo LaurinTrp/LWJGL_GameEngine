@@ -6,11 +6,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import glm.mat._4.Mat4;
@@ -19,17 +15,16 @@ import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.camera.CameraMode;
-import main.java.render.model.MultiModel;
+import main.java.render.model.Model;
 import main.java.render.model.MultiTextureTerrain;
-import main.java.render.model.SingleModel;
 import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.BoundingBox;
 import main.java.utils.constants.Constants;
-import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
-import resources.ResourceLoader;
 
-public class Player extends SingleModel {
+public class Player extends Model {
+
+	private static Mat4 modelMatrix = new Mat4(1.0f);
 
 	private Vec3 position;
 	private Vec3 prevPosition;
@@ -47,10 +42,10 @@ public class Player extends SingleModel {
 	private ArrayList<IRenderObject> intersectors = new ArrayList<>();
 
 	public Player() {
-		super((SingleModel) ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj"));
+		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj", modelMatrix), modelMatrix);
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
-		
+
 		setShowMinMax(true);
 	}
 
@@ -84,8 +79,9 @@ public class Player extends SingleModel {
 	 * Rotate the player around its axis
 	 */
 	private void rotation() {
-		double rotationSpeed = Renderer.camera.cameraMode == CameraMode.POV_CAMERA ? -Constants.PLAYER_ROTATION_SPEED : Constants.PLAYER_ROTATION_SPEED;
-		
+		double rotationSpeed = Renderer.camera.cameraMode == CameraMode.POV_CAMERA ? -Constants.PLAYER_ROTATION_SPEED
+				: Constants.PLAYER_ROTATION_SPEED;
+
 		if (Engine_Main.mouseHandler.getXoffset() > 0) {
 			modelMatrix.rotateY(rotationSpeed);
 			rotationAngle += rotationSpeed;
@@ -105,7 +101,7 @@ public class Player extends SingleModel {
 	 * Move the player model
 	 */
 	public boolean checkMovement() {
-		
+
 		direction = new Vec3(0.0f);
 		hasMoved = false;
 
@@ -138,7 +134,7 @@ public class Player extends SingleModel {
 				hasMoved = true;
 			}
 		}
-		
+
 		return hasMoved;
 	}
 
@@ -147,18 +143,12 @@ public class Player extends SingleModel {
 		Vec3 tempPosition = new Vec3(position).add(direction);
 		Mat4 tempModelMatrix = new Mat4(modelMatrix).cleanTranslation().translation(tempPosition);
 
-		BoundingBox<Player> tempBoundryBox = new BoundingBox<>(getBoundingBox().getStartMinmax(), tempModelMatrix);
+		BoundingBox tempBoundryBox = new BoundingBox(getBoundingBox().getStartMinmax(), tempModelMatrix);
 		for (IRenderObject model : intersectors) {
-			if (model instanceof SingleModel) {
-				if (BoundingBox.collision(tempBoundryBox, ((SingleModel) model).getBoundingBox())) {
+			Model intersectorModel = (Model) model;
+			for (BoundingBox boundingBox : intersectorModel.getBoundingBoxes()) {
+				if (BoundingBox.collision(tempBoundryBox, boundingBox)) {
 					return true;
-				}
-			} else if (model instanceof MultiModel) {
-				MultiModel multiModel = (MultiModel) model;
-				for (BoundingBox<?> boundingBox: multiModel.getBoundingBoxes()) {
-					if(BoundingBox.collision(tempBoundryBox, boundingBox)) {
-						return true;
-					}
 				}
 			}
 		}
@@ -219,7 +209,7 @@ public class Player extends SingleModel {
 		intersectors.add(intersector);
 	}
 
-	public void removeIntersector(SingleModel intersector) {
+	public void removeIntersector(Model intersector) {
 		intersectors.remove(intersector);
 	}
 

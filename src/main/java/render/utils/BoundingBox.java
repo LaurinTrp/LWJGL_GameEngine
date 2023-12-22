@@ -21,16 +21,13 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.Arrays;
 
-import org.lwjgl.opengles.IMGMultisampledRenderToTexture;
-
 import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
 import main.java.render.renderobject.IRenderObject;
-import main.java.render.renderobject.RenderObjectSingle;
 import main.java.shader.ShaderProgram;
 
-public class BoundingBox<E> implements IRenderObject {
+public class BoundingBox implements IRenderObject {
 
 	private boolean init = false;
 
@@ -171,7 +168,7 @@ public class BoundingBox<E> implements IRenderObject {
 		return cornerPoints;
 	}
 	
-	public static boolean collision(BoundingBox<?> minmax0, BoundingBox<?> minmax1) {
+	public static boolean collision(BoundingBox minmax0, BoundingBox minmax1) {
 		Vec4[] cornerPoints0 = minmax0.transformedMinmax();
 		Vec4[] cornerPoints1 = minmax1.transformedMinmax();
 		

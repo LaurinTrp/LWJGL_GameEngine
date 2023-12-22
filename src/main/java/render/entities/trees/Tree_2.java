@@ -1,15 +1,14 @@
 package main.java.render.entities.trees;
 
 import glm.mat._4.Mat4;
-import main.java.render.Renderer;
-import main.java.render.model.MultiModel;
+import main.java.render.model.Model;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
-public class Tree_2 extends MultiModel {
+public class Tree_2 extends Model {
 
 	public Tree_2(Mat4[] matrices) {
-		super(ModelLoader.loadMultiModelFromResource("Trees", "Tree2.obj", matrices), matrices);
+		super(ModelLoader.loadModelFromResource("Trees", "Tree2.obj", matrices), matrices);
 //		setModelMatrices(matrices);
 		
 		setShaderFolder("Transformation");

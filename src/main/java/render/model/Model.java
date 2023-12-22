@@ -33,13 +33,19 @@ import org.lwjgl.opengl.GL15;
 import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
-import main.java.render.renderobject.RenderObjectSingle;
+import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.BoundingBox;
 import main.java.render.utils.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class SingleModel extends RenderObjectSingle {
+public class Model implements IRenderObject {
+
+	private final HashMap<Integer, Integer> objectIds = new HashMap<>();
+
+	private final HashMap<Integer, Vec4> colorsForSelection = new HashMap<>();
+
+	protected HashMap<Integer, Boolean> selected = new HashMap<>();
 
 	private Material material;
 
@@ -52,7 +58,7 @@ public class SingleModel extends RenderObjectSingle {
 	protected ShaderProgram program;
 	protected ShaderProgram programObjectPick;
 
-	protected Mat4 modelMatrix;
+	protected Mat4[] modelMatrices;
 
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
 	protected HashMap<String, Integer> uniformsObjectPick = new HashMap<>();
@@ -65,52 +71,86 @@ public class SingleModel extends RenderObjectSingle {
 	protected int[] indices;
 
 	// min x, max x, min y, max y, min z, max z
-//	protected final Float[] startMinmax;
-//	protected Float[] minmax = new Float[6];
+//	protected final Float[] startMinmaxForModel;
+//	protected Float[][] minmax;
 
 	private float scale = 1.0f;
 
 	private String shaderFolder;
 
-	private NormalDrawing<SingleModel> normalDrawing;
-	private BoundingBox<SingleModel> boundingBox;
+	private NormalDrawing normalDrawing;
+	private final BoundingBox startMinmax;
+	private BoundingBox[] boundingBoxes;
 
 	private boolean showNormals;
 	private boolean showMinMax;
 
 	private Vec4 translation;
 
+	private Model(Mat4[] matrices, BoundingBox initBoundingBox) {
+		for (int i = 0; i < matrices.length; i++) {
+			int id = Renderer.modelObserver.instanceCounter++;
+
+			objectIds.put(i, id);
+
+			colorsForSelection.put(id,
+					new Vec4((id >> 16) & 0xFF, (id >> 8) & 0xFF, (id >> 0) & 0xFF, (id >> 24) & 0xFF));
+
+			selected.put(id, false);
+		}
+
+		Renderer.modelObserver.addObjectToSelectables(this);
+
+		this.startMinmax = initBoundingBox;
+	}
+
 	/**
 	 * Model constructor without ebo
 	 *
-	 * @param vertices  The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs       The data of the uv coordinates
-	 * @param normals   The data of the normals
-	 * @param indices   The indices
-	 * @param triangles Number of triangles
-	 * @param material  Material object
-	 * @param minmax    Min and Max coordinates (minX, maxX, minY, maxY, minZ, maxZ)
+	 * @param vertices    The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
+	 * @param uvs         The data of the uv coordinates
+	 * @param normals     The data of the normals
+	 * @param indices     The indices
+	 * @param triangles   Number of triangles
+	 * @param material    Material object
+	 * @param startMinMax Min and Max coordinates (minX, maxX, minY, maxY, minZ,
+	 *                    maxZ)
 	 */
-	public SingleModel(Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material, BoundingBox<SingleModel> minmax) {
+	public Model(Mat4[] modelMatrices, Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material,
+			BoundingBox initBoundingBox) {
+		this(modelMatrices, initBoundingBox);
+
+		this.modelMatrices = modelMatrices;
 		this.triangles = triangles;
 		this.vertices = vertices;
 		this.uvs = uvs;
 		this.normals = normals;
 		this.material = material;
-		this.boundingBox = minmax;
 	}
+
 	/**
 	 * Constructor copying other model
 	 *
 	 * @param model Model to copy
 	 */
-	public SingleModel(SingleModel model) {
-		this(model.vertices, model.uvs, model.normals, model.triangles, model.material, model.boundingBox);
+	public Model(Model model, Mat4[] modelMatrices) {
+		this(modelMatrices, model.vertices, model.uvs, model.normals, model.triangles, model.material,
+				model.startMinmax);
 
 		this.program = model.program;
+		this.uniforms = model.uniforms;
+	}
 
-		this.modelMatrix = model.modelMatrix;
+	/**
+	 * Constructor copying other model
+	 *
+	 * @param model Model to copy
+	 */
+	public Model(Model model, Mat4 modelMatrix) {
+		this(new Mat4[] { modelMatrix }, model.vertices, model.uvs, model.normals, model.triangles, model.material,
+				model.startMinmax);
 
+		this.program = model.program;
 		this.uniforms = model.uniforms;
 	}
 
@@ -118,13 +158,17 @@ public class SingleModel extends RenderObjectSingle {
 	public void init() {
 
 		initShader(shaderFolder);
-		initMatrixes();
+		initMatrices();
 		bindModel();
 
 		afterInit();
 
-		normalDrawing = new NormalDrawing<>(this);
-		boundingBox.setModelMatrix(modelMatrix);
+		normalDrawing = new NormalDrawing(vertices, normals, modelMatrices);
+
+		boundingBoxes = new BoundingBox[modelMatrices.length];
+		for (int i = 0; i < modelMatrices.length; i++) {
+			boundingBoxes[i] = new BoundingBox(startMinmax.getStartMinmax(), modelMatrices[i]);
+		}
 
 		init = true;
 	}
@@ -135,11 +179,15 @@ public class SingleModel extends RenderObjectSingle {
 	protected void afterInit() {
 	}
 
-	/**
-	 * Initializing the matrices
-	 */
-	public void initMatrixes() {
-		modelMatrix = new Mat4(1.0f);
+	private void initMatrices() {
+//		this.minmax = new Float[modelMatrices.length][6];
+//		for (int i = 0; i < minmax.length; i++) {
+//			minmax[i] = Arrays.copyOf(startMinmaxForModel, startMinmaxForModel.length);
+//		}
+//
+//		for (int i = 0; i < minmax.length; i++) {
+//			updateMinmax(i);
+//		}
 	}
 
 	/**
@@ -160,16 +208,15 @@ public class SingleModel extends RenderObjectSingle {
 
 		ModelUtils.createUniform(program, uniforms, "sunPosition");
 		ModelUtils.createUniform(program, uniforms, "sunColor");
-		
 		ModelUtils.createUniform(program, uniforms, "selected");
-		
-		
+
 		programObjectPick = new ShaderProgram("TransformationObjectPick");
 		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "modelMatrix");
 		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "viewMatrix");
 		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "projectionMatrix");
 		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "cameraPos");
 		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "colorID");
+
 	}
 
 	/**
@@ -185,7 +232,7 @@ public class SingleModel extends RenderObjectSingle {
 			colors[i + 2] = 0.0f;
 			colors[i + 3] = 1.0f;
 		}
-		
+
 		float[] data = ModelUtils.flattenArrays(vertices, colors, uvs, normals);
 
 		vao = glGenVertexArrays();
@@ -277,10 +324,10 @@ public class SingleModel extends RenderObjectSingle {
 	/**
 	 * Upload the different matrices to the shader
 	 */
-	protected void uploadMatrixes(HashMap<String, Integer> uniforms) {
+	protected void uploadMatrixes(int index) {
 		glUniformMatrix4fv(uniforms.get("viewMatrix"), false, Renderer.camera.getView().toFa_());
 		glUniformMatrix4fv(uniforms.get("projectionMatrix"), false, Renderer.camera.getProjectionMatrix().toFa_());
-		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
+		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrices[index].toFa_());
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
 
@@ -292,10 +339,12 @@ public class SingleModel extends RenderObjectSingle {
 		if (!init) {
 			return;
 		}
-		
+
+		renderToObjectPickBuffer();
+
 		{
-			Renderer.objectPickBuffer.bindFbo();
-			glUseProgram(programObjectPick.getProgramID());
+			glUseProgram(program.getProgramID());
+			Renderer.framebuffer.bindFbo();
 			{
 				if (material != null) {
 					glActiveTexture(GL_TEXTURE0 + 0);
@@ -303,21 +352,62 @@ public class SingleModel extends RenderObjectSingle {
 				}
 				glBindVertexArray(vao);
 				{
-//					updateMinmax();
-					renderProcessBegin();
+					for (int i = 0; i < modelMatrices.length; i++) {
+						renderProcessBegin();
 
-					// Upload the uniforms
-					uploadMatrixes(uniforms);
-					glUniform4fv(uniformsObjectPick.get("colorID"), new Vec4(getObjectIdAsColor()).div(255f).toFA_());
+						// Upload the uniforms
+						uploadLighting();
+						uploadMatrixes(i);
+						glUniform1i(uniforms.get("selected"), isSelected(getObjectId(i)) ? 1 : 0);
 
-					// draw the data (depends on if it has a ebo)
-					if (!hasEbo) {
-						glDrawArrays(GL_TRIANGLES, 0, triangles);
-					} else {
-						glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+						// draw the data (depends on if it has a ebo)
+						if (!hasEbo) {
+							glDrawArrays(GL_TRIANGLES, 0, triangles);
+						} else {
+							glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+						}
+
+						renderProcessEnd();
 					}
 
-					renderProcessEnd();
+				}
+				Renderer.framebuffer.unbindFbo();
+				glBindVertexArray(0);
+			}
+			glUseProgram(0);
+		}
+		// draw normals if necessary
+		if (showNormals) {
+			normalDrawing.render();
+		}
+		if (showMinMax) {
+			for (BoundingBox minMax : boundingBoxes) {
+				minMax.render();
+			}
+		}
+	}
+
+	private void renderToObjectPickBuffer() {
+		{
+			Renderer.objectPickBuffer.bindFbo();
+			glUseProgram(programObjectPick.getProgramID());
+			{
+				glBindVertexArray(vao);
+				{
+					for (int i = 0; i < modelMatrices.length; i++) {
+
+						uploadMatrixes(i);
+						glUniform4fv(uniformsObjectPick.get("colorID"),
+								new Vec4(getObjectIdAsColor(getObjectId(i))).div(255f).toFA_());
+
+						// draw the data (depends on if it has a ebo)
+						if (!hasEbo) {
+							glDrawArrays(GL_TRIANGLES, 0, triangles);
+						} else {
+							glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+						}
+
+					}
 
 				}
 				glBindVertexArray(0);
@@ -325,52 +415,35 @@ public class SingleModel extends RenderObjectSingle {
 			Renderer.objectPickBuffer.unbindFbo();
 			glUseProgram(0);
 		}
-
-		{
-			Renderer.framebuffer.bindFbo();
-			glUseProgram(program.getProgramID());
-			{
-				if (material != null) {
-					glActiveTexture(GL_TEXTURE0 + 0);
-					glBindTexture(GL_TEXTURE_2D, material.getTexture());
-				}
-				glBindVertexArray(vao);
-				{
-//					updateMinmax();
-					renderProcessBegin();
-
-					// Upload the uniforms
-					uploadLighting();
-					uploadMatrixes(uniforms);
-					
-					glUniform1i(uniforms.get("selected"), isSelected() ? 1 : 0);
-
-					// draw the data (depends on if it has a ebo)
-					if (!hasEbo) {
-						glDrawArrays(GL_TRIANGLES, 0, triangles);
-					} else {
-						glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
-					}
-
-					renderProcessEnd();
-
-				}
-				glBindVertexArray(0);
-			}
-			Renderer.framebuffer.unbindFbo();
-			glUseProgram(0);
-		}
-		// draw normals if necessary
-		if (showNormals) {
-			normalDrawing.render();
-		}
-		if(showMinMax) {
-			boundingBox.render();
-		}
-
-		
 	}
 
+	@Override
+	public void dispose() {
+
+		glDeleteVertexArrays(vao);
+		glDeleteBuffers(vbo);
+		glDeleteBuffers(ebo);
+
+		if (program != null) {
+			program.dispose();
+		}
+		if (material != null) {
+			material.dispose();
+		}
+
+		vao = 0;
+
+		if (normalDrawing != null) {
+			normalDrawing.dispose();
+		}
+		if (boundingBoxes != null) {
+			for (BoundingBox minMax : boundingBoxes) {
+				minMax.dispose();
+			}
+		}
+
+		init = false;
+	}
 
 	/**
 	 * Get the material object
@@ -443,7 +516,7 @@ public class SingleModel extends RenderObjectSingle {
 	public void setShowNormals(boolean showNormals) {
 		this.showNormals = showNormals;
 	}
-	
+
 	public void setShowMinMax(boolean showMinMax) {
 		this.showMinMax = showMinMax;
 	}
@@ -457,62 +530,48 @@ public class SingleModel extends RenderObjectSingle {
 		return scale;
 	}
 
-	/**
-	 * get the model matrix
-	 *
-	 * @return model matrix as mat4
-	 */
-	public Mat4 getModelMatrix() {
-		return modelMatrix;
-	}
-
-	/**
-	 * Set a new model matrix
-	 *
-	 * @param modelMatrix new Model matrix
-	 */
-	public void setModelMatrix(Mat4 modelMatrix) {
-		this.modelMatrix = modelMatrix;
-	}
-
-
-	/**
-	 * set the scale of the model
-	 *
-	 * @param scale scaling factor
-	 */
 	public void scale(float scale) {
-		modelMatrix.scale(scale);
+		scale(0, scale);
 	}
 
-	public BoundingBox<SingleModel> getBoundingBox() {
-		return boundingBox;
-	}
-	
-	@Override
-	public void dispose() {
-
-		glDeleteVertexArrays(vao);
-		glDeleteBuffers(vbo);
-		glDeleteBuffers(ebo);
-
-		if (program != null) {
-			program.dispose();
-		}
-		if (material != null) {
-			material.dispose();
-		}
-
-		vao = 0;
-
-		if (normalDrawing != null) {
-			normalDrawing.dispose();
-		}
-		if(boundingBox != null) {
-			boundingBox.dispose();
-		}
-
-		init = false;
+	public void scale(int index, float scale) {
+		Mat4 model = modelMatrices[index];
+		model.scale(scale);
 	}
 
+	public void setModelMatrices(Mat4[] modelMatrices) {
+		this.modelMatrices = modelMatrices;
+	}
+
+	public BoundingBox getBoundingBox() {
+		return boundingBoxes[0];
+	}
+
+	public BoundingBox[] getBoundingBoxes() {
+		return boundingBoxes;
+	}
+
+	public Mat4[] getModelMatrices() {
+		return modelMatrices;
+	}
+
+	public int getObjectId(int index) {
+		return objectIds.get(index);
+	}
+
+	public boolean containsID(int id) {
+		return objectIds.containsValue(id);
+	}
+
+	public Vec4 getObjectIdAsColor(int id) {
+		return colorsForSelection.get(id);
+	}
+
+	public boolean isSelected(int id) {
+		return selected.get(id);
+	}
+
+	public void setSelected(int id, boolean selected) {
+		this.selected.put(id, selected);
+	}
 }

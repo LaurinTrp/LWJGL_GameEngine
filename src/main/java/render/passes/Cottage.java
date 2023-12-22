@@ -2,17 +2,19 @@ package main.java.render.passes;
 
 import org.lwjgl.glfw.GLFW;
 
+import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
-import main.java.render.Renderer;
-import main.java.render.model.SingleModel;
+import main.java.render.model.Model;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.ModelLoader;
 
-public class Cottage extends SingleModel {
+public class Cottage extends Model {
 
+	private static Mat4 modelMatrix = new Mat4(1.0f);
+	
 	public Cottage() {
-		super((SingleModel) ModelLoader.loadModelFromResource("Cottage", "cottage.obj"));
+		super(ModelLoader.loadModelFromResource("Cottage", "cottage.obj", modelMatrix), modelMatrix);
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage_diffuse.png"));
 		setShowMinMax(true);

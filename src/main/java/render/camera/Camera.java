@@ -29,7 +29,7 @@ public class Camera {
 
 	private Vec3 focusPoint;
 
-	public CameraMode cameraMode = CameraMode.PLAYER_CAMERA;
+	public CameraMode cameraMode = CameraMode.POV_CAMERA;
 
 	private final float NEAR_CLIPPING_PLANE = 0.1f, FAR_CLIPPING_PLANE = 100f;
 
@@ -99,7 +99,7 @@ public class Camera {
 		cameraPosition.y = focusPoint.y + verticalDistance;
 		cameraPosition.z = focusPoint.z - offsetZ;
 		
-		System.out.println(cameraPosition);
+//		System.out.println(cameraPosition);
 		
 		float groundHeight = groundIntersection();
 		cameraPosition.y = Math.max(cameraPosition.y, groundHeight + 1f);

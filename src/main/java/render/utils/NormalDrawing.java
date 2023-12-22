@@ -22,12 +22,13 @@ import java.util.HashMap;
 
 import glm.mat._4.Mat4;
 import main.java.render.Renderer;
+import main.java.render.model.Model;
 import main.java.render.model.MultiTextureTerrain;
-import main.java.render.model.SingleModel;
+import main.java.render.renderobject.IRenderObject;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
 
-public class NormalDrawing<E> {
+public class NormalDrawing {
 
 	private Float[] vertices;
 	private Float[] normals;
@@ -38,37 +39,39 @@ public class NormalDrawing<E> {
 	private ShaderProgram program;
 	private int vao = 0, vbo = 0;
 
-	private Mat4 modelMatrix = new Mat4(1.0f);
+	private Mat4[] modelMatrices;
 
 	private boolean init = false;
 
-	public NormalDrawing(E model) {
-		if (model instanceof SingleModel) {
-			this.vertices = ((SingleModel) model).getVertices();
-			this.normals = ((SingleModel) model).getNormals();
+	public NormalDrawing(IRenderObject model) {
+		if (model instanceof Model) {
+			Model myModel = (Model) model;
+			this.vertices = myModel.getVertices();
+			this.normals = myModel.getNormals();
 
 			data = ModelUtils.createNormals(vertices, normals);
 
-			this.modelMatrix = ((SingleModel) model).getModelMatrix();
+			this.modelMatrices = myModel.getModelMatrices();
 		}
-
+//
 		if (model instanceof MultiTextureTerrain) {
-			this.vertices = ((MultiTextureTerrain) model).getVertices();
-			this.normals = ((MultiTextureTerrain) model).getNormals();
+			MultiTextureTerrain terrain = (MultiTextureTerrain) model;
+			this.vertices = terrain.getVertices();
+			this.normals = terrain.getNormals();
 
 			data = ModelUtils.createNormals(vertices, normals);
 
-			this.modelMatrix = ((MultiTextureTerrain) model).getModelMatrix();
+			this.modelMatrices = new Mat4[] {terrain.getModelMatrix()};
 		}
 
 		bind();
 		initShader();
 	}
 
-	public NormalDrawing(Float[] vertices, Float[] normals, Mat4 modelMatrix) {
+	public NormalDrawing(Float[] vertices, Float[] normals, Mat4[] modelMatrix) {
 		this.vertices = vertices;
 		this.normals = normals;
-		this.modelMatrix = new Mat4(modelMatrix);
+		this.modelMatrices = modelMatrix;
 	}
 
 	private void init() {
@@ -106,10 +109,10 @@ public class NormalDrawing<E> {
 		ModelUtils.createUniform(program, uniforms, "projectionMatrix");
 	}
 
-	protected void uploadMatrixes() {
+	protected void uploadMatrixes(Mat4 matrix) {
 		glUniformMatrix4fv(uniforms.get("viewMatrix"), false, Renderer.camera.getView().toFa_());
 		glUniformMatrix4fv(uniforms.get("projectionMatrix"), false, Renderer.camera.getProjectionMatrix().toFa_());
-		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
+		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, matrix.toFa_());
 	}
 
 	public void render() {
@@ -122,9 +125,11 @@ public class NormalDrawing<E> {
 			{
 				glBindVertexArray(vao);
 				{
-					uploadMatrixes();
+					for (Mat4 matrix : modelMatrices) {
+						uploadMatrixes(matrix);
 
-					glDrawArrays(GL_LINES, 0, data.length / 4);
+						glDrawArrays(GL_LINES, 0, data.length / 4);
+					}
 
 				}
 				glBindVertexArray(0);
