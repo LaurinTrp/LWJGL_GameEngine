@@ -10,12 +10,12 @@ import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
 
+import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.camera.Camera;
 import main.java.render.entities.Player;
-import main.java.render.entities.Test;
 import main.java.render.entities.trees.Tree_1;
 import main.java.render.entities.trees.Tree_2;
 import main.java.render.model.ModelObserver;
@@ -28,6 +28,7 @@ import main.java.render.passes.framebuffers.Framebuffer;
 import main.java.render.passes.framebuffers.IFramebuffer;
 import main.java.render.passes.framebuffers.ObjectPickBuffer;
 import main.java.render.passes.lighting.LightSourcePass;
+import main.java.render.passes.lighting.Lightsources;
 import main.java.render.passes.lighting.SunPass;
 import main.java.render.passes.skybox.Skybox;
 import main.java.render.passes.standard.RectanglePass;
@@ -36,12 +37,11 @@ import main.java.render.passes.transformation.Compass;
 import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.TexturePack;
 import main.java.render.utils.terrain.TerrainGenerator;
-import main.java.utils.math.MousePicker;
 
 public class Renderer {
 
 	public static ModelObserver modelObserver;
-	
+
 	public static IFramebuffer framebuffer;
 	public static IFramebuffer objectPickBuffer;
 	public IFramebuffer depthBuffer;
@@ -68,12 +68,13 @@ public class Renderer {
 	public static Camera camera;
 
 	public static ArrayList<Vec4> lightSourcePositions = new ArrayList<>();
+	public static ArrayList<Mat4> lightSourcePositionsMats = new ArrayList<>();
 
 	private Skybox skybox;
 
 	public Renderer() {
 		modelObserver = new ModelObserver();
-		
+
 		skybox = createSkybox();
 
 		framebuffer = new Framebuffer();
@@ -84,11 +85,9 @@ public class Renderer {
 
 		rectanglePass = new RectanglePass();
 
-		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
-		lightSourcePositions.add(new Vec4(1.2f, 1.0f, 2.0f, 1.0f));
+		initLightSourcePositions();
 
-		lightSourcePass = new LightSourcePass();
-		((LightSourcePass) lightSourcePass).setLightsourcePositions(lightSourcePositions);
+		lightSourcePass = new Lightsources(lightSourcePositionsMats.toArray(new Mat4[] {}));
 
 		sun = new SunPass();
 
@@ -109,7 +108,19 @@ public class Renderer {
 
 		player.addIntersector(cottage);
 		player.addIntersector(tree_1);
-		
+
+	}
+
+	private void initLightSourcePositions() {
+
+		lightSourcePositions.add(new Vec4(-1.2f, 1.0f, 2.0f, 1.0f));
+		lightSourcePositions.add(new Vec4(1.2f, 1.0f, 2.0f, 1.0f));
+
+		for (Vec4 vec4 : lightSourcePositions) {
+			Mat4 mat4 = new Mat4(1.0f);
+			mat4.translate(vec4.toVec3_());
+			lightSourcePositionsMats.add(mat4);
+		}
 	}
 
 	private Skybox createSkybox() {
@@ -136,14 +147,16 @@ public class Renderer {
 		sun.update();
 		skybox.render();
 		glEnable(GL_DEPTH_TEST);
-		
+
+		lightSourcePass.render();
+
 		renderModels();
 
 		camera.setFocusPoint(new Vec3(player.getPosition()));
 		camera.moveCamera();
-		
+
 		glDisable(GL_DEPTH_TEST);
-		
+
 		objectPickBuffer.renderColorAttachments();
 		framebuffer.renderColorAttachments();
 
@@ -157,7 +170,7 @@ public class Renderer {
 //		test.render();
 
 //		terrainModel.render();
-		lightSourcePass.render();
+//		lightSourcePass.render();
 
 //		System.out.println("PLAYER POSITION: " + ((Player)player).getPosition());
 
@@ -167,11 +180,11 @@ public class Renderer {
 			player.move();
 			terrainModel.translate(new Vec3(playerPosXZ.x, 0, playerPosXZ.y));
 		}
-		
+
 		terrainModel.render();
 		player.gravity(terrainModel);
 		player.render();
-		
+
 		glDisable(GL_CULL_FACE);
 		compass.render();
 

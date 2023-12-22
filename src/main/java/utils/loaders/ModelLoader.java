@@ -146,19 +146,19 @@ public class ModelLoader {
 //		return model;
 //	}
 
-	public static IRenderObject loadModelFromResource(String parent, String file) {
+	public static SingleModel loadModelFromResource(String parent, String file) {
 		clear();
 		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
 		IRenderObject model = new SingleModel(data[0], data[1], data[2], triangleCount, new Material(), new BoundingBox<SingleModel>(data[3]));
 
-		return model;
+		return (SingleModel) model;
 	}
 
-	public static IRenderObject loadMultiModelFromResource(String parent, String file, Mat4[] matrices) {
+	public static MultiModel loadMultiModelFromResource(String parent, String file, Mat4[] matrices) {
 		clear();
 		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
 		IRenderObject model = new MultiModel(matrices, data[0], data[1], data[2], triangleCount, new Material(), new BoundingBox<MultiModel>(data[3]));
-		return model;
+		return (MultiModel) model;
 	}
 
 	private static void clear() {

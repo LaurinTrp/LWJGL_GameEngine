@@ -9,7 +9,7 @@ import main.java.utils.loaders.ModelLoader;
 public class Tree_2 extends MultiModel {
 
 	public Tree_2(Mat4[] matrices) {
-		super((MultiModel) ModelLoader.loadMultiModelFromResource("Trees", "Tree2.obj", matrices), matrices);
+		super(ModelLoader.loadMultiModelFromResource("Trees", "Tree2.obj", matrices), matrices);
 //		setModelMatrices(matrices);
 		
 		setShaderFolder("Transformation");
