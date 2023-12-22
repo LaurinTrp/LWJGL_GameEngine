@@ -1,5 +1,7 @@
 package main.java.render.camera;
 
+import org.lwjgl.glfw.GLFW;
+
 import glm.Glm;
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
@@ -32,6 +34,8 @@ public class Camera {
 	public CameraMode cameraMode = CameraMode.POV_CAMERA;
 
 	private final float NEAR_CLIPPING_PLANE = 0.1f, FAR_CLIPPING_PLANE = 100f;
+	
+	private boolean buttonV_ready = true;
 
 	public Camera() {
 		projectionMatrix = Glm.perspective_(45.0f, (float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight,
@@ -42,6 +46,24 @@ public class Camera {
 	public Camera(Player player) {
 		this();
 		this.player = player;
+	}
+
+	public void update() {
+		moveCamera();
+
+		toggleCameraMode();
+	}
+
+	private void toggleCameraMode() {
+		if (Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_V) && buttonV_ready) {
+			if (cameraMode == CameraMode.POV_CAMERA) {
+				cameraMode = CameraMode.PLAYER_CAMERA;
+			} else if (cameraMode == CameraMode.PLAYER_CAMERA) {
+				cameraMode = CameraMode.POV_CAMERA;
+			}
+			buttonV_ready = false;
+		}
+		buttonV_ready = Engine_Main.keyHandler.isReleased(GLFW.GLFW_KEY_V);
 	}
 
 	private void rotation() {
@@ -71,8 +93,7 @@ public class Camera {
 			if (angleVertical >= 89f) {
 				angleVertical = 89f;
 			}
-			
-			
+
 			cameraFront = new Vec3(player.getPlayerFront());
 			cameraFront.y = (float) Math.sin(Math.toRadians(angleVertical));
 
@@ -98,17 +119,15 @@ public class Camera {
 		cameraPosition.x = focusPoint.x - offsetX;
 		cameraPosition.y = focusPoint.y + verticalDistance;
 		cameraPosition.z = focusPoint.z - offsetZ;
-		
-//		System.out.println(cameraPosition);
-		
+
 		float groundHeight = groundIntersection();
 		cameraPosition.y = Math.max(cameraPosition.y, groundHeight + 1f);
 	}
-	
+
 	private float groundIntersection() {
-		
+
 		MultiTextureTerrain terrain = (MultiTextureTerrain) player.getCurrentTerrain();
-		if(terrain == null) {
+		if (terrain == null) {
 			return 0f;
 		}
 		return terrain.heightAtPosition(new Vec2(cameraPosition.x, cameraPosition.z));
@@ -120,7 +139,9 @@ public class Camera {
 				Math.max(3, distanceFromPlayer - Engine_Main.mouseHandler.getScrollY() * 0.4f));
 
 		rotation();
-
+		if(cameraMode == CameraMode.PLAYER_CAMERA) {
+			focusPoint.y = focusPoint.y + 1.5f;
+		}
 		view = Glm.lookAt_(cameraPosition, focusPoint, cameraUp);
 	}
 

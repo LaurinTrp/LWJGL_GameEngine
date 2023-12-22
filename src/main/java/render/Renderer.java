@@ -133,7 +133,7 @@ public class Renderer {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		sun.update();
+//		sun.update();
 		skybox.render();
 		glEnable(GL_DEPTH_TEST);
 
@@ -142,7 +142,7 @@ public class Renderer {
 		renderModels();
 
 		camera.setFocusPoint(new Vec3(player.getPosition()));
-		camera.moveCamera();
+		camera.update();
 
 		glDisable(GL_DEPTH_TEST);
 

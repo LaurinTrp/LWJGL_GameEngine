@@ -19,7 +19,7 @@ import main.java.render.model.Model;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.BoundingBox;
-import main.java.utils.constants.Constants;
+import static main.java.utils.constants.Constants.*;
 import main.java.utils.loaders.ModelLoader;
 
 public class Player extends Model {
@@ -28,7 +28,6 @@ public class Player extends Model {
 
 	private Vec3 position;
 	private Vec3 prevPosition;
-	private final float speed = 0.5f;
 	private boolean hasMoved;
 	private Vec3 playerFront = new Vec3(0.0f, 0.0f, -1.0f);
 	private Vec3 playerUp = new Vec3(0.0f, 1.0f, 0.0f);
@@ -79,8 +78,8 @@ public class Player extends Model {
 	 * Rotate the player around its axis
 	 */
 	private void rotation() {
-		double rotationSpeed = Renderer.camera.cameraMode == CameraMode.POV_CAMERA ? -Constants.PLAYER_ROTATION_SPEED
-				: Constants.PLAYER_ROTATION_SPEED;
+		double rotationSpeed = Renderer.camera.cameraMode == CameraMode.POV_CAMERA ? -PLAYER_ROTATION_SPEED
+				: PLAYER_ROTATION_SPEED;
 
 		if (Engine_Main.mouseHandler.getXoffset() > 0) {
 			modelMatrix.rotateY(rotationSpeed);
@@ -106,26 +105,26 @@ public class Player extends Model {
 		hasMoved = false;
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
-			direction.add(new Vec3(playerFront)).mul(speed);
+			direction.add(new Vec3(playerFront)).mul(PLAYER_WALKING_SPEED);
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_S)) {
-			direction.sub(new Vec3(playerFront)).mul(speed);
+			direction.sub(new Vec3(playerFront)).mul(PLAYER_WALKING_SPEED);
 		}
 
 		playerRight = new Vec3(playerFront).cross(playerUp);
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_A)) {
-			direction.sub(new Vec3(playerRight)).mul(speed);
+			direction.sub(new Vec3(playerRight)).mul(PLAYER_WALKING_SPEED);
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_D)) {
-			direction.add(new Vec3(playerRight)).mul(speed);
+			direction.add(new Vec3(playerRight)).mul(PLAYER_WALKING_SPEED);
 		}
 
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_Q)) {
-			direction.add(new Vec3(playerUp)).mul(speed);
+			direction.add(new Vec3(playerUp)).mul(PLAYER_WALKING_SPEED);
 		}
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_X)) {
-			direction.sub(new Vec3(playerUp)).mul(speed);
+			direction.sub(new Vec3(playerUp)).mul(PLAYER_WALKING_SPEED);
 		}
 
 		if (!direction.equals(new Vec3(0.0f))) {
