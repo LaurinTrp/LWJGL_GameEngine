@@ -8,8 +8,7 @@ import main.java.utils.loaders.ModelLoader;
 public class Tree_1 extends Model {
 
 	public Tree_1(Mat4[] matrices) {
-		super(ModelLoader.loadModelFromResource("Trees", "Tree1.obj", matrices), matrices);
-//		setModelMatrices();
+		super("Trees", "Tree1.obj", matrices);
 		
 		setShaderFolder("Transformation");
 		try {

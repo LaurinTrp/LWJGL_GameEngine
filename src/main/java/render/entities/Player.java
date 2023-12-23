@@ -41,11 +41,11 @@ public class Player extends Model {
 	private ArrayList<IRenderObject> intersectors = new ArrayList<>();
 
 	public Player() {
-		super(ModelLoader.loadModelFromResource("AmongUs", "AmongUs.obj", modelMatrix), modelMatrix);
+		super("AmongUs", "AmongUs.obj", modelMatrix);
 		setShaderFolder("Transformation");
-		getMaterial().setTexture(ModelLoader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
+		getMaterial().setTexture(loader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
 
-//		setShowMinMax(true);
+		setShowMinMax(true);
 	}
 
 	@Override

@@ -139,8 +139,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 	 */
 	@Override
 	public void render(Context context) {
-//		framebuffer.render();
-		objectPickBuffer.render();
+		framebuffer.render();
+//		objectPickBuffer.render();
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
@@ -158,11 +158,11 @@ public class Renderer implements lwjgui.gl.Renderer {
 
 		glDisable(GL_DEPTH_TEST);
 
-		objectPickBuffer.renderColorAttachments();
-//		framebuffer.renderColorAttachments();
+//		objectPickBuffer.renderColorAttachments();
+		framebuffer.renderColorAttachments();
 
-//		framebuffer.unbindFbo();
-		objectPickBuffer.unbindFbo();
+		framebuffer.unbindFbo();
+//		objectPickBuffer.unbindFbo();
 	}
 
 	public void renderModels() {

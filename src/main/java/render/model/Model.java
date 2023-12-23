@@ -25,6 +25,7 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
@@ -38,6 +39,7 @@ import main.java.render.utils.BoundingBox;
 import main.java.render.utils.NormalDrawing;
 import main.java.shader.ShaderProgram;
 import main.java.utils.ModelUtils;
+import main.java.utils.loaders.ModelLoader;
 
 public class Model implements IRenderObject {
 
@@ -47,6 +49,8 @@ public class Model implements IRenderObject {
 
 	protected HashMap<Integer, Boolean> selected = new HashMap<>();
 
+	protected ModelLoader loader;
+	
 	private Material material;
 
 	protected boolean init = false;
@@ -87,71 +91,35 @@ public class Model implements IRenderObject {
 
 	private Vec4 translation;
 
-	private Model(Mat4[] matrices, BoundingBox initBoundingBox) {
-		for (int i = 0; i < matrices.length; i++) {
-			int id = Renderer.modelObserver.instanceCounter++;
-			System.out.println(this);
-			objectIds.put(i, id);
-
-			colorsForSelection.put(id,
-					new Vec4((id >> 16) & 0xFF, (id >> 8) & 0xFF, (id >> 0) & 0xFF, (id >> 24) & 0xFF));
-
-			selected.put(id, false);
-		}
-
-		Renderer.modelObserver.addObjectToSelectables(this);
-
-		this.startMinmax = initBoundingBox;
-	}
-
 	/**
-	 * Model constructor without ebo
-	 *
-	 * @param vertices    The vertices data (v0x, v0y, v0z, v0w, v1x, ...)
-	 * @param uvs         The data of the uv coordinates
-	 * @param normals     The data of the normals
-	 * @param indices     The indices
-	 * @param triangles   Number of triangles
-	 * @param material    Material object
-	 * @param startMinMax Min and Max coordinates (minX, maxX, minY, maxY, minZ,
-	 *                    maxZ)
+	 * 
+	 * @param modelPathParent
+	 * @param modelPathFile
+	 * @param modelMatrices
 	 */
-	public Model(Mat4[] modelMatrices, Float[] vertices, Float[] uvs, Float[] normals, int triangles, Material material,
-			BoundingBox initBoundingBox) {
-		this(modelMatrices, initBoundingBox);
-
+	public Model(String modelPathParent, String modelPathFile, Mat4 modelMatrix) {
+		this(modelPathParent, modelPathFile, new Mat4[] {modelMatrix});
+	}
+	/**
+	 * 
+	 * @param modelPathParent
+	 * @param modelPathFile
+	 * @param modelMatrices
+	 */
+	public Model(String modelPathParent, String modelPathFile, Mat4[] modelMatrices) {
+		loader = new ModelLoader();
+		Float[][] data = loader.loadModelFromResource(modelPathParent, modelPathFile);
+		this.vertices = data[0];
+		this.uvs = data[1];
+		this.normals = data[2];
+		this.startMinmax = new BoundingBox(data[3]);
+		
 		this.modelMatrices = modelMatrices;
-		this.triangles = triangles;
-		this.vertices = vertices;
-		this.uvs = uvs;
-		this.normals = normals;
-		this.material = material;
-	}
-
-	/**
-	 * Constructor copying other model
-	 *
-	 * @param model Model to copy
-	 */
-	public Model(Model model, Mat4[] modelMatrices) {
-		this(modelMatrices, model.vertices, model.uvs, model.normals, model.triangles, model.material,
-				model.startMinmax);
-
-		this.program = model.program;
-		this.uniforms = model.uniforms;
-	}
-
-	/**
-	 * Constructor copying other model
-	 *
-	 * @param model Model to copy
-	 */
-	public Model(Model model, Mat4 modelMatrix) {
-		this(new Mat4[] { modelMatrix }, model.vertices, model.uvs, model.normals, model.triangles, model.material,
-				model.startMinmax);
-
-		this.program = model.program;
-		this.uniforms = model.uniforms;
+		this.material = new Material();
+		
+		this.triangles = loader.getTriangleCount();
+		
+		calculateObjectId(modelMatrices);
 	}
 
 	@Override
@@ -171,6 +139,20 @@ public class Model implements IRenderObject {
 		}
 
 		init = true;
+	}
+	
+
+	private void calculateObjectId(Mat4[] matrices) {
+		for (int i = 0; i < matrices.length; i++) {
+			int id = ++Renderer.modelObserver.instanceCounter;
+			objectIds.put(i, id);
+			colorsForSelection.put(id,
+					new Vec4((id >> 16) & 0xFF, (id >> 8) & 0xFF, (id >> 0) & 0xFF, 1));
+//			System.out.println(colorsForSelection.get(id));
+			selected.put(id, false);
+		}
+
+		Renderer.modelObserver.addObjectToSelectables(this);
 	}
 
 	/**
@@ -340,42 +322,9 @@ public class Model implements IRenderObject {
 			return;
 		}
 
-		renderToObjectPickBuffer();
+//		renderToObjectPickBuffer();
+		renderToFramebuffer();
 		
-		{
-			glUseProgram(program.getProgramID());
-			Renderer.framebuffer.bindFbo();
-			{
-				if (material != null) {
-					glActiveTexture(GL_TEXTURE0 + 0);
-					glBindTexture(GL_TEXTURE_2D, material.getTexture());
-				}
-				glBindVertexArray(vao);
-				{
-					for (int i = 0; i < modelMatrices.length; i++) {
-						renderProcessBegin();
-
-						// Upload the uniforms
-						uploadLighting();
-						uploadMatrixes(i);
-						glUniform1i(uniforms.get("selected"), isSelected(getObjectId(i)) ? 1 : 0);
-
-						// draw the data (depends on if it has a ebo)
-						if (!hasEbo) {
-							glDrawArrays(GL_TRIANGLES, 0, triangles);
-						} else {
-							glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
-						}
-
-						renderProcessEnd();
-					}
-
-				}
-				Renderer.framebuffer.unbindFbo();
-				glBindVertexArray(0);
-			}
-			glUseProgram(0);
-		}
 		// draw normals if necessary
 		if (showNormals) {
 			normalDrawing.render();
@@ -413,6 +362,43 @@ public class Model implements IRenderObject {
 				glBindVertexArray(0);
 			}
 			Renderer.objectPickBuffer.unbindFbo();
+			glUseProgram(0);
+		}
+	}
+	
+	private void renderToFramebuffer() {
+		{
+			glUseProgram(program.getProgramID());
+			Renderer.framebuffer.bindFbo();
+			{
+				if (material != null) {
+					glActiveTexture(GL_TEXTURE0 + 0);
+					glBindTexture(GL_TEXTURE_2D, material.getTexture());
+				}
+				glBindVertexArray(vao);
+				{
+					for (int i = 0; i < modelMatrices.length; i++) {
+						renderProcessBegin();
+
+						// Upload the uniforms
+						uploadLighting();
+						uploadMatrixes(i);
+						glUniform1i(uniforms.get("selected"), isSelected(getObjectId(i)) ? 1 : 0);
+
+						// draw the data (depends on if it has a ebo)
+						if (!hasEbo) {
+							glDrawArrays(GL_TRIANGLES, 0, triangles);
+						} else {
+							glDrawElements(GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+						}
+
+						renderProcessEnd();
+					}
+
+				}
+				Renderer.framebuffer.unbindFbo();
+				glBindVertexArray(0);
+			}
 			glUseProgram(0);
 		}
 	}

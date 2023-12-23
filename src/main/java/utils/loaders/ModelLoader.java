@@ -16,22 +16,22 @@ import resources.ResourceLoader;
 
 public class ModelLoader {
 
-	private static ArrayList<Double[]> vertices = new ArrayList<>();
-	private static ArrayList<Double[]> textures = new ArrayList<>();
-	private static ArrayList<Double[]> normals = new ArrayList<>();
+	private ArrayList<Double[]> vertices = new ArrayList<>();
+	private ArrayList<Double[]> textures = new ArrayList<>();
+	private ArrayList<Double[]> normals = new ArrayList<>();
 
-	private static ArrayList<Float> verticesFinal = new ArrayList<>();
-	private static ArrayList<Float> texturesFinal = new ArrayList<>();
-	private static ArrayList<Float> normalsFinal = new ArrayList<>();
+	private ArrayList<Float> verticesFinal = new ArrayList<>();
+	private ArrayList<Float> texturesFinal = new ArrayList<>();
+	private ArrayList<Float> normalsFinal = new ArrayList<>();
 
-	private static String material = "";
+	private String material = "";
 
-	private static int triangleCount = 0;
+	private int triangleCount = 0;
 
-	private static File file;
+	private File file;
 
-	private static ArrayList<IRenderObject> models = new ArrayList<>();
-	private static HashMap<String, Integer> materials = new HashMap<>();
+//	private static ArrayList<IRenderObject> models = new ArrayList<>();
+//	private static HashMap<String, Integer> materials = new HashMap<>();
 
 	public ModelLoader() {
 	}
@@ -46,7 +46,7 @@ public class ModelLoader {
 //		return models;
 //	}
 
-	public static ArrayList<Float[][]> loadMultipleFromObj(String path) {
+	public ArrayList<Float[][]> loadMultipleFromObj(String path) {
 		clear();
 		file = new File(path);
 		try {
@@ -73,7 +73,7 @@ public class ModelLoader {
 		return null;
 	}
 
-	public static Float[][] loadObj(String path) {
+	public Float[][] loadObj(String path) {
 		clear();
 		file = new File(path);
 		try {
@@ -85,7 +85,7 @@ public class ModelLoader {
 		return null;
 	}
 
-	private static Float[][] loadObj(ArrayList<String> lines, String path) {
+	private Float[][] loadObj(ArrayList<String> lines, String path) {
 		Float[] minmax = new Float[6];
 		minmax[0] = Float.MAX_VALUE;
 		minmax[1] = -Float.MAX_VALUE;
@@ -136,19 +136,23 @@ public class ModelLoader {
 		return new Float[][] { getVertices(), getTextures(), getNormals(), minmax };
 	}
 	
-	public static Model loadModelFromResource(String parent, String file, Mat4 matrix) {
-		return loadModelFromResource(parent, file, new Mat4[] { matrix });
+	public Float[][] loadModelFromResource(String parent, String file){
+		return loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
 	}
+	
+//	public static Model loadModelFromResource(String parent, String file, Mat4 matrix) {
+//		return loadModelFromResource(parent, file, new Mat4[] { matrix });
+//	}
+//
+//	public static Model loadModelFromResource(String parent, String file, Mat4[] matrices) {
+//		clear();
+//		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
+//		IRenderObject model = new Model(matrices, data[0], data[1], data[2], triangleCount, new Material(),
+//				new BoundingBox(data[3]));
+//		return (Model) model;
+//	}
 
-	public static Model loadModelFromResource(String parent, String file, Mat4[] matrices) {
-		clear();
-		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
-		IRenderObject model = new Model(matrices, data[0], data[1], data[2], triangleCount, new Material(),
-				new BoundingBox(data[3]));
-		return (Model) model;
-	}
-
-	private static void clear() {
+	private void clear() {
 		vertices.clear();
 		normals.clear();
 		textures.clear();
@@ -157,34 +161,30 @@ public class ModelLoader {
 		texturesFinal.clear();
 	}
 
-	private static void clearFinalLists() {
+	private void clearFinalLists() {
 		verticesFinal.clear();
 		texturesFinal.clear();
 		normalsFinal.clear();
 	}
 
-	public ArrayList<IRenderObject> getModels() {
-		return models;
-	}
-
-	private static void processFace(String triple) {
+	private void processFace(String triple) {
 		String[] token = triple.split("/");
 		int vector = Integer.parseInt(token[0]) - 1;
 		int texture = Integer.parseInt(token[1]) - 1;
 		int normal = Integer.parseInt(token[2]) - 1;
 		for (int i = 0; i < 4; i++) {
-			triangleCount++;
 			verticesFinal.add(vertices.get(vector)[i].floatValue());
 			texturesFinal.add(textures.get(texture)[i].floatValue());
 			normalsFinal.add(normals.get(normal)[i].floatValue());
 		}
+		triangleCount++;
 	}
 
 	public int getTriangleCount() {
 		return triangleCount;
 	}
 
-	public static int loadMaterial(String parentFile) {
+	public int loadMaterial(String parentFile) {
 		File folder = new File(parentFile).getParentFile();
 		File materialFile = null;
 		for (File subFile : folder.listFiles()) {
@@ -206,11 +206,11 @@ public class ModelLoader {
 		return 0;
 	}
 
-	public static int loadMaterialFileFromResource(String parentFile, String fileName) {
+	public int loadMaterialFileFromResource(String parentFile, String fileName) {
 		return loadMaterial(ResourceLoader.loadMaterialFile(parentFile, fileName));
 	}
 
-	public static int loadMaterial(ArrayList<String> content) {
+	public int loadMaterial(ArrayList<String> content) {
 		String name = "";
 		int textureID = 0;
 		try {
@@ -238,7 +238,7 @@ public class ModelLoader {
 		return 0;
 	}
 
-	private static String processMaterialFile(String[] splitted) {
+	private String processMaterialFile(String[] splitted) {
 		String file = "";
 		if (splitted.length > 2) {
 			for (int i = 1; i < splitted.length; i++) {
@@ -251,7 +251,7 @@ public class ModelLoader {
 		if (f.exists()) {
 			return f.getAbsolutePath();
 		}
-		file = ModelLoader.file.getParent() + "/" + file;
+		file = this.file.getParent() + "/" + file;
 		f = new File(file);
 		if (f.exists()) {
 			return f.getAbsolutePath();
@@ -259,7 +259,7 @@ public class ModelLoader {
 		return "";
 	}
 
-	public static Float[] getVertices() {
+	public Float[] getVertices() {
 		Float[] vertices = new Float[verticesFinal.size()];
 		for (int i = 0; i < verticesFinal.size(); i++) {
 			vertices[i] = verticesFinal.get(i);
@@ -267,7 +267,7 @@ public class ModelLoader {
 		return vertices;
 	}
 
-	public static Float[] getTextures() {
+	public Float[] getTextures() {
 		Float[] textures = new Float[texturesFinal.size()];
 		for (int i = 0; i < texturesFinal.size(); i++) {
 			textures[i] = texturesFinal.get(i);
@@ -275,12 +275,12 @@ public class ModelLoader {
 		return textures;
 	}
 
-	public static Float[] getNormals() {
+	public Float[] getNormals() {
 		Float[] normals = new Float[normalsFinal.size()];
 		for (int i = 0; i < normalsFinal.size(); i++) {
 			normals[i] = normalsFinal.get(i);
 		}
 		return normals;
 	}
-
+	
 }

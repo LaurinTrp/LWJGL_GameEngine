@@ -14,7 +14,7 @@ public class Cottage extends Model {
 	private static Mat4 modelMatrix = new Mat4(1.0f);
 	
 	public Cottage() {
-		super(ModelLoader.loadModelFromResource("Cottage", "cottage.obj", modelMatrix), modelMatrix);
+		super("Cottage", "cottage.obj", modelMatrix);
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage_diffuse.png"));
 		setShowMinMax(true);

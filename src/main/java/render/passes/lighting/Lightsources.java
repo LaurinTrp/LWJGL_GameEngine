@@ -7,7 +7,7 @@ import main.java.utils.loaders.ModelLoader;
 public class Lightsources extends Model {
 
 	public Lightsources(Mat4[] modelMatrices) {
-		super(ModelLoader.loadModelFromResource("Cube", "cube.obj", modelMatrices), modelMatrices);
+		super("Cube", "cube.obj", modelMatrices);
 		setShaderFolder("LightSource");
 	}
 

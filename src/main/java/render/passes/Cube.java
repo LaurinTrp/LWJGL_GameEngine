@@ -10,7 +10,7 @@ public class Cube extends Model {
 	private static Mat4 modelMatrix = new Mat4(1.0f);
 	
 	public Cube() {
-		super(ModelLoader.loadModelFromResource("Cube", "cube.obj", modelMatrix), modelMatrix);
+		super("Cube", "cube.obj", modelMatrix);
 		setShaderFolder("Transformation");
 		getMaterial().setTexture(ImageLoader.loadTextureFromResource("Terrain/Terrain.png"));
 	}
