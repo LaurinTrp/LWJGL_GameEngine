@@ -48,6 +48,7 @@ import main.java.utils.Inputs.MouseInputs;
 import main.java.utils.loaders.ImageLoader;
 import openglPane.OpenGLPane;
 
+
 public class Engine_Main extends LWJGUIApplication {
 
 	public static float x, y;
@@ -210,7 +211,7 @@ public class Engine_Main extends LWJGUIApplication {
 	}
 
 	@Override
-	public void start(String[] args, Window window) {
+	public void start(String[] args, lwjgui.scene.Window window) {
 		
 	}
 }

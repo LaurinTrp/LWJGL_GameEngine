@@ -49,7 +49,9 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.opengl.GL30.glRenderbufferStorage;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import java.awt.Color;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 
@@ -107,23 +109,23 @@ public class ObjectPickBuffer implements IFramebuffer {
 
 				// Triangle 0
 				// TL
-				-1f, 1f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+				-1f, 1f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
 
 				// BL
-				-1f, -1f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+				-1f, -1f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
 
 				// BR
-				1f, -1f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+				1f, -1f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 
 				// Triangle 1
 				// TL
-				-1f, 1f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+				-1f, 1f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
 
 				// BR
-				1f, -1f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+				1f, -1f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 
 				// TR
-				1f, 1f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, };
+				1f, 1f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, };
 
 		// create VAO
 		vao = glGenVertexArrays();
@@ -256,49 +258,69 @@ public class ObjectPickBuffer implements IFramebuffer {
 	public void renderColorAttachments() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 		{
 			glUseProgram(program.getProgramID());
 			{
 				glBindVertexArray(vao);
 				glEnable(GL_DEPTH_TEST);
+				glDisable(GL_CULL_FACE);
 				glBindTexture(GL_TEXTURE_2D, texture);
 				{
-//					if (Engine_Main.mouseHandler.isLMB_Down()) {
-//						if (!clickReady) {
-//							return;
-//						}
-					glDrawArrays(GL_TRIANGLES, 0, 6);
+					if (Engine_Main.mouseHandler.isLMB_Down()) {
+						if (!clickReady) {
+							return;
+						}
+						glDrawArrays(GL_TRIANGLES, 0, 6);
 
-					glReadPixels((int) (Engine_Main.windowWidth / 2f), (int) (Engine_Main.windowHeight / 2f), 1, 1,
-							GL_RGBA, GL_UNSIGNED_BYTE, colorBuffer);
+						glReadPixels((int) (Engine_Main.windowWidth / 2f), (int) (Engine_Main.windowHeight / 2f), 1, 1,
+								GL_RGB, GL_UNSIGNED_BYTE, colorBuffer);
 
-					int red = colorBuffer.get(0) & 0xFF;
-					int green = colorBuffer.get(1) & 0xFF;
-					int blue = colorBuffer.get(2) & 0xFF;
+						int red = colorBuffer.get(0) & 0xFF;
+						int green = colorBuffer.get(1) & 0xFF;
+						int blue = colorBuffer.get(2) & 0xFF;
 
-					int objectId = (red << 16) | (green << 8) | blue;
-					IRenderObject object = Renderer.modelObserver.getObjectById(objectId);
-					System.out.println(objectId);
-					
-					Model objectMulti = (Model) object;
-					if (objectMulti != null && !objectMulti.isSelected(objectId)) {
-						objectMulti.setSelected(objectId, true);
+						int objectId = (red << 16) | (green << 8) | blue;
+						IRenderObject object = Renderer.modelObserver.getObjectById(objectId);
+						
+						System.out.println(red + ", " + green + ", " + blue);
+						
+						Model objectMulti = (Model) object;
+						if(objectMulti != null) {
+							objectMulti.setSelected(objectId, !objectMulti.isSelected(objectId));
+						}
+
+						clickReady = false;
+					} else {
+						clickReady = true;
 					}
-
-					System.out.println(object);
-
-					clickReady = false;
-//					} else {
-//						clickReady = true;
-//					}
 				}
+				glEnable(GL_CULL_FACE);
 				glBindVertexArray(0);
 			}
 		}
 
 		unbindFbo();
 	}
+
+//	private void writeImage() {
+//		glReadPixels(0, 0, Engine_Main.windowWidth, Engine_Main.windowHeight, GL_RGBA, GL_UNSIGNED_BYTE, colorBuffer);
+//
+//        // Create a BufferedImage from the pixel data
+//        BufferedImage image = new BufferedImage(windowWidth, windowHeight, BufferedImage.TYPE_INT_ARGB);
+//        int[] pixels = new int[windowWidth * windowHeight];
+//        colorBuffer.asIntBuffer().get(pixels);
+//        image.setRGB(0, 0, windowWidth, windowHeight, pixels, 0, windowWidth);
+//
+//        // Write the BufferedImage to a file
+//        try {
+//            File outputImage = new File("screenshot.png"); // Specify the file path
+//            ImageIO.write(image, "png", outputImage);
+//            System.out.println("Screenshot saved to: " + outputImage.getAbsolutePath());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//	}
 
 	/**
 	 * Dispose the fbo and rbo

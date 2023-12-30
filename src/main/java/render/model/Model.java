@@ -1,6 +1,6 @@
 package main.java.render.model;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glBindTexture;
@@ -9,12 +9,12 @@ import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_DYNAMIC_READ;
+import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
@@ -25,13 +25,13 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
 import glm.mat._4.Mat4;
+import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
 import main.java.render.renderobject.IRenderObject;
@@ -45,7 +45,7 @@ public class Model implements IRenderObject {
 
 	private final HashMap<Integer, Integer> objectIds = new HashMap<>();
 
-	private final HashMap<Integer, Vec4> colorsForSelection = new HashMap<>();
+	private final HashMap<Integer, Vec3> colorsForSelection = new HashMap<>();
 
 	protected HashMap<Integer, Boolean> selected = new HashMap<>();
 
@@ -146,9 +146,13 @@ public class Model implements IRenderObject {
 		for (int i = 0; i < matrices.length; i++) {
 			int id = ++Renderer.modelObserver.instanceCounter;
 			objectIds.put(i, id);
-			colorsForSelection.put(id,
-					new Vec4((id >> 16) & 0xFF, (id >> 8) & 0xFF, (id >> 0) & 0xFF, 1));
-//			System.out.println(colorsForSelection.get(id));
+			
+			int red = (id >> 16) & 0xFF;
+			int green = (id >> 8) & 0xFF;
+			int blue = (id >> 0) & 0xFF;
+			
+			colorsForSelection.put(id, new Vec3(red, green, blue));
+			System.out.println(this + ": " + colorsForSelection.get(id));
 			selected.put(id, false);
 		}
 
@@ -322,7 +326,7 @@ public class Model implements IRenderObject {
 			return;
 		}
 
-//		renderToObjectPickBuffer();
+		renderToObjectPickBuffer();
 		renderToFramebuffer();
 		
 		// draw normals if necessary
@@ -346,8 +350,8 @@ public class Model implements IRenderObject {
 					for (int i = 0; i < modelMatrices.length; i++) {
 
 						uploadMatrixes(i);
-						glUniform4fv(uniformsObjectPick.get("colorID"),
-								new Vec4(getObjectIdAsColor(getObjectId(i))).div(255f).toFA_());
+						glUniform3fv(uniformsObjectPick.get("colorID"),
+								new Vec3(getObjectIdAsColor(getObjectId(i))).div(255f).toFa_());
 
 						// draw the data (depends on if it has a ebo)
 						if (!hasEbo) {
@@ -549,7 +553,7 @@ public class Model implements IRenderObject {
 		return objectIds.containsValue(id);
 	}
 
-	public Vec4 getObjectIdAsColor(int id) {
+	public Vec3 getObjectIdAsColor(int id) {
 		return colorsForSelection.get(id);
 	}
 
