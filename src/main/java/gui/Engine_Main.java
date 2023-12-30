@@ -37,11 +37,18 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
+import elements.Button;
+import elements.Slider;
 import lwjgui.LWJGUI;
 import lwjgui.LWJGUIApplication;
 import lwjgui.LWJGUIUtil;
+import lwjgui.paint.Color;
 import lwjgui.scene.Scene;
 import lwjgui.scene.Window;
+import lwjgui.scene.layout.StackPane;
+import lwjgui.scene.layout.floating.FloatingPane;
+import lwjgui.theme.Theme;
+import lwjgui.theme.ThemeDark;
 import main.java.render.Renderer;
 import main.java.utils.Inputs.KeyHandler;
 import main.java.utils.Inputs.MouseInputs;
@@ -63,12 +70,6 @@ public class Engine_Main extends LWJGUIApplication {
 
 	private static long window = -1;
 
-	private static long currentFrameTime;
-	private static long lastFrameTime;
-	private static long delta;
-
-	private static double old_time, new_time;
-
 	public static void main(String[] args) throws IOException {
 		
 		initWindow();
@@ -76,8 +77,6 @@ public class Engine_Main extends LWJGUIApplication {
 		initObjects();
 
 		initCallbacks();
-
-		lastFrameTime = System.nanoTime();
 
 		loop();
 
@@ -136,24 +135,33 @@ public class Engine_Main extends LWJGUIApplication {
 		
 		lwjguiWindow.show();
 		
-//		makeContextCurrent();
-//		glfwSwapInterval(1);
-
+		lwjguiWindow.setIcon("png", new File[] {
+			new File("/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/Textures/Warn.png")
+		});
+		
 		// ####### Disable cursor
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-//		glfwShowWindow(window);
-//		createCapabilities();
-		
 	}
 
 
 	private static void addComponents(Scene scene) {
-		// Create a simple pane
+		Theme.setTheme(new ThemeDark());
+		
 		OpenGLPane pane = new OpenGLPane(lwjguiWindow);
 		pane.setRendererCallback(render);
 		
-		// Set the pane as the scenes root
+//		Button button = new Button("Test");
+//		button.setAbsolutePosition(100, 100);
+//		button.setPrefSize(100, 50);
+//		
+//		pane.getChildren().add(button.getInPane());
+//		
+//		Slider slider = new Slider();
+//		slider.setPrefSize(300, 100);
+//		slider.setAbsolutePosition(windowWidth / 2d - slider.getPrefWidth() / 2d, 0);
+		
+//		pane.getChildren().add(slider.getInPane());
+		
 		scene.setRoot(pane);
 	}
 	
@@ -181,8 +189,6 @@ public class Engine_Main extends LWJGUIApplication {
 
 		while (!glfwWindowShouldClose(window)) {
 
-//			FPScounter.StartCounter();
-			
 			if (keyHandler.isPressed(GLFW_KEY_ESCAPE)) {
 				glfwSetWindowShouldClose(window, true);
 				continue;
@@ -190,28 +196,11 @@ public class Engine_Main extends LWJGUIApplication {
 
 			// RENDER //
 			LWJGUI.render();
-//			render.render();
 
-//			mouseHandler.reset();
-
-//			glfwSwapBuffers(window);
-//			glfwPollEvents();
-
-//			currentFrameTime = System.nanoTime();
-//			delta = currentFrameTime - lastFrameTime;
-//			lastFrameTime = currentFrameTime;
-
-//			FPScounter.StopAndPost();
+			mouseHandler.reset();
 		}
-		render.dispose();
-	}
-
-	public static long getDelta() {
-		return delta;
 	}
 
 	@Override
-	public void start(String[] args, lwjgui.scene.Window window) {
-		
-	}
+	public void start(String[] args, lwjgui.scene.Window window) {}
 }
