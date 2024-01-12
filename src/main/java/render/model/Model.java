@@ -74,10 +74,6 @@ public class Model implements IRenderObject {
 
 	protected int[] indices;
 
-	// min x, max x, min y, max y, min z, max z
-//	protected final Float[] startMinmaxForModel;
-//	protected Float[][] minmax;
-
 	private float scale = 1.0f;
 
 	private String shaderFolder;
@@ -152,7 +148,6 @@ public class Model implements IRenderObject {
 			int blue = (id >> 0) & 0xFF;
 			
 			colorsForSelection.put(id, new Vec3(red, green, blue));
-			System.out.println(this + ": " + colorsForSelection.get(id));
 			selected.put(id, false);
 		}
 

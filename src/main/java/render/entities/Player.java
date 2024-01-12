@@ -103,7 +103,7 @@ public class Player extends Model {
 
 		direction = new Vec3(0.0f);
 		hasMoved = false;
-
+		
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
 			direction.add(new Vec3(playerFront)).mul(PLAYER_WALKING_SPEED);
 		}

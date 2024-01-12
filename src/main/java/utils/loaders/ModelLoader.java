@@ -30,21 +30,8 @@ public class ModelLoader {
 
 	private File file;
 
-//	private static ArrayList<IRenderObject> models = new ArrayList<>();
-//	private static HashMap<String, Integer> materials = new HashMap<>();
-
 	public ModelLoader() {
 	}
-
-//	public static ArrayList<IRenderObject> loadMultipleModelsFromObj(String path) {
-//		ArrayList<IRenderObject> models = new ArrayList<>();
-//		ArrayList<Float[][]> objects = loadMultipleFromObj(path);
-//		for (Float[][] floats : objects) {
-//			IRenderObject model = new Model(floats[0], floats[1], floats[2], floats[4][0].intValue(), new Material(), new BoundingBox(floats[3]));
-//			models.add(model);
-//		}
-//		return models;
-//	}
 
 	public ArrayList<Float[][]> loadMultipleFromObj(String path) {
 		clear();

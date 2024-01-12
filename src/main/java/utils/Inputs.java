@@ -128,19 +128,4 @@ public class Inputs {
 
 	}
 
-	public static class KeyHandler {
-		private long window;
-		public KeyHandler(long window) {
-			this.window = window;
-		}
-
-		public boolean isPressed(int key) {
-			return glfwGetKey(window, key) == GLFW_PRESS;
-		}
-		
-		public boolean isReleased(int key) {
-			return glfwGetKey(window, key) == GLFW_RELEASE;
-		}
-	}
-
 }

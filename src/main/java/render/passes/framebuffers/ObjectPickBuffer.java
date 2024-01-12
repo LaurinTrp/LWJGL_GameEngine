@@ -56,6 +56,7 @@ import java.util.Arrays;
 import org.lwjgl.BufferUtils;
 
 import main.java.gui.Engine_Main;
+import main.java.gui.PaneObserver;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
 import main.java.render.renderobject.IRenderObject;
@@ -267,7 +268,7 @@ public class ObjectPickBuffer implements IFramebuffer {
 				glDisable(GL_CULL_FACE);
 				glBindTexture(GL_TEXTURE_2D, texture);
 				{
-					if (Engine_Main.mouseHandler.isLMB_Down()) {
+					if (PaneObserver.gamePane.isClicked()) {
 						if (!clickReady) {
 							return;
 						}
@@ -282,8 +283,6 @@ public class ObjectPickBuffer implements IFramebuffer {
 
 						int objectId = (red << 16) | (green << 8) | blue;
 						IRenderObject object = Renderer.modelObserver.getObjectById(objectId);
-						
-						System.out.println(red + ", " + green + ", " + blue);
 						
 						Model objectMulti = (Model) object;
 						if(objectMulti != null) {
@@ -302,25 +301,6 @@ public class ObjectPickBuffer implements IFramebuffer {
 
 		unbindFbo();
 	}
-
-//	private void writeImage() {
-//		glReadPixels(0, 0, Engine_Main.windowWidth, Engine_Main.windowHeight, GL_RGBA, GL_UNSIGNED_BYTE, colorBuffer);
-//
-//        // Create a BufferedImage from the pixel data
-//        BufferedImage image = new BufferedImage(windowWidth, windowHeight, BufferedImage.TYPE_INT_ARGB);
-//        int[] pixels = new int[windowWidth * windowHeight];
-//        colorBuffer.asIntBuffer().get(pixels);
-//        image.setRGB(0, 0, windowWidth, windowHeight, pixels, 0, windowWidth);
-//
-//        // Write the BufferedImage to a file
-//        try {
-//            File outputImage = new File("screenshot.png"); // Specify the file path
-//            ImageIO.write(image, "png", outputImage);
-//            System.out.println("Screenshot saved to: " + outputImage.getAbsolutePath());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//	}
 
 	/**
 	 * Dispose the fbo and rbo

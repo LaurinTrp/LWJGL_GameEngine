@@ -9,11 +9,14 @@ import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
 
+import org.lwjgl.glfw.GLFW;
+
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import lwjgui.scene.Context;
+import main.java.gui.Engine_Main;
 import main.java.render.camera.Camera;
 import main.java.render.entities.Player;
 import main.java.render.entities.trees.Tree_1;
@@ -139,6 +142,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 	 */
 	@Override
 	public void render(Context context) {
+		
 		framebuffer.render();
 		objectPickBuffer.render();
 		
