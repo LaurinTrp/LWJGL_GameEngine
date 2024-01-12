@@ -1,31 +1,15 @@
 package main.java.gui.panels;
 
-import org.lwjgl.glfw.GLFW;
-
-import elements.Button;
-import inputs.KeyHandler;
 import lwjgui.paint.Color;
-import pane.StackPane;
+import lwjgui.scene.control.Button;
+import lwjgui.scene.layout.StackPane;
 import main.java.gui.Engine_Main;
 import main.java.gui.PaneObserver;
 
 public class StartPane extends StackPane {
+	
 	public StartPane() {
 		setPrefSize(Engine_Main.windowWidth, Engine_Main.windowHeight);
-		
-		setKeyHandler(new KeyHandler() {
-			@Override
-			protected void onKeyPress() {
-				if(isPressed(GLFW.GLFW_KEY_ESCAPE)) {
-					Engine_Main.lwjguiWindow.close();
-				}
-			}
-
-			@Override
-			protected void onKeyRelease() {
-				
-			}
-		});
 		
 		cursorVisible = true;
 		

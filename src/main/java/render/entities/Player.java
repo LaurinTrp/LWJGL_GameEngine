@@ -81,6 +81,10 @@ public class Player extends Model {
 		double rotationSpeed = Renderer.camera.cameraMode == CameraMode.POV_CAMERA ? -PLAYER_ROTATION_SPEED
 				: PLAYER_ROTATION_SPEED;
 
+		if(Engine_Main.mouseHandler.getXoffset() != 0f) {
+			System.out.println(Engine_Main.mouseHandler.getXoffset());
+		}
+		
 		if (Engine_Main.mouseHandler.getXoffset() > 0) {
 			modelMatrix.rotateY(rotationSpeed);
 			rotationAngle += rotationSpeed;

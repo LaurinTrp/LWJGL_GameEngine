@@ -40,15 +40,6 @@
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-stb-natives-linux.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GLM"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/LWJGL_GameEngineResource"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/LWJGUI_Wrapper"/>
-	<classpathentry kind="lib" path="/home/laurin/.m2/repository/com/github/orange451/LWJGUI/pre-mt/LWJGUI-pre-mt.jar" sourcepath="/home/laurin/.m2/repository/com/github/orange451/LWJGUI/pre-mt/LWJGUI-pre-mt-sources.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="com.github.orange451"/>
-			<attribute name="maven.artifactId" value="LWJGUI"/>
-			<attribute name="maven.version" value="pre-mt"/>
-			<attribute name="maven.scope" value="compile"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/LWJGUI"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

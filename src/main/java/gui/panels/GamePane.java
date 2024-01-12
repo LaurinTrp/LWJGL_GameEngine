@@ -1,37 +1,27 @@
 package main.java.gui.panels;
 
-import java.awt.event.KeyEvent;
-
-import org.lwjgl.glfw.GLFW;
-
-import inputs.KeyHandler;
+import lwjgui.scene.layout.OpenGLPane;
 import lwjgui.theme.Theme;
 import lwjgui.theme.ThemeDark;
 import main.java.gui.Engine_Main;
-import main.java.gui.PaneObserver;
-import pane.OpenGLPane;
 
 public class GamePane extends OpenGLPane {
-	
 	public GamePane() {
-		super(Engine_Main.lwjguiWindow);
+		super();
 		
 		Theme.setTheme(new ThemeDark());
 		
 		setPrefSize(Engine_Main.windowWidth, Engine_Main.windowHeight);
-
-
-		setKeyHandler(new KeyHandler() {
-			@Override
-			protected void onKeyPress() {
-				if(isPressed(GLFW.GLFW_KEY_ESCAPE)) {
-					Engine_Main.paneObserver.setCurrentPane(PaneObserver.startPane);
-				}
-			}
-
-			@Override
-			protected void onKeyRelease() {
-			}
+		
+		setOnKeyPressed(event -> {
+			Engine_Main.keyHandler.keyPressed(event);
+		});
+		setOnKeyReleased(event -> {
+			Engine_Main.keyHandler.keyReleased(event);
+		});
+		
+		setOnMousePressed(event -> {
+			System.out.println(event.mouseX);
 		});
 		
 		cursorVisible = false;

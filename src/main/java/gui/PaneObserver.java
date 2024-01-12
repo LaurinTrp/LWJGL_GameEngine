@@ -1,6 +1,6 @@
 package main.java.gui;
 
-import pane.Pane;
+import lwjgui.scene.layout.Pane;
 import main.java.gui.panels.GamePane;
 import main.java.gui.panels.StartPane;
 
@@ -8,7 +8,7 @@ public class PaneObserver {
 	public static final Pane gamePane = new GamePane();
 	public static final Pane startPane = new StartPane();
 	
-	private Pane currentPane = startPane;
+	private Pane currentPane = gamePane;
 	
 	public static boolean paneChanged = true;
 	

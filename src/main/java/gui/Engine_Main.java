@@ -29,13 +29,13 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
-import inputs.KeyHandler;
 import lwjgui.LWJGUI;
 import lwjgui.LWJGUIApplication;
 import lwjgui.LWJGUIUtil;
 import lwjgui.scene.Scene;
 import lwjgui.scene.Window;
 import main.java.render.Renderer;
+import main.java.utils.Inputs.KeyHandler;
 import main.java.utils.Inputs.MouseInputs;
 
 public class Engine_Main extends LWJGUIApplication {
@@ -100,6 +100,7 @@ public class Engine_Main extends LWJGUIApplication {
 		window = LWJGUIUtil.createOpenGLCoreWindow("Game", windowWidth, windowHeight, true, false);
 
 		lwjguiWindow = LWJGUI.initialize(window);
+		lwjguiWindow.setResizible(false);
 
 		lwjguiWindow.setIcon("png", new File[] { new File(
 				"/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/Textures/Warn.png") });
@@ -114,7 +115,6 @@ public class Engine_Main extends LWJGUIApplication {
 		if(keyHandler != null) {
 			keyHandler.reset();
 		}
-		keyHandler = paneObserver.getCurrentPane().getKeyHandler();
 		
 		PaneObserver.paneChanged = false;
 	}
@@ -128,6 +128,7 @@ public class Engine_Main extends LWJGUIApplication {
 	}
 
 	private static void initObjects() {
+		keyHandler = new KeyHandler();
 		mouseHandler = new MouseInputs();
 		render = new Renderer();
 		paneObserver = new PaneObserver();
@@ -161,12 +162,13 @@ public class Engine_Main extends LWJGUIApplication {
 			LWJGUI.render();
 
 			if(mouseHandler != null) {
-				mouseHandler.reset();
+				mouseHandler.reset(window);
 			}
 		}
 	}
 
 	@Override
-	public void start(String[] args, lwjgui.scene.Window window) {
+	public void start(String[] args, Window window) {
+		
 	}
 }
