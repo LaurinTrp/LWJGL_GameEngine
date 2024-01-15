@@ -268,10 +268,10 @@ public class ObjectPickBuffer implements IFramebuffer {
 				glDisable(GL_CULL_FACE);
 				glBindTexture(GL_TEXTURE_2D, texture);
 				{
-//					if (PaneObserver.gamePane.isClicked()) {
-//						if (!clickReady) {
-//							return;
-//						}
+					if (PaneObserver.gamePane.isClicked()) {
+						if (!clickReady) {
+							return;
+						}
 						glDrawArrays(GL_TRIANGLES, 0, 6);
 
 						glReadPixels((int) (Engine_Main.windowWidth / 2f), (int) (Engine_Main.windowHeight / 2f), 1, 1,
@@ -290,9 +290,9 @@ public class ObjectPickBuffer implements IFramebuffer {
 						}
 
 						clickReady = false;
-//					} else {
-//						clickReady = true;
-//					}
+					} else {
+						clickReady = true;
+					}
 				}
 				glEnable(GL_CULL_FACE);
 				glBindVertexArray(0);

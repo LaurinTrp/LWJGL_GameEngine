@@ -163,7 +163,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 		glDisable(GL_DEPTH_TEST);
 
 		objectPickBuffer.renderColorAttachments();
-//		framebuffer.renderColorAttachments();
+		framebuffer.renderColorAttachments();
 
 		framebuffer.unbindFbo();
 		objectPickBuffer.unbindFbo();

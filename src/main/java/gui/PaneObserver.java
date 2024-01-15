@@ -8,7 +8,7 @@ public class PaneObserver {
 	public static final Pane gamePane = new GamePane();
 	public static final Pane startPane = new StartPane();
 	
-	private Pane currentPane = gamePane;
+	private Pane currentPane = startPane;
 	
 	public static boolean paneChanged = true;
 	

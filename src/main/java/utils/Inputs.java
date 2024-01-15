@@ -84,7 +84,7 @@ public class Inputs {
 			}
 		};
 
-		public void reset(long window) {
+		public void reset() {
 			xoffset = 0;
 			yoffset = 0;
 		}

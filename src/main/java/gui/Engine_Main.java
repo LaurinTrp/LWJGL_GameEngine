@@ -34,6 +34,9 @@ import lwjgui.LWJGUIApplication;
 import lwjgui.LWJGUIUtil;
 import lwjgui.scene.Scene;
 import lwjgui.scene.Window;
+import lwjgui.theme.Theme;
+import lwjgui.theme.ThemeCoral;
+import lwjgui.theme.ThemeDark;
 import main.java.render.Renderer;
 import main.java.utils.Inputs.KeyHandler;
 import main.java.utils.Inputs.MouseInputs;
@@ -64,7 +67,7 @@ public class Engine_Main extends LWJGUIApplication {
 		updateCallbacks();
 
 		lwjguiWindow.show();
-		updatePane(lwjguiWindow.getScene());
+		updatePane();
 
 		loop();
 
@@ -101,22 +104,31 @@ public class Engine_Main extends LWJGUIApplication {
 
 		lwjguiWindow = LWJGUI.initialize(window);
 		lwjguiWindow.setResizible(false);
+		
+		Theme.setTheme(new ThemeDark());
 
 		lwjguiWindow.setIcon("png", new File[] { new File(
 				"/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/Textures/Warn.png") });
 
 	}
 
-	private static void updatePane(Scene scene) {
-		scene.setRoot(paneObserver.getCurrentPane());
+	private static void updatePane() {
+		Scene scene = new Scene(paneObserver.getCurrentPane());
 		updateCallbacks();
 		updateCursorVisibility();
 		
 		if(keyHandler != null) {
 			keyHandler.reset();
 		}
+		if(mouseHandler != null) {
+			mouseHandler.reset();
+		}
+		
+		paneObserver.getCurrentPane().setPrefSize(windowWidth, windowHeight);
 		
 		PaneObserver.paneChanged = false;
+		
+		lwjguiWindow.setScene(scene);
 	}
 
 	public static void makeContextCurrent() {
@@ -150,19 +162,14 @@ public class Engine_Main extends LWJGUIApplication {
 		while (!glfwWindowShouldClose(window)) {
 
 			if (PaneObserver.paneChanged) {
-				updatePane(lwjguiWindow.getScene());
+				updatePane();
 			}
-
-//			if (keyHandler.isPressed(GLFW_KEY_ESCAPE)) {
-//				glfwSetWindowShouldClose(window, true);
-//				continue;
-//			}
 
 			// RENDER //
 			LWJGUI.render();
 
 			if(mouseHandler != null) {
-				mouseHandler.reset(window);
+				mouseHandler.reset();
 			}
 		}
 	}
