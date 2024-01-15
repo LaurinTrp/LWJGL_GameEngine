@@ -39,10 +39,10 @@ public class Inputs {
 				lastX = xpos;
 				lastY = ypos;
 
-				if (Math.abs(xoffset) <= 1) {
+				if (Math.abs(xoffset) <= 0.5f) {
 					xoffset = 0;
 				}
-				if (Math.abs(yoffset) <= 1) {
+				if (Math.abs(yoffset) <= 0.5f) {
 					yoffset = 0;
 				}
 
@@ -71,26 +71,9 @@ public class Inputs {
 			return scrollCallback;
 		}
 
-		GLFWMouseButtonCallback mouseButtonCallback = new GLFWMouseButtonCallback() {
-
-			@Override
-			public void invoke(long window, int button, int action, int mods) {
-				if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
-					LMB_Down = action == GLFW.GLFW_PRESS;
-				}
-				if (button == GLFW.GLFW_MOUSE_BUTTON_2) {
-					RMB_Down = action == GLFW.GLFW_PRESS;
-				}
-			}
-		};
-
 		public void reset() {
 			xoffset = 0;
 			yoffset = 0;
-		}
-
-		public GLFWMouseButtonCallback getMouseButtonCallback() {
-			return mouseButtonCallback;
 		}
 
 		public double getXoffset() {

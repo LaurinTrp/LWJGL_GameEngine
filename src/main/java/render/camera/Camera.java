@@ -26,7 +26,7 @@ public class Camera {
 	private Mat4 view = new Mat4();
 	private Mat4 projectionMatrix = new Mat4();
 
-	private final float cameraSpeed = 0.5f;
+	private final float cameraSpeed = 0.3f;
 
 	private float distanceFromPlayer = 10f;
 
