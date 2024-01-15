@@ -37,6 +37,7 @@ import lwjgui.scene.Window;
 import lwjgui.theme.Theme;
 import lwjgui.theme.ThemeCoral;
 import lwjgui.theme.ThemeDark;
+import lwjgui.theme.ThemeGame;
 import main.java.render.Renderer;
 import main.java.utils.Inputs.KeyHandler;
 import main.java.utils.Inputs.MouseInputs;
@@ -105,8 +106,6 @@ public class Engine_Main extends LWJGUIApplication {
 		lwjguiWindow = LWJGUI.initialize(window);
 		lwjguiWindow.setResizible(false);
 		
-		Theme.setTheme(new ThemeDark());
-
 		lwjguiWindow.setIcon("png", new File[] { new File(
 				"/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/Textures/Warn.png") });
 
@@ -125,6 +124,8 @@ public class Engine_Main extends LWJGUIApplication {
 		}
 		
 		paneObserver.getCurrentPane().setPrefSize(windowWidth, windowHeight);
+		
+		Theme.setTheme(paneObserver.getCurrentPane().getCurrentTheme());
 		
 		PaneObserver.paneChanged = false;
 		

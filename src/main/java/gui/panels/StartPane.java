@@ -7,6 +7,7 @@ import lwjgui.scene.control.Button;
 import lwjgui.scene.control.Label;
 import lwjgui.scene.layout.StackPane;
 import lwjgui.theme.ThemeCoral;
+import lwjgui.theme.ThemeDark;
 import main.java.gui.Engine_Main;
 import main.java.gui.PaneObserver;
 
@@ -16,6 +17,7 @@ public class StartPane extends StackPane {
 		setPrefSize(Engine_Main.windowWidth, Engine_Main.windowHeight);
 		
 		cursorVisible = true;
+		currentTheme = new ThemeDark();
 		
 		setKeyEvents();
 		
