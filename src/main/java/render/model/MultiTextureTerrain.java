@@ -57,15 +57,15 @@ public class MultiTextureTerrain implements IRenderObject {
 
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
 
-	protected Float[] vertices;
-	protected Float[] uvs;
-	protected Float[] normals;
+	protected float[] vertices;
+	protected float[] uvs;
+	protected float[] normals;
 
 	protected int[] indices;
 
 	// min x, max x, min y, max y, min z, max z
-	protected final Float[] startMinmax;
-	protected Float[] minmax = new Float[6];
+	protected final float[] startMinmax;
+	protected float[] minmax = new float[6];
 
 	private float scale = 1.0f;
 
@@ -179,7 +179,7 @@ public class MultiTextureTerrain implements IRenderObject {
 	 */
 	private void bindModel() {
 
-		Float[] colors = new Float[vertices.length];
+		float[] colors = new float[vertices.length];
 
 		for (int i = 0; i < colors.length; i += 4) {
 			colors[i] = 1.0f;
@@ -380,7 +380,7 @@ public class MultiTextureTerrain implements IRenderObject {
 	 *
 	 * @return The vertices as float array
 	 */
-	public Float[] getVertices() {
+	public float[] getVertices() {
 		return vertices;
 	}
 
@@ -389,7 +389,7 @@ public class MultiTextureTerrain implements IRenderObject {
 	 *
 	 * @return The normals as float array
 	 */
-	public Float[] getNormals() {
+	public float[] getNormals() {
 		return normals;
 	}
 
@@ -398,7 +398,7 @@ public class MultiTextureTerrain implements IRenderObject {
 	 *
 	 * @return The uvs as float array
 	 */
-	public Float[] getUvs() {
+	public float[] getUvs() {
 		return uvs;
 	}
 
@@ -461,7 +461,7 @@ public class MultiTextureTerrain implements IRenderObject {
 	 *
 	 * @return minmax values as an float array
 	 */
-	public Float[] getMinmax() {
+	public float[] getMinmax() {
 		return minmax;
 	}
 

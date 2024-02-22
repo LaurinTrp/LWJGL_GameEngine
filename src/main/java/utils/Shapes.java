@@ -265,6 +265,66 @@ public class Shapes {
 
 		public static final float[] bufferNormals = normals;
 
-		// @formatter:on
 	}
+
+	public static class SimpleCube {
+		public static float[] vertices = {
+				// Front face
+				-1.0f, -1.0f, 1.0f, 1.0f, 	// V0
+				1.0f, -1.0f, 1.0f, 1.0f, 	// V1
+				1.0f, 1.0f, 1.0f, 1.0f, 	// V2
+				-1.0f, 1.0f, 1.0f, 1.0f, 	// V3
+				// Back face
+				-1.0f, -1.0f, -1.0f, 1.0f, 	// V4
+				1.0f, -1.0f, -1.0f, 1.0f, 	// V5
+				1.0f, 1.0f, -1.0f, 1.0f, 	// V6
+				-1.0f, 1.0f, -1.0f, 1.0f, 	// V7
+		};
+		public static float[] texCoords = {
+				// Front face
+				0.0f, 0.0f, 0.0f, 1.0f, // V0
+				1.0f, 0.0f, 0.0f, 1.0f, // V1
+				1.0f, 1.0f, 0.0f, 1.0f, // V2
+				0.0f, 1.0f, 0.0f, 1.0f, // V3
+				// Back face 
+				1.0f, 0.0f, 0.0f, 1.0f, // V4
+				1.0f, 1.0f, 0.0f, 1.0f, // V5
+				0.0f, 1.0f, 0.0f, 1.0f, // V6
+				0.0f, 0.0f, 0.0f, 1.0f, // V7
+		};
+		public static float[] normals = {
+				// Front face
+				0.0f, 0.0f, 1.0f, 1.0f,	// V0
+				0.0f, 0.0f, 1.0f, 1.0f,	// V1
+				0.0f, 0.0f, 1.0f, 1.0f,	// V2
+				0.0f, 0.0f, 1.0f, 1.0f,	// V3
+				// Back face
+				0.0f, 0.0f, -1.0f,1.0f, // V4
+				0.0f, 0.0f, -1.0f,1.0f, // V5
+				0.0f, 0.0f, -1.0f,1.0f, // V6
+				0.0f, 0.0f, -1.0f,1.0f, // V7
+		};
+		public static int[] indices = {
+			    // Front face
+			    0, 1, 2,  // V0-V1-V2
+			    2, 3, 0,  // V2-V3-V0
+			    // Right face
+			    1, 5, 6,  // V1-V5-V6
+			    6, 2, 1,  // V6-V2-V1
+			    // Back face
+			    7, 6, 5,  // V7-V6-V5
+			    5, 4, 7,  // V5-V4-V7
+			    // Left face
+			    4, 0, 3,  // V4-V0-V3
+			    3, 7, 4,  // V3-V7-V4
+			    // Bottom face
+			    4, 5, 1,  // V4-V5-V1
+			    1, 0, 4,  // V1-V0-V4
+			    // Top face
+			    3, 2, 6,  // V3-V2-V6
+			    6, 7, 3   // V6-V7-V3
+			};
+
+	}
+	// @formatter:on
 }

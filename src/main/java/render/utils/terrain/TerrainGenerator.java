@@ -9,9 +9,9 @@ import main.java.utils.ModelUtils;
 
 public class TerrainGenerator {
 
-	private Float[] verticesBuffer;
-	private Float[] uvsBuffer;
-	private Float[] normalsBuffer;
+	private float[] verticesBuffer;
+	private float[] uvsBuffer;
+	private float[] normalsBuffer;
 
 	private int[] indicesBuffer;
 
@@ -20,7 +20,7 @@ public class TerrainGenerator {
 
 	private float size, density, startX, startZ;
 
-	private Float[] minmax;
+	private float[] minmax;
 
 	private Vec3[] edgePoints = new Vec3[4];
 
@@ -101,7 +101,7 @@ public class TerrainGenerator {
 			indicesBuffer[i] = indices.get(i);
 		}
 
-		this.uvsBuffer = new Float[uvs.size() * 4];
+		this.uvsBuffer = new float[uvs.size() * 4];
 		for (int i = 0; i < uvs.size(); i++) {
 			this.uvsBuffer[i * 4 + 0] = uvs.get(i).x;
 			this.uvsBuffer[i * 4 + 1] = uvs.get(i).y;
@@ -109,7 +109,7 @@ public class TerrainGenerator {
 			this.uvsBuffer[i * 4 + 3] = uvs.get(i).w;
 		}
 
-		this.normalsBuffer = new Float[normalsList.size() * 4];
+		this.normalsBuffer = new float[normalsList.size() * 4];
 		for (int i = 0; i < normalsList.size(); i++) {
 			this.normalsBuffer[i * 4 + 0] = normalsList.get(i).x;
 			this.normalsBuffer[i * 4 + 1] = normalsList.get(i).y;
@@ -118,7 +118,7 @@ public class TerrainGenerator {
 		}
 	}
 
-	public Float[] getVerticesBuffer() {
+	public float[] getVerticesBuffer() {
 		return verticesBuffer;
 	}
 
@@ -126,11 +126,11 @@ public class TerrainGenerator {
 		return verticesList;
 	}
 
-	public Float[] getUvsBuffer() {
+	public float[] getUvsBuffer() {
 		return uvsBuffer;
 	}
 
-	public Float[] getNormalsBuffer() {
+	public float[] getNormalsBuffer() {
 		return normalsBuffer;
 	}
 
@@ -138,7 +138,7 @@ public class TerrainGenerator {
 		return indicesBuffer;
 	}
 
-	public Float[] getMinmax() {
+	public float[] getMinmax() {
 		return minmax;
 	}
 

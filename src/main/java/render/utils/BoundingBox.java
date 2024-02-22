@@ -40,14 +40,14 @@ public class BoundingBox implements IRenderObject {
 
 	private Mat4 modelMatrix;
 
-	private final Float[] startMinmax;
-	private Float[] minmax;
+	private final float[] startMinmax;
+	private float[] minmax;
 
-	public BoundingBox(Float[] minmax) {
+	public BoundingBox(float[] minmax) {
 		this(minmax, new Mat4(1.0f));
 	}
 	
-	public BoundingBox(Float[] minmax, Mat4 modelMatrix) {
+	public BoundingBox(float[] minmax, Mat4 modelMatrix) {
 		this.startMinmax = Arrays.copyOf(minmax, minmax.length);
 		this.minmax = Arrays.copyOf(startMinmax, startMinmax.length);
 		for (int i = 0; i < minmax.length; i++) {
@@ -184,7 +184,7 @@ public class BoundingBox implements IRenderObject {
 		this.modelMatrix = modelMatrix;
 	}
 	
-	public Float[] getStartMinmax() {
+	public float[] getStartMinmax() {
 		return startMinmax;
 	}
 	

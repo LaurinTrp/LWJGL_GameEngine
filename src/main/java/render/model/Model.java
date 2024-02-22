@@ -67,10 +67,10 @@ public class Model implements IRenderObject {
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
 	protected HashMap<String, Integer> uniformsObjectPick = new HashMap<>();
 
-	protected Float[] vertices;
-	protected Float[] uvs;
-	protected Float[] normals;
-	protected Float[] colors;
+	protected float[] vertices;
+	protected float[] uvs;
+	protected float[] normals;
+	protected float[] colors;
 
 	protected int[] indices;
 
@@ -104,7 +104,7 @@ public class Model implements IRenderObject {
 	 */
 	public Model(String modelPathParent, String modelPathFile, Mat4[] modelMatrices) {
 		loader = new ModelLoader();
-		Float[][] data = loader.loadModelFromResource(modelPathParent, modelPathFile);
+		float[][] data = loader.loadModelFromResource(modelPathParent, modelPathFile);
 		this.vertices = data[0];
 		this.uvs = data[1];
 		this.normals = data[2];
@@ -205,7 +205,7 @@ public class Model implements IRenderObject {
 	 */
 	private void bindModel() {
 
-		colors = new Float[vertices.length];
+		colors = new float[vertices.length];
 
 		for (int i = 0; i < colors.length; i += 4) {
 			colors[i] = 1.0f;
@@ -453,7 +453,7 @@ public class Model implements IRenderObject {
 	 *
 	 * @return The vertices as float array
 	 */
-	public Float[] getVertices() {
+	public float[] getVertices() {
 		return vertices;
 	}
 
@@ -462,7 +462,7 @@ public class Model implements IRenderObject {
 	 *
 	 * @return The normals as float array
 	 */
-	public Float[] getNormals() {
+	public float[] getNormals() {
 		return normals;
 	}
 
@@ -471,7 +471,7 @@ public class Model implements IRenderObject {
 	 *
 	 * @return The uvs as float array
 	 */
-	public Float[] getUvs() {
+	public float[] getUvs() {
 		return uvs;
 	}
 

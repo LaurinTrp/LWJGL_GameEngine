@@ -33,12 +33,12 @@ public class ModelLoader {
 	public ModelLoader() {
 	}
 
-	public ArrayList<Float[][]> loadMultipleFromObj(String path) {
+	public ArrayList<float[][]> loadMultipleFromObj(String path) {
 		clear();
 		file = new File(path);
 		try {
 			String lines = FileUtils.getFileContentAsString(file);
-			ArrayList<Float[][]> output = new ArrayList<>();
+			ArrayList<float[][]> output = new ArrayList<>();
 			// Regex to match a line that indicates the start of an object
 			String[] content = lines.split("[o] .*");
 			content = Arrays.copyOfRange(content, 1, content.length);
@@ -47,9 +47,9 @@ public class ModelLoader {
 				clearFinalLists();
 				triangleCount = 0;
 				ArrayList<String> object = new ArrayList<>(Arrays.asList(string.split("\n")));
-				Float[][] data = loadObj(object, path);
-				Float[][] newData = new Float[][] { data[0], data[1], data[2], data[3],
-						new Float[] { (float) triangleCount } };
+				float[][] data = loadObj(object, path);
+				float[][] newData = new float[][] { data[0], data[1], data[2], data[3],
+						new float[] { (float) triangleCount } };
 				output.add(newData);
 			}
 
@@ -60,7 +60,7 @@ public class ModelLoader {
 		return null;
 	}
 
-	public Float[][] loadObj(String path) {
+	public float[][] loadObj(String path) {
 		clear();
 		file = new File(path);
 		try {
@@ -72,8 +72,8 @@ public class ModelLoader {
 		return null;
 	}
 
-	private Float[][] loadObj(ArrayList<String> lines, String path) {
-		Float[] minmax = new Float[6];
+	private float[][] loadObj(ArrayList<String> lines, String path) {
+		float[] minmax = new float[6];
 		minmax[0] = Float.MAX_VALUE;
 		minmax[1] = -Float.MAX_VALUE;
 		minmax[2] = Float.MAX_VALUE;
@@ -120,10 +120,10 @@ public class ModelLoader {
 			}
 		}
 
-		return new Float[][] { getVertices(), getTextures(), getNormals(), minmax };
+		return new float[][] { getVertices(), getTextures(), getNormals(), minmax };
 	}
 	
-	public Float[][] loadModelFromResource(String parent, String file){
+	public float[][] loadModelFromResource(String parent, String file){
 		return loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
 	}
 	
@@ -133,7 +133,7 @@ public class ModelLoader {
 //
 //	public static Model loadModelFromResource(String parent, String file, Mat4[] matrices) {
 //		clear();
-//		Float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
+//		float[][] data = loadObj(ResourceLoader.loadObjFile(parent, file), parent + File.separator + file);
 //		IRenderObject model = new Model(matrices, data[0], data[1], data[2], triangleCount, new Material(),
 //				new BoundingBox(data[3]));
 //		return (Model) model;
@@ -246,24 +246,24 @@ public class ModelLoader {
 		return "";
 	}
 
-	public Float[] getVertices() {
-		Float[] vertices = new Float[verticesFinal.size()];
+	public float[] getVertices() {
+		float[] vertices = new float[verticesFinal.size()];
 		for (int i = 0; i < verticesFinal.size(); i++) {
 			vertices[i] = verticesFinal.get(i);
 		}
 		return vertices;
 	}
 
-	public Float[] getTextures() {
-		Float[] textures = new Float[texturesFinal.size()];
+	public float[] getTextures() {
+		float[] textures = new float[texturesFinal.size()];
 		for (int i = 0; i < texturesFinal.size(); i++) {
 			textures[i] = texturesFinal.get(i);
 		}
 		return textures;
 	}
 
-	public Float[] getNormals() {
-		Float[] normals = new Float[normalsFinal.size()];
+	public float[] getNormals() {
+		float[] normals = new float[normalsFinal.size()];
 		for (int i = 0; i < normalsFinal.size(); i++) {
 			normals[i] = normalsFinal.get(i);
 		}

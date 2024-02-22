@@ -41,5 +41,9 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/GLM"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/LWJGL_GameEngineResource"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/LWJGUI"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-assimp.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-assimp-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-assimp-natives-linux.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-assimp-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

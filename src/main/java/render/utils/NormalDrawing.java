@@ -30,8 +30,8 @@ import main.java.utils.ModelUtils;
 
 public class NormalDrawing {
 
-	private Float[] vertices;
-	private Float[] normals;
+	private float[] vertices;
+	private float[] normals;
 
 	private HashMap<String, Integer> uniforms = new HashMap<>();
 
@@ -68,7 +68,7 @@ public class NormalDrawing {
 		initShader();
 	}
 
-	public NormalDrawing(Float[] vertices, Float[] normals, Mat4[] modelMatrix) {
+	public NormalDrawing(float[] vertices, float[] normals, Mat4[] modelMatrix) {
 		this.vertices = vertices;
 		this.normals = normals;
 		this.modelMatrices = modelMatrix;

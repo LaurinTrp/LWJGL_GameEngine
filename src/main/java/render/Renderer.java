@@ -21,6 +21,7 @@ import main.java.render.camera.Camera;
 import main.java.render.entities.Player;
 import main.java.render.entities.trees.Tree_1;
 import main.java.render.entities.trees.Tree_2;
+import main.java.render.model.Mesh;
 import main.java.render.model.ModelObserver;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.model.RandomMatrixGenerator;
@@ -39,6 +40,8 @@ import main.java.render.passes.transformation.Compass;
 import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.TexturePack;
 import main.java.render.utils.terrain.TerrainGenerator;
+import main.java.shader.ShaderProgram;
+import main.java.utils.Shapes;
 
 public class Renderer implements lwjgui.gl.Renderer {
 
@@ -69,6 +72,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 	public static ArrayList<Mat4> lightSourcePositionsMats = new ArrayList<>();
 
 	private Skybox skybox;
+	
+	private Mesh meshCube;
 	
 	TrianglePass tp;
 	
@@ -110,6 +115,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 		tp = new TrianglePass();
 		
 		cube = new Cube();
+		
+		meshCube = new Mesh(Shapes.SimpleCube.vertices, Shapes.SimpleCube.texCoords, Shapes.SimpleCube.normals, Shapes.SimpleCube.indices);
 		
 	}
 
@@ -172,7 +179,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 	public void renderModels() {
 		glEnable(GL_CULL_FACE);
 
-		cube.render();
+//		cube.render();
 //		test.render();
 
 //		terrainModel.render();
@@ -191,11 +198,13 @@ public class Renderer implements lwjgui.gl.Renderer {
 		player.gravity(terrainModel);
 		player.render();
 		
-		cottage.render();
-		tree_1.render();
+		
+//		cottage.render();
+//		tree_1.render();
 		
 		glDisable(GL_CULL_FACE);
 
+		meshCube.render();
 	}
 
 	/**
@@ -220,6 +229,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 		tree_2.dispose();
 		
 		tp.dispose();
+		
+		meshCube.dispose();
 	}
 
 }

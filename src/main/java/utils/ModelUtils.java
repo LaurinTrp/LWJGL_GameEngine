@@ -14,7 +14,7 @@ import main.java.render.model.Model;
 import main.java.shader.ShaderProgram;
 
 public class ModelUtils {
-	public static float[] flattenArrays(Float[] vertices, Float[] colors, Float[] uvs, Float[] normals) {
+	public static float[] flattenArrays(float[] vertices, float[] colors, float[] uvs, float[] normals) {
 		int count = 0;
 		if (vertices != null)
 			count += vertices.length;
@@ -54,7 +54,7 @@ public class ModelUtils {
 		return output;
 	}
 
-	public static float[] createNormals(Float[] vertices, Float[] normals) {
+	public static float[] createNormals(float[] vertices, float[] normals) {
 		float[] output = new float[vertices.length + normals.length];
 		ArrayList<Float> list = new ArrayList<>();
 		for (int i = 0; i < vertices.length; i += 4) {
@@ -72,9 +72,9 @@ public class ModelUtils {
 		return output;
 	}
 
-	public static Float[] flattenListOfListsStream(ArrayList<ArrayList<Vec4>> arrayList) {
+	public static float[] flattenListOfListsStream(ArrayList<ArrayList<Vec4>> arrayList) {
 		List<Vec4> list = arrayList.stream().flatMap(Collection::stream).collect(Collectors.toList());
-		Float[] array = new Float[list.size() * 4];
+		float[] array = new float[list.size() * 4];
 		for (int i = 0; i < list.size(); i++) {
 			array[i * 4 + 0] = list.get(i).x;
 			array[i * 4 + 1] = list.get(i).y;
@@ -116,12 +116,8 @@ public class ModelUtils {
 				&& minmax0[2] <= minmax1[3] && minmax0[5] >= minmax1[4] && minmax0[4] <= minmax1[5]);
 	}
 
-	public static Float[] calculateMinmax(Float[] startMinmax, Vec3 translation) {
-		return calculateMinmax(startMinmax, new Vec4(translation, 1.0f));
-	}
-
-	public static Float[] calculateMinmax(Float[] startMinmax, Vec4 translation) {
-		Float[] minmax = new Float[6];
+	public static float[] calculateMinmax(float[] startMinmax, Vec4 translation) {
+		float[] minmax = new float[6];
 		minmax[0] = startMinmax[0] + translation.x;
 		minmax[1] = startMinmax[1] + translation.x;
 		minmax[2] = startMinmax[2] + translation.y;
