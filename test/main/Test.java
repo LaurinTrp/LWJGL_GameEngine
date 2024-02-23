@@ -6,6 +6,7 @@ import glm.vec._2.Vec2;
 
 public class Test {
 	public static void main(String[] args) {
+		
 		int value = 1;
 		
 		int a = (value >> 24) & 0xFF;

@@ -1,59 +1,102 @@
 package main.java.utils.loaders;
 
-import static org.lwjgl.assimp.Assimp.aiImportFile;
-import static org.lwjgl.assimp.Assimp.aiProcess_FixInfacingNormals;
-import static org.lwjgl.assimp.Assimp.aiProcess_JoinIdenticalVertices;
-import static org.lwjgl.assimp.Assimp.aiProcess_Triangulate;
+import static main.java.utils.FileUtils.ioResourceToByteBuffer;
+import static org.lwjgl.assimp.Assimp.aiGetErrorString;
+import static org.lwjgl.assimp.Assimp.aiOrigin_CUR;
+import static org.lwjgl.assimp.Assimp.aiOrigin_END;
+import static org.lwjgl.assimp.Assimp.aiOrigin_SET;
+import static org.lwjgl.system.MemoryUtil.memAddress;
+import static org.lwjgl.system.MemoryUtil.memCopy;
+import static org.lwjgl.system.MemoryUtil.memUTF8;
 
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.AIColor4D;
-import org.lwjgl.assimp.AIMaterial;
-import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AIFile;
+import org.lwjgl.assimp.AIFileIO;
 import org.lwjgl.assimp.AIScene;
-import org.lwjgl.assimp.AIString;
-import org.lwjgl.assimp.AIVector3D;
 
-import glm.vec._4.Vec4;
-import main.java.render.model.Material;
-import main.java.render.model.Mesh;
+import jassimp.AiPostProcessSteps;
+import jassimp.AiScene;
+import jassimp.IHMCJassimp;
+import main.java.render.model.assimp.AssimpModel;
 
 public class StaticMeshesLoader {
-	
+		
+	public static final Set<AiPostProcessSteps> ASSIMP_POST = new HashSet<AiPostProcessSteps>() {
+	      {
+	            add(AiPostProcessSteps.Triangulate);
+	            add(AiPostProcessSteps.GenSmoothNormals);
+	            add(AiPostProcessSteps.GenUVCoords);
+	            add(AiPostProcessSteps.FlipUVs);
+
+	            add(AiPostProcessSteps.CalcTangentSpace);
+	            add(AiPostProcessSteps.JoinIdenticalVertices);
+
+	            add(AiPostProcessSteps.OptimizeMeshes);
+	      }
+	  };
 	
 	
 //	public static Mesh[] load(String resourcePath, String texturesDir) {
 //		return load(resourcePath, texturesDir, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_FixInfacingNormals);
 //	}
 //	
-//	public static Mesh[] load(String resourcePath, String texturesDir, int flags) {
-//		AIScene aiScene = aiImportFile(resourcePath, flags);
-//		if(aiScene == null) {
-//			throw new AssimpLoadException("Could not load model: " + resourcePath);
-//		}
-//		
-//		int numMaterials = aiScene.mNumMaterials();
-//		PointerBuffer aiMaterials = aiScene.mMaterials();
-//		List<Material> materials = new ArrayList<>();
-//		for (int i = 0; i < numMaterials; i++) {
-//		    AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-//		    processMaterial(aiMaterial, materials, texturesDir);
-//		}
-//
-//		int numMeshes = aiScene.mNumMeshes();
-//		PointerBuffer aiMeshes = aiScene.mMeshes();
-//		Mesh[] meshes = new Mesh[numMeshes];
-//		for (int i = 0; i < numMeshes; i++) {
-//		    AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-//		    Mesh mesh = processMesh(aiMesh, materials);
-//		    meshes[i] = mesh;
-//		}
-//
-//		return meshes;
-//	}
+	public static AssimpModel load(String filePath) throws IOException { 
+		AIFileIO fileIo = AIFileIO.create()
+            .OpenProc((pFileIO, fileName, openMode) -> {
+                ByteBuffer data;
+                String fileNameUtf8 = memUTF8(fileName);
+                try {
+                    data = ioResourceToByteBuffer(fileNameUtf8, 8192);
+                } catch (IOException e) {
+                    throw new RuntimeException("Could not open file: " + fileNameUtf8);
+                }
+
+                return AIFile.create()
+                    .ReadProc((pFile, pBuffer, size, count) -> {
+                        long max = Math.min(data.remaining() / size, count);
+                        memCopy(memAddress(data), pBuffer, max * size);
+                        data.position(data.position() + (int) (max * size));
+                        return max;
+                    })
+                    .SeekProc((pFile, offset, origin) -> {
+                        if (origin == aiOrigin_CUR) {
+                            data.position(data.position() + (int) offset);
+                        } else if (origin == aiOrigin_SET) {
+                            data.position((int) offset);
+                        } else if (origin == aiOrigin_END) {
+                            data.position(data.limit() + (int) offset);
+                        }
+                        return 0;
+                    })
+                    .FileSizeProc(pFile -> data.limit())
+                    .address();
+            })
+            .CloseProc((pFileIO, pFile) -> {
+                AIFile aiFile = AIFile.create(pFile);
+
+                aiFile.ReadProc().free();
+                aiFile.SeekProc().free();
+                aiFile.FileSizeProc().free();
+            });
+		
+//		aiImportF
+		
+//        AIScene scene = aiImportFile(filePath,
+//                aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
+		
+		AiScene scene = IHMCJassimp.importFile(filePath, ASSIMP_POST);
+		
+        fileIo.OpenProc().free();
+        fileIo.CloseProc().free();
+        if (scene == null) {
+            throw new IllegalStateException(aiGetErrorString());
+        }
+        return new AssimpModel(scene);	
+	}
 //	
 //	private static void processMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDir) throws Exception {
 //	    AIColor4D colour = AIColor4D.create();

@@ -56,7 +56,6 @@ public class ImageLoader {
 		int width, height;
 		ByteBuffer buffer;
 		
-		System.out.println(path);
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			IntBuffer w = stack.mallocInt(1);
 			IntBuffer h = stack.mallocInt(1);
