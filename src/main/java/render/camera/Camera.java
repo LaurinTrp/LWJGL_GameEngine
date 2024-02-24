@@ -6,11 +6,9 @@ import glm.Glm;
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
-import lwjgui.event.KeyEvent;
 import main.java.gui.Engine_Main;
 import main.java.render.entities.Player;
 import main.java.render.model.MultiTextureTerrain;
-import main.java.render.renderobject.IRenderObject;
 
 public class Camera {
 

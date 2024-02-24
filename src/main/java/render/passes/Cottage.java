@@ -7,7 +7,6 @@ import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ImageLoader;
-import main.java.utils.loaders.ModelLoader;
 
 public class Cottage extends Model {
 
@@ -16,7 +15,7 @@ public class Cottage extends Model {
 	public Cottage() {
 		super("Cottage", "cottage.obj", modelMatrix);
 		setShaderFolder("Transformation");
-		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage_diffuse.png"));
+		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage", "cottage_diffuse.png"));
 		setShowMinMax(true);
 	}
 

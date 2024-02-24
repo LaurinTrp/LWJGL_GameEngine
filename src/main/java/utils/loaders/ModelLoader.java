@@ -4,13 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
-import glm.mat._4.Mat4;
-import main.java.render.model.Material;
-import main.java.render.model.Model;
-import main.java.render.renderobject.IRenderObject;
-import main.java.render.utils.BoundingBox;
 import main.java.utils.FileUtils;
 import resources.ResourceLoader;
 

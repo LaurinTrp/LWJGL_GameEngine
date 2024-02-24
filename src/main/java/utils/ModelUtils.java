@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.model.Material;
 import main.java.render.model.Model;

@@ -1,20 +1,12 @@
 package main.java.utils;
 
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.glfwGetKey;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 
-import glm.vec._2.Vec2;
 import lwjgui.event.KeyEvent;
-import main.java.gui.Engine_Main;
 
 public class Inputs {
 	public static class MouseInputs {

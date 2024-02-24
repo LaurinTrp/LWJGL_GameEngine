@@ -1,9 +1,5 @@
 package main;
 
-import java.util.Random;
-
-import glm.vec._2.Vec2;
-
 public class Test {
 	public static void main(String[] args) {
 		

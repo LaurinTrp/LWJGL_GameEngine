@@ -2,13 +2,8 @@ package main.java.gui.panels;
 
 import org.lwjgl.glfw.GLFW;
 
-import lwjgui.event.KeyEvent;
-import lwjgui.paint.Color;
 import lwjgui.scene.control.ProgressBar;
 import lwjgui.scene.layout.OpenGLPane;
-import lwjgui.scene.layout.floating.FloatingPane;
-import lwjgui.theme.Theme;
-import lwjgui.theme.ThemeDark;
 import lwjgui.theme.ThemeGame;
 import main.java.gui.Engine_Main;
 import main.java.gui.PaneObserver;

@@ -1,69 +1,83 @@
 package main.java.render.model.assimp;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.lwjgl.PointerBuffer;
-
-import glm.mat._4.Mat4;
-import glm.vec._4.Vec4;
-import jassimp.AiMesh;
-import jassimp.AiScene;
-import main.java.render.Renderer;
-import main.java.render.renderobject.IRenderObject;
-import main.java.shader.ShaderProgram;
-import main.java.utils.ModelUtils;
-
-import static org.lwjgl.assimp.Assimp.*;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
-public class AssimpModel implements IRenderObject {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-	public AiScene scene;
-	public List<Mesh> meshes;
+import glm.mat._4.Mat4;
+import glm.vec._4.Vec4;
+import jassimp.AiMesh;
+import jassimp.AiScene;
+import main.java.render.Renderer;
+import main.java.render.model.Material;
+import main.java.render.renderobject.IRenderObject;
+import main.java.shader.ShaderProgram;
+import main.java.utils.ModelUtils;
 
-	private boolean init;
+public abstract class AssimpModel implements IRenderObject {
+
+	private AiScene scene;
+	private List<Mesh> meshes;
+//	private List<Mesh> meshes;
+
+	protected boolean init;
 
 	private ShaderProgram program;
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
 
 	protected Mat4 modelMatrix;
+	
+	protected Map<Mesh, float[]> startMinMax = new HashMap<>();
+	
 //    public List<Material> materials;
+	
+	protected Material material;
 
 	public AssimpModel(AiScene scene) {
 
 		this.scene = scene;
 
-//        int materialCount = scene.mNumMaterials();
-//        PointerBuffer materialsBuffer = scene.mMaterials();
-//        materials = new ArrayList<>();
-//        for (int i = 0; i < materialCount; ++i) {
-//            materials.add(new Material(AIMaterial.create(materialsBuffer.get(i))));
-//        }
 	}
 
 	@Override
 	public void init() {
+
+		loadMeshes();
+		loadMaterials();
+		
+		initShader();
+
+		afterInit();
+		
+		init = true;
+	}
+	
+	private void loadMeshes() {
 		int meshCount = scene.getNumMeshes();
 		List<AiMesh> sceneMeshes = scene.getMeshes();
 		meshes = new ArrayList<>();
 		for (int i = 0; i < meshCount; ++i) {
-			meshes.add(new Mesh(sceneMeshes.get(i)));
+			Mesh mesh = new Mesh(sceneMeshes.get(i));
+			meshes.add(mesh);
+			startMinMax.put(mesh, sceneMeshes.get(i).getMinmax());
 		}
-
-		initShader();
-
-		modelMatrix = new Mat4(1.0f);
-		modelMatrix.translate(-10, 10, 10);
-
-		init = true;
+	}
+	
+	private void loadMaterials() {
+//		int materialCount = scene.getNumMaterials();
+//		List<AiMaterial> sceneMaterials = scene.getMaterials();
+		
 	}
 
 	private void initShader() {
@@ -80,7 +94,11 @@ public class AssimpModel implements IRenderObject {
 		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
-
+	
+	protected abstract void afterInit();
+	protected abstract void renderProcessBegin();
+	protected abstract void renderProcessEnd();
+	
 	@Override
 	public void render() {
 		if (!init) {
@@ -93,15 +111,18 @@ public class AssimpModel implements IRenderObject {
 		glUseProgram(program.getProgramID());
 		Renderer.framebuffer.bindFbo();
 		{
-//			if(material != null) {
-//				glBindTexture(GL_TEXTURE_2D, material.getTexture());
-//			}
+			if(material != null) {
+				glBindTexture(GL_TEXTURE_2D, material.getTexture());
+			}
 			for (Mesh mesh : meshes) {
 				glBindVertexArray(mesh.vao);
 				{
+					renderProcessBegin();
+					
 					uploadMatrixes();
 					glDrawElements(GL_TRIANGLES, mesh.elements, GL_UNSIGNED_INT, 0);
 
+					renderProcessEnd();
 				}
 				glBindVertexArray(0);
 

@@ -3,7 +3,6 @@ package main.java.render.entities.trees;
 import glm.mat._4.Mat4;
 import main.java.render.model.Model;
 import main.java.utils.loaders.ImageLoader;
-import main.java.utils.loaders.ModelLoader;
 
 public class Tree_1 extends Model {
 
@@ -13,7 +12,7 @@ public class Tree_1 extends Model {
 		setShaderFolder("Transformation");
 		try {
 			getMaterial().setTexture(ImageLoader
-					.loadTextureFromResource("trees/Tree1.png"));
+					.loadTextureFromResource("trees", "Tree1.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

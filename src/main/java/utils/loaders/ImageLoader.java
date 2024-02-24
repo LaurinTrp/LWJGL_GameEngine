@@ -28,6 +28,7 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -78,9 +79,9 @@ public class ImageLoader {
 	 * @param fileName Filename of the image in the res/Textures folder
 	 * @return Returning the OpenGL texture id
 	 */
-	public static int loadTextureFromResource(String fileName) {
+	public static int loadTextureFromResource(String folder, String fileName) {
 		try {
-			return loadTexture(ResourceLoader.loadTexture(fileName));
+			return loadTexture(ResourceLoader.loadTexture(folder + File.separator + fileName));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;

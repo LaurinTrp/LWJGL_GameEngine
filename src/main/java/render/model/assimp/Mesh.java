@@ -12,11 +12,6 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.assimp.AIVector3D;
-
 import glm.mat._4.Mat4;
 import jassimp.AiMesh;
 
@@ -33,6 +28,8 @@ public class Mesh {
 	private float[] texCoords;
 	private float[] normals;
 	private int[] indices;
+	
+	private float[] minmax;
 	
 	public Mesh(AiMesh mesh) {
 		this.mesh = mesh;
@@ -62,7 +59,6 @@ public class Mesh {
 	    for (int t = 0; t < mesh.getNumVertices(); t++) {
 	        texCoords[counter++] = mesh.getTexCoordU(t, 0);
 	        texCoords[counter++] = mesh.getTexCoordV(t, 0);
-
 	    }
 	    counter = 0;
 	    for (int n = 0; n < mesh.getNumVertices(); n++) {
@@ -96,8 +92,8 @@ public class Mesh {
 	    glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * 4, 0);
 
-	    glBindBuffer(GL_ARRAY_BUFFER, vboNormals);
-	    glBufferData(GL_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+	    glBindBuffer(GL_ARRAY_BUFFER, vboTexCoords);
+	    glBufferData(GL_ARRAY_BUFFER, texCoords, GL_STATIC_DRAW);
 	    glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, false, 2 * 4, 0);
 	    

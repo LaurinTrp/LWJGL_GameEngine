@@ -3,7 +3,6 @@ package main.java.render.passes;
 import org.lwjgl.opengl.GL20;
 
 import glm.vec._2.Vec2;
-import main.java.render.Renderer;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.utils.TexturePack;
 import main.java.render.utils.terrain.TerrainGenerator;

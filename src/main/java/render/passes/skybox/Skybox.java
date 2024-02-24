@@ -36,7 +36,6 @@ import main.java.utils.loaders.ImageLoader;
 public class Skybox implements IRenderObject {
 
 	private int vao, vbo, textureID;
-	private int texture;
 	private boolean init = false;
 
 	private ShaderProgram program;
@@ -48,8 +47,6 @@ public class Skybox implements IRenderObject {
 	public Skybox(String[] faces) {
 		try {
 			textureID = ImageLoader.loadSkybox(faces);
-
-			texture = ImageLoader.loadTextureFromResource("Warn.png");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

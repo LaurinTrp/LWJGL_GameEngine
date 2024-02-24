@@ -35,12 +35,10 @@ import lwjgui.LWJGUIUtil;
 import lwjgui.scene.Scene;
 import lwjgui.scene.Window;
 import lwjgui.theme.Theme;
-import lwjgui.theme.ThemeCoral;
-import lwjgui.theme.ThemeDark;
-import lwjgui.theme.ThemeGame;
 import main.java.render.Renderer;
 import main.java.utils.Inputs.KeyHandler;
 import main.java.utils.Inputs.MouseInputs;
+import resources.ResourceLoader;
 
 public class Engine_Main extends LWJGUIApplication {
 
@@ -106,8 +104,8 @@ public class Engine_Main extends LWJGUIApplication {
 		lwjguiWindow = LWJGUI.initialize(window);
 		lwjguiWindow.setResizible(false);
 		
-		lwjguiWindow.setIcon("png", new File[] { new File(
-				"/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/Textures/Warn.png") });
+		File f = ResourceLoader.getFile("Textures", "flatearth.png");
+		lwjguiWindow.setIcon("png", new File[] { f });
 
 	}
 

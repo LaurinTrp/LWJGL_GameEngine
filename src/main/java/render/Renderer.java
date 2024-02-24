@@ -1,23 +1,20 @@
 package main.java.render;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
-import org.lwjgl.glfw.GLFW;
 
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import lwjgui.scene.Context;
-import main.java.gui.Engine_Main;
 import main.java.render.camera.Camera;
 import main.java.render.entities.Player;
 import main.java.render.entities.trees.Tree_1;
@@ -25,8 +22,6 @@ import main.java.render.entities.trees.Tree_2;
 import main.java.render.model.ModelObserver;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.model.RandomMatrixGenerator;
-import main.java.render.model.assimp.AssimpModel;
-import main.java.render.model.assimp.Mesh;
 import main.java.render.passes.Cottage;
 import main.java.render.passes.Cube;
 import main.java.render.passes.TerrainModel;
@@ -42,9 +37,7 @@ import main.java.render.passes.transformation.Compass;
 import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.TexturePack;
 import main.java.render.utils.terrain.TerrainGenerator;
-import main.java.shader.ShaderProgram;
-import main.java.utils.Shapes;
-import main.java.utils.loaders.StaticMeshesLoader;
+import resources.ResourceLoader;
 
 public class Renderer implements lwjgui.gl.Renderer {
 
@@ -77,8 +70,6 @@ public class Renderer implements lwjgui.gl.Renderer {
 	private Skybox skybox;
 	
 //	private Mesh meshCube;
-	
-	private AssimpModel testAssimpModel;
 	
 	TrianglePass tp;
 	
@@ -121,14 +112,10 @@ public class Renderer implements lwjgui.gl.Renderer {
 		
 		cube = new Cube();
 		
-		try {
-			testAssimpModel = StaticMeshesLoader.load("/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/Models/Collada/model.dae");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
 //		meshCube = new Mesh(Shapes.SimpleCube.vertices, Shapes.SimpleCube.texCoords, Shapes.SimpleCube.normals, Shapes.SimpleCube.indices);
 		
+		
+		ResourceLoader.clear();
 	}
 
 	private void initLightSourcePositions() {
@@ -162,12 +149,12 @@ public class Renderer implements lwjgui.gl.Renderer {
 	public void render(Context context) {
 		
 		framebuffer.render();
-//		objectPickBuffer.render();
+		objectPickBuffer.render();
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-//		sun.update();
-//		skybox.render();
+		sun.update();
+		skybox.render();
 		
 		glEnable(GL_DEPTH_TEST);
 		
@@ -180,11 +167,11 @@ public class Renderer implements lwjgui.gl.Renderer {
 
 		glDisable(GL_DEPTH_TEST);
 
-//		objectPickBuffer.renderColorAttachments();
+		objectPickBuffer.renderColorAttachments();
 		framebuffer.renderColorAttachments();
 
 		framebuffer.unbindFbo();
-//		objectPickBuffer.unbindFbo();
+		objectPickBuffer.unbindFbo();
 	}
 
 	public void renderModels() {
@@ -209,12 +196,10 @@ public class Renderer implements lwjgui.gl.Renderer {
 		player.gravity(terrainModel);
 		player.render();
 		
-		testAssimpModel.render();
-		
 //		meshCube.render();
 		
-//		cottage.render();
-//		tree_1.render();
+		cottage.render();
+		tree_1.render();
 		
 		glDisable(GL_CULL_FACE);
 
@@ -242,8 +227,6 @@ public class Renderer implements lwjgui.gl.Renderer {
 		tree_2.dispose();
 		
 		tp.dispose();
-		
-		testAssimpModel.dispose();
 		
 //		meshCube.dispose();
 	}

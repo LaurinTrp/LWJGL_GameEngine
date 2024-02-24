@@ -1,5 +1,7 @@
 package main.java.render.entities;
 
+import static main.java.utils.constants.Constants.PLAYER_ROTATION_SPEED;
+import static main.java.utils.constants.Constants.PLAYER_WALKING_SPEED;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
@@ -15,16 +17,17 @@ import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.camera.CameraMode;
+import main.java.render.model.Material;
 import main.java.render.model.Model;
 import main.java.render.model.MultiTextureTerrain;
+import main.java.render.model.assimp.AssimpModel;
 import main.java.render.renderobject.IRenderObject;
-import main.java.render.utils.BoundingBox;
-import static main.java.utils.constants.Constants.*;
-import main.java.utils.loaders.ModelLoader;
+import main.java.utils.loaders.ImageLoader;
+import main.java.utils.loaders.StaticMeshesLoader;
 
-public class Player extends Model {
 
-	private static Mat4 modelMatrix = new Mat4(1.0f);
+
+public class Player extends AssimpModel {
 
 	private Vec3 position;
 	private Vec3 prevPosition;
@@ -41,34 +44,38 @@ public class Player extends Model {
 	private ArrayList<IRenderObject> intersectors = new ArrayList<>();
 
 	public Player() {
-		super("AmongUs", "AmongUs.obj", modelMatrix);
-		setShaderFolder("Transformation");
-		getMaterial().setTexture(loader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
-
-		setShowMinMax(true);
+		super(StaticMeshesLoader.loadFromResource("Collada", "model.dae"));
+		
+		this.material = new Material(ImageLoader.loadTextureFromResource("collada", "diffuse.png"));
+		
+//		super(null)
+//		super("AmongUs", "AmongUs.obj", modelMatrix);
+//		setShaderFolder("Transformation");
+//		getMaterial().setTexture(loader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
+//
+//		setShowMinMax(true);
 	}
 
 	@Override
 	protected void renderProcessBegin() {
-		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
+//		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
 //			glEnable(GL_CULL_FACE);
-		}
+//		}
 		rotation();
 	}
 
 	@Override
 	protected void renderProcessEnd() {
-		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
+//		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
 //			glDisable(GL_CULL_FACE);
-		}
+//		}
 	}
 
 	@Override
 	public void afterInit() {
-		super.afterInit();
-
 		position = new Vec3(0.0, 0.0, 0.0);
 		prevPosition = new Vec3(position);
+		modelMatrix = new Mat4(1.0f);
 		modelMatrix = modelMatrix.rotate((float) Math.toRadians(180), new Vec3(0.0, 1.0, 0.0));
 		rotationAngle = (float) Math.toRadians(180);
 		modelMatrix = modelMatrix.translation(position);
@@ -142,18 +149,18 @@ public class Player extends Model {
 		Vec3 tempPosition = new Vec3(position).add(direction);
 		Mat4 tempModelMatrix = new Mat4(modelMatrix).cleanTranslation().translation(tempPosition);
 
-		BoundingBox tempBoundryBox = new BoundingBox(getBoundingBox().getStartMinmax(), tempModelMatrix);
-		for (IRenderObject model : intersectors) {
-			Model intersectorModel = (Model) model;
-			if(intersectorModel.getBoundingBoxes() == null) {
-				continue;
-			}
-			for (BoundingBox boundingBox : intersectorModel.getBoundingBoxes()) {
-				if (BoundingBox.collision(tempBoundryBox, boundingBox)) {
-					return true;
-				}
-			}
-		}
+//		BoundingBox tempBoundryBox = new BoundingBox(getBoundingBox().getStartMinmax(), tempModelMatrix);
+//		for (IRenderObject model : intersectors) {
+//			Model intersectorModel = (Model) model;
+//			if(intersectorModel.getBoundingBoxes() == null) {
+//				continue;
+//			}
+//			for (BoundingBox boundingBox : intersectorModel.getBoundingBoxes()) {
+//				if (BoundingBox.collision(tempBoundryBox, boundingBox)) {
+//					return true;
+//				}
+//			}
+//		}
 		return false;
 	}
 
@@ -175,7 +182,7 @@ public class Player extends Model {
 		if (terrain != null || terrain != currentTerrain) {
 			currentTerrain = terrain;
 		}
-		position.y = terrain.heightAtPlayerPos() - getBoundingBox().getStartMinmax()[2];
+		position.y = terrain.heightAtPlayerPos();// - getBoundingBox().getStartMinmax()[2];
 	}
 
 	/**
