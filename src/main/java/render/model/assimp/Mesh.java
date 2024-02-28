@@ -12,8 +12,11 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
+import java.util.Arrays;
+
 import glm.mat._4.Mat4;
 import jassimp.AiMesh;
+import main.java.render.Renderer;
 
 public class Mesh {
 
@@ -29,10 +32,26 @@ public class Mesh {
 	private float[] normals;
 	private int[] indices;
 	
-	private float[] minmax;
+	private float[] minmax = new float[6];
+	
+	private static int idCounter;
+	private final int id;
+	
+	private boolean selected;
 	
 	public Mesh(AiMesh mesh) {
+		id=Mesh.idCounter;
+		Mesh.idCounter++;
+		Renderer.modelObserver.addObjectToSelectables(this);
+		
 		this.mesh = mesh;
+		
+		minmax[0] = Float.MAX_VALUE;
+		minmax[1] = -Float.MAX_VALUE;
+		minmax[2] = Float.MAX_VALUE;
+		minmax[3] = -Float.MAX_VALUE;
+		minmax[4] = Float.MAX_VALUE;
+		minmax[5] = -Float.MAX_VALUE;
 		
 		loadData();
 		bindData();
@@ -54,6 +73,13 @@ public class Mesh {
 	        vertices[counter++] = mesh.getPositionX(v);
 	        vertices[counter++] = mesh.getPositionY(v);
 	        vertices[counter++] = mesh.getPositionZ(v);
+	        
+	        minmax[0] = Math.min(minmax[0], mesh.getPositionX(v));
+	        minmax[1] = Math.max(minmax[1], mesh.getPositionX(v));
+	        minmax[2] = Math.min(minmax[2], mesh.getPositionY(v));
+	        minmax[3] = Math.max(minmax[3], mesh.getPositionY(v));
+	        minmax[4] = Math.min(minmax[4], mesh.getPositionZ(v));
+	        minmax[5] = Math.max(minmax[5], mesh.getPositionZ(v));
 	    }
 	    counter = 0;
 	    for (int t = 0; t < mesh.getNumVertices(); t++) {
@@ -108,4 +134,20 @@ public class Mesh {
 		glBindVertexArray(0);
 	}
 
+	public int getId() {
+		return id;
+	}
+	
+	public boolean isSelected() {
+		return selected;
+	}
+	
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+	
+	public float[] getMinmax() {
+		return minmax;
+	}
+	
 }

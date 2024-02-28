@@ -96,7 +96,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 
 		player = new Player();
 
-		camera = new Camera(player);
+//		camera = new Camera(player);
+		camera = player.getCamera();
 
 		generateFirstTerrain();
 
@@ -162,7 +163,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 		
 		renderModels();
 //
-		camera.setFocusPoint(new Vec3(player.getPosition()));
+//		camera.setFocusPoint(new Vec3(player.getFocusPoint()));
 		camera.update();
 
 		glDisable(GL_DEPTH_TEST);
@@ -177,7 +178,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 	public void renderModels() {
 		glEnable(GL_CULL_FACE);
 
-//		cube.render();
+		cube.render();
 //		test.render();
 
 //		terrainModel.render();

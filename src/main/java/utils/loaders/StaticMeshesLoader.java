@@ -30,7 +30,7 @@ public class StaticMeshesLoader {
 	public static AiScene loadFromResource(String folder, String fileName) {
 		return load(ResourceLoader.getModelFile(folder, fileName));
 	}
-//	
+	
 	public static AiScene load(File file) {
 		try {
 			AiScene scene = IHMCJassimp.importFile(file.getAbsolutePath(), ASSIMP_POST);

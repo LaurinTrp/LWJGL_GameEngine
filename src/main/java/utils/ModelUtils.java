@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.model.Material;
 import main.java.render.model.Model;
@@ -124,5 +125,13 @@ public class ModelUtils {
 		minmax[4] = startMinmax[4] + translation.z;
 		minmax[5] = startMinmax[5] + translation.z;
 		return minmax;
+	}
+
+	public static Vec3 getObjectIdAsColor(int id) {
+		int red = (id >> 16) & 0xFF;
+		int green = (id >> 8) & 0xFF;
+		int blue = (id >> 0) & 0xFF;
+		
+		return new Vec3(red, green, blue);
 	}
 }

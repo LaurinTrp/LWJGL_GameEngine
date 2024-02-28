@@ -1,12 +1,16 @@
 package main.java.render.camera;
 
+import static main.java.utils.constants.Constants.*;
+
 import org.lwjgl.glfw.GLFW;
 
 import glm.Glm;
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
+import jassimp.AiScene;
 import main.java.gui.Engine_Main;
+import main.java.render.Renderer;
 import main.java.render.entities.Player;
 import main.java.render.model.MultiTextureTerrain;
 
@@ -14,9 +18,10 @@ public class Camera {
 
 	private Player player;
 
-	private Vec3 cameraPosition = new Vec3(0.0f, 0.0f, 0.0f);
-	private Vec3 cameraFront = new Vec3(0.0f, 0.0f, -1.0f);
-	private Vec3 cameraUp = new Vec3(0.0f, 1.0f, 0.0f);
+	protected Vec3 initialCameraPosition = new Vec3(0.0f, 0.0f, 0.0f);
+	protected Vec3 cameraPosition = new Vec3(0.0f, 0.0f, 0.0f);
+	protected Vec3 cameraFront = new Vec3(0.0f, 0.0f, -1.0f);
+	protected Vec3 cameraUp = new Vec3(0.0f, 1.0f, 0.0f);
 
 	private float angleHorizontal = 0.0f;
 	private float angleVertical = 0.0f;
@@ -33,17 +38,13 @@ public class Camera {
 	public CameraMode cameraMode = CameraMode.PLAYER_CAMERA;
 
 	private final float NEAR_CLIPPING_PLANE = 0.1f, FAR_CLIPPING_PLANE = 100f;
-	
+
 	private boolean buttonV_ready = true;
 
-	public Camera() {
+	public Camera(Player player) {
 		projectionMatrix = Glm.perspective_(45.0f, (float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight,
 				NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
 		focusPoint = new Vec3();
-	}
-
-	public Camera(Player player) {
-		this();
 		this.player = player;
 	}
 
@@ -66,39 +67,46 @@ public class Camera {
 	}
 
 	private void rotation() {
+		double rotationSpeed = cameraMode == CameraMode.POV_CAMERA ? -POV_CAM_VERTICAL_SPEED
+				: POV_CAM_VERTICAL_SPEED;
 
 		switch (cameraMode) {
 		case PLAYER_CAMERA: {
 			angleHorizontal = player.getRotationAngle() - (float) Math.toRadians(180);
-
-			angleVertical += Engine_Main.mouseHandler.getYoffset();
-
-			if (angleVertical <= -89f) {
-				angleVertical = -89f;
+			
+			if (Engine_Main.mouseHandler.getYoffset() > 0) {
+				angleVertical += rotationSpeed;
 			}
-			if (angleVertical >= 89f) {
-				angleVertical = 89f;
+			if (Engine_Main.mouseHandler.getYoffset() < 0) {
+				angleVertical -= rotationSpeed;
 			}
+			
+			angleVertical = (float) Math.toDegrees(angleVertical);
+			
+			angleVertical = Math.max(angleVertical, -89);
+			angleVertical = Math.min(angleVertical, 89);
 
 			calculateCameraPos(angleVertical, angleHorizontal);
 			break;
 		}
 		case POV_CAMERA: {
-			angleVertical += Engine_Main.mouseHandler.getYoffset();
+			if (Engine_Main.mouseHandler.getYoffset() > 0) {
+				angleVertical -= rotationSpeed;
+			}
+			if (Engine_Main.mouseHandler.getYoffset() < 0) {
+				angleVertical += rotationSpeed;
+			}
 
-			if (angleVertical <= -89f) {
-				angleVertical = -89f;
-			}
-			if (angleVertical >= 89f) {
-				angleVertical = 89f;
-			}
+			angleVertical = Math.max(angleVertical, -89);
+			angleVertical = Math.min(angleVertical, 89);
 
 			cameraFront = new Vec3(player.getPlayerFront());
 			cameraFront.y = (float) Math.sin(Math.toRadians(angleVertical));
 
-			cameraPosition = new Vec3(player.getPosition());
+			cameraPosition = new Vec3(player.getPosition()).add(initialCameraPosition);
 
 			focusPoint = new Vec3(cameraPosition).add(cameraFront);
+
 			break;
 		}
 		default:
@@ -120,7 +128,7 @@ public class Camera {
 		cameraPosition.z = focusPoint.z - offsetZ;
 
 		float groundHeight = groundIntersection();
-		cameraPosition.y = Math.max(cameraPosition.y, groundHeight + 1f);
+		cameraPosition.y = Math.max(cameraPosition.y, groundHeight + 2f);
 	}
 
 	private float groundIntersection() {
@@ -138,9 +146,7 @@ public class Camera {
 				Math.max(3, distanceFromPlayer - Engine_Main.mouseHandler.getScrollY() * 0.4f));
 
 		rotation();
-		if(cameraMode == CameraMode.PLAYER_CAMERA) {
-			focusPoint.y = focusPoint.y + 1.5f;
-		}
+
 		view = Glm.lookAt_(cameraPosition, focusPoint, cameraUp);
 	}
 

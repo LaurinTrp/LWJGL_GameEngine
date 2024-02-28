@@ -31,10 +31,10 @@ public class Inputs {
 				lastX = xpos;
 				lastY = ypos;
 
-				if (Math.abs(xoffset) <= 0.5f) {
+				if (Math.abs(xoffset) <= 0.2f) {
 					xoffset = 0;
 				}
-				if (Math.abs(yoffset) <= 0.5f) {
+				if (Math.abs(yoffset) <= 0.2f) {
 					yoffset = 0;
 				}
 

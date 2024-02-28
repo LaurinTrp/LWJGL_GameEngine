@@ -5,18 +5,20 @@ import org.lwjgl.glfw.GLFW;
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
+import main.java.render.model.Material;
 import main.java.render.model.Model;
+import main.java.render.model.assimp.AssimpModel;
 import main.java.utils.loaders.ImageLoader;
+import main.java.utils.loaders.StaticMeshesLoader;
 
-public class Cottage extends Model {
+public class Cottage extends AssimpModel {
 
-	private static Mat4 modelMatrix = new Mat4(1.0f);
-	
 	public Cottage() {
-		super("Cottage", "cottage.obj", modelMatrix);
-		setShaderFolder("Transformation");
-		getMaterial().setTexture(ImageLoader.loadTextureFromResource("cottage", "cottage_diffuse.png"));
-		setShowMinMax(true);
+		super(StaticMeshesLoader.loadFromResource("Cottage", "cottage.obj"));
+//		super("Cottage", "cottage.obj", modelMatrix);
+//		setShaderFolder("Transformation");
+		this.material = new Material(ImageLoader.loadTextureFromResource("cottage", "cottage_diffuse.png"));
+//		setShowMinMax(true);
 	}
 
 	@Override
@@ -36,7 +38,7 @@ public class Cottage extends Model {
 	@Override
 	public void afterInit() {
 		modelMatrix.translate(new Vec3(10f, 1f, 10f));
-
-		scale(0.5f);
+		modelMatrix.scale(0.5f);
+//		scale(0.5f);
 	}
 }

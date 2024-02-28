@@ -1,22 +1,24 @@
 package main.java.render.passes;
 
 import glm.mat._4.Mat4;
+import main.java.render.model.Material;
 import main.java.render.model.Model;
+import main.java.render.model.assimp.AssimpModel;
 import main.java.utils.loaders.ImageLoader;
+import main.java.utils.loaders.StaticMeshesLoader;
 
-public class Cube extends Model {
-
-	private static Mat4 modelMatrix = new Mat4(1.0f);
+public class Cube extends AssimpModel {
 	
 	public Cube() {
-		super("Cube", "cube.obj", modelMatrix);
-		setShaderFolder("Transformation");
-		getMaterial().setTexture(ImageLoader.loadTextureFromResource("Terrain", "Terrain.png"));
+		super(StaticMeshesLoader.loadFromResource("Cube", "cube.obj"));
+
+		this.material = new Material(ImageLoader.loadTextureFromResource("", "Numbers.png"));
 	}
 
 	@Override
 	protected void afterInit() {
-		scale(3);
+		modelMatrix.translate(10, 10, 0);
+//		scale(3);
 	}
 
 	@Override

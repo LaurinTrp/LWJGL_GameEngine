@@ -8,24 +8,31 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
+import jassimp.AiCamera;
+import jassimp.AiScene;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.camera.CameraMode;
+import main.java.render.camera.PlayerCamera;
 import main.java.render.model.Material;
 import main.java.render.model.Model;
 import main.java.render.model.MultiTextureTerrain;
 import main.java.render.model.assimp.AssimpModel;
 import main.java.render.renderobject.IRenderObject;
+import main.java.render.utils.BoundingBox;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.StaticMeshesLoader;
-
-
 
 public class Player extends AssimpModel {
 
@@ -37,48 +44,58 @@ public class Player extends AssimpModel {
 	private Vec3 playerRight = new Vec3(1.0f, 0.0f, 0.0f);
 	private Vec3 direction = new Vec3();
 
+	private Vec3 focusPoint = new Vec3();
+
 	private MultiTextureTerrain currentTerrain;
 
 	private float rotationAngle = 0;
 
 	private ArrayList<IRenderObject> intersectors = new ArrayList<>();
 
+	private static AiScene scene;
+	private PlayerCamera camera;
+
+	static {
+		scene = StaticMeshesLoader.loadFromResource("Collada", "model.dae");
+	}
+
 	public Player() {
-		super(StaticMeshesLoader.loadFromResource("Collada", "model.dae"));
-		
+		super(scene);
+		camera = new PlayerCamera(this, scene);
+
 		this.material = new Material(ImageLoader.loadTextureFromResource("collada", "diffuse.png"));
-		
-//		super(null)
-//		super("AmongUs", "AmongUs.obj", modelMatrix);
-//		setShaderFolder("Transformation");
-//		getMaterial().setTexture(loader.loadMaterialFileFromResource("AmongUs", "AmongUs.mtl"));
-//
-//		setShowMinMax(true);
 	}
 
 	@Override
 	protected void renderProcessBegin() {
-//		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
-//			glEnable(GL_CULL_FACE);
-//		}
+		glEnable(GL_CULL_FACE);
+	}
+
+	@Override
+	public void render() {
+		super.render();
 		rotation();
 	}
 
 	@Override
 	protected void renderProcessEnd() {
-//		if (Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
-//			glDisable(GL_CULL_FACE);
-//		}
+		glDisable(GL_CULL_FACE);
 	}
 
 	@Override
 	public void afterInit() {
 		position = new Vec3(0.0, 0.0, 0.0);
 		prevPosition = new Vec3(position);
+
 		modelMatrix = new Mat4(1.0f);
 		modelMatrix = modelMatrix.rotate((float) Math.toRadians(180), new Vec3(0.0, 1.0, 0.0));
-		rotationAngle = (float) Math.toRadians(180);
 		modelMatrix = modelMatrix.translation(position);
+		scale(0.3f);
+		camera.scale(0.3f);
+
+		rotationAngle = (float) Math.toRadians(180);
+
+		render = false;
 	}
 
 	/**
@@ -87,7 +104,7 @@ public class Player extends AssimpModel {
 	private void rotation() {
 		double rotationSpeed = Renderer.camera.cameraMode == CameraMode.POV_CAMERA ? -PLAYER_ROTATION_SPEED
 				: PLAYER_ROTATION_SPEED;
-		
+
 		if (Engine_Main.mouseHandler.getXoffset() > 0) {
 			modelMatrix.rotateY(rotationSpeed);
 			rotationAngle += rotationSpeed;
@@ -110,7 +127,7 @@ public class Player extends AssimpModel {
 
 		direction = new Vec3(0.0f);
 		hasMoved = false;
-		
+
 		if (Engine_Main.keyHandler.isPressed(GLFW_KEY_W)) {
 			direction.add(new Vec3(playerFront)).mul(PLAYER_WALKING_SPEED);
 		}
@@ -149,18 +166,16 @@ public class Player extends AssimpModel {
 		Vec3 tempPosition = new Vec3(position).add(direction);
 		Mat4 tempModelMatrix = new Mat4(modelMatrix).cleanTranslation().translation(tempPosition);
 
-//		BoundingBox tempBoundryBox = new BoundingBox(getBoundingBox().getStartMinmax(), tempModelMatrix);
-//		for (IRenderObject model : intersectors) {
-//			Model intersectorModel = (Model) model;
-//			if(intersectorModel.getBoundingBoxes() == null) {
-//				continue;
-//			}
-//			for (BoundingBox boundingBox : intersectorModel.getBoundingBoxes()) {
-//				if (BoundingBox.collision(tempBoundryBox, boundingBox)) {
-//					return true;
-//				}
-//			}
-//		}
+		BoundingBox tempBoundryBox = new BoundingBox(getBoundingBox().getStartMinmax(), tempModelMatrix);
+		for (IRenderObject model : intersectors) {
+			AssimpModel intersectorModel = (AssimpModel) model;
+			if (intersectorModel.getBoundingBox() == null) {
+				continue;
+			}
+			if (BoundingBox.collision(tempBoundryBox, intersectorModel.getBoundingBox())) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -182,7 +197,14 @@ public class Player extends AssimpModel {
 		if (terrain != null || terrain != currentTerrain) {
 			currentTerrain = terrain;
 		}
-		position.y = terrain.heightAtPlayerPos();// - getBoundingBox().getStartMinmax()[2];
+		position.y = terrain.heightAtPlayerPos() - startMinmax[2];
+
+//		if(Renderer.camera.cameraMode == CameraMode.PLAYER_CAMERA) {
+		focusPoint.set(position.x, terrain.heightAtPlayerPos() + Math.abs(startMinmax[3]) + Math.abs(startMinmax[2]),
+				position.z);
+//		}else if(Renderer.camera.cameraMode == CameraMode.POV_CAMERA) {
+//			focusPoint.set(position.x, terrain.heightAtPlayerPos() + Math.abs(startMinmax[3]) + Math.abs(startMinmax[2]), position.z);
+//		}
 	}
 
 	/**
@@ -214,6 +236,10 @@ public class Player extends AssimpModel {
 		return new Vec2(position.x, position.z);
 	}
 
+	public Vec3 getFocusPoint() {
+		return focusPoint;
+	}
+
 	public void addIntersector(IRenderObject intersector) {
 		intersectors.add(intersector);
 	}
@@ -224,5 +250,9 @@ public class Player extends AssimpModel {
 
 	public IRenderObject getCurrentTerrain() {
 		return currentTerrain;
+	}
+
+	public PlayerCamera getCamera() {
+		return camera;
 	}
 }

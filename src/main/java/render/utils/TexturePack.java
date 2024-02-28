@@ -15,11 +15,11 @@ public class TexturePack {
 
 	public TexturePack(String blendMap, String background, String rTexture, String gTexture, String bTexture) {
 		this();
-		this.blendMap = ImageLoader.loadTextureFromResource("", blendMap);
-		this.background = ImageLoader.loadTextureFromResource("", background);
-		this.rTexture = ImageLoader.loadTextureFromResource("", rTexture);
-		this.gTexture = ImageLoader.loadTextureFromResource("", gTexture);
-		this.bTexture = ImageLoader.loadTextureFromResource("", bTexture);
+//		this.blendMap = ImageLoader.loadTextureFromResource("", blendMap);
+//		this.background = ImageLoader.loadTextureFromResource("", background);
+//		this.rTexture = ImageLoader.loadTextureFromResource("", rTexture);
+//		this.gTexture = ImageLoader.loadTextureFromResource("", gTexture);
+//		this.bTexture = ImageLoader.loadTextureFromResource("", bTexture);
 	}
 
 	public int getBlendMap() {

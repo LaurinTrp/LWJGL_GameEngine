@@ -58,6 +58,7 @@ import main.java.gui.Engine_Main;
 import main.java.gui.PaneObserver;
 import main.java.render.Renderer;
 import main.java.render.model.Model;
+import main.java.render.model.assimp.Mesh;
 import main.java.render.renderobject.IRenderObject;
 import main.java.shader.ShaderProgram;
 
@@ -281,11 +282,10 @@ public class ObjectPickBuffer implements IFramebuffer {
 						int blue = colorBuffer.get(2) & 0xFF;
 
 						int objectId = (red << 16) | (green << 8) | blue;
-						IRenderObject object = Renderer.modelObserver.getObjectById(objectId);
-						
-						Model objectMulti = (Model) object;
-						if(objectMulti != null) {
-							objectMulti.setSelected(objectId, !objectMulti.isSelected(objectId));
+						Mesh object = Renderer.modelObserver.getObjectById(objectId);
+						System.out.println("Pickbuffer: " + object + "\t" + objectId);
+						if(object != null) {
+							object.setSelected(!object.isSelected());
 						}
 
 						clickReady = false;
