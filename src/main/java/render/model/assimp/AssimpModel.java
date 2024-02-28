@@ -54,7 +54,7 @@ public abstract class AssimpModel implements IRenderObject {
 
 	protected float[] minmax = new float[6];
 	protected float[] startMinmax = new float[6];
-	
+
 	private BoundingBox boundingBox;
 
 	public AssimpModel(AiScene scene) {
@@ -100,7 +100,7 @@ public abstract class AssimpModel implements IRenderObject {
 		}
 
 		startMinmax = Arrays.copyOf(minmax, minmax.length);
-		
+
 		boundingBox = new BoundingBox(minmax, modelMatrix);
 	}
 
@@ -109,11 +109,19 @@ public abstract class AssimpModel implements IRenderObject {
 	}
 
 	private void initShader() {
-		program = new ShaderProgram("MeshTest");
+		program = new ShaderProgram("AssimpModel");
 		ModelUtils.createUniform(program, uniforms, "modelMatrix");
 		ModelUtils.createUniform(program, uniforms, "viewMatrix");
 		ModelUtils.createUniform(program, uniforms, "projectionMatrix");
 		ModelUtils.createUniform(program, uniforms, "cameraPos");
+		ModelUtils.createUniform(program, uniforms, "selected");
+
+		// Lighting
+		ModelUtils.createUniform(program, uniforms, "lightsources");
+		ModelUtils.createUniform(program, uniforms, "numOfLights");
+
+		ModelUtils.createUniform(program, uniforms, "sunPosition");
+		ModelUtils.createUniform(program, uniforms, "sunColor");
 		ModelUtils.createUniform(program, uniforms, "selected");
 
 		programObjectPick = new ShaderProgram("TransformationObjectPick");
@@ -131,6 +139,23 @@ public abstract class AssimpModel implements IRenderObject {
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
 
+	protected void uploadLighting() {
+		ArrayList<Vec4> lights = Renderer.lightSourcePositions;
+		float[] lightsources = new float[lights.size() * 4];
+		for (int i = 0; i < lights.size(); i++) {
+			lightsources[i * 4 + 0] = lights.get(i).x;
+			lightsources[i * 4 + 1] = lights.get(i).y;
+			lightsources[i * 4 + 2] = lights.get(i).z;
+			lightsources[i * 4 + 3] = lights.get(i).w;
+		}
+		glUniform4fv(uniforms.get("lightsources"), lightsources);
+		glUniform1i(uniforms.get("numOfLights"), lights.size());
+
+		glUniform4fv(uniforms.get("sunPosition"), Renderer.sun.getLightPosition().toFA_());
+		glUniform4fv(uniforms.get("sunColor"), Renderer.sun.getColor().toFA_());
+
+	}
+
 	protected abstract void afterInit();
 
 	protected abstract void renderProcessBegin();
@@ -146,10 +171,8 @@ public abstract class AssimpModel implements IRenderObject {
 			return;
 		}
 
-		if (render) {
-			renderToObjectPickBuffer();
-			renderToFramebuffer();
-		}
+		renderToObjectPickBuffer();
+		renderToFramebuffer();
 	}
 
 	private void renderToObjectPickBuffer() {
@@ -186,10 +209,13 @@ public abstract class AssimpModel implements IRenderObject {
 				glBindVertexArray(mesh.vao);
 				{
 					renderProcessBegin();
-					uploadMatrixes();
-					glUniform1i(uniforms.get("selected"), mesh.isSelected() ? 1 : 0);
+					if (render) {
+						uploadMatrixes();
+						uploadLighting();
+						glUniform1i(uniforms.get("selected"), mesh.isSelected() ? 1 : 0);
 
-					glDrawElements(GL_TRIANGLES, mesh.elements, GL_UNSIGNED_INT, 0);
+						glDrawElements(GL_TRIANGLES, mesh.elements, GL_UNSIGNED_INT, 0);
+					}
 
 					renderProcessEnd();
 				}
@@ -214,13 +240,12 @@ public abstract class AssimpModel implements IRenderObject {
 			startMinmax[i] *= scale;
 		}
 	}
-	
+
 	@Override
 	public void dispose() {
 		scene = null;
 		meshes = null;
 	}
-	
 
 	public BoundingBox getBoundingBox() {
 		return boundingBox;

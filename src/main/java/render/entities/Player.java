@@ -69,6 +69,11 @@ public class Player extends AssimpModel {
 	@Override
 	protected void renderProcessBegin() {
 		glEnable(GL_CULL_FACE);
+		if (camera.cameraMode == CameraMode.POV_CAMERA) {
+			render = false;
+		} else {
+			render = true;
+		}
 	}
 
 	@Override

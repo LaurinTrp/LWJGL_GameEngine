@@ -176,8 +176,6 @@ public class Renderer implements lwjgui.gl.Renderer {
 	}
 
 	public void renderModels() {
-		glEnable(GL_CULL_FACE);
-
 		cube.render();
 //		test.render();
 
@@ -202,7 +200,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 		cottage.render();
 		tree_1.render();
 		
-		glDisable(GL_CULL_FACE);
+//		glDisable(GL_CULL_FACE);
 
 	}
 
