@@ -2,7 +2,6 @@ package main.java.render.entities.trees;
 
 import glm.mat._4.Mat4;
 import main.java.render.model.Material;
-import main.java.render.model.Model;
 import main.java.render.model.assimp.AssimpModel;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.StaticMeshesLoader;

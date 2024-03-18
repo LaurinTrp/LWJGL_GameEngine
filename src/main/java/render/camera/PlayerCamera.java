@@ -1,21 +1,20 @@
 package main.java.render.camera;
 
-import java.util.List;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.assimp.AICamera;
+import org.lwjgl.assimp.AIMatrix4x4;
+import org.lwjgl.assimp.AINode;
+import org.lwjgl.assimp.AIScene;
+import org.lwjgl.assimp.AIVector3D;
 
-import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
-import jassimp.AiBuiltInWrapperProvider;
-import jassimp.AiCamera;
-import jassimp.AiNode;
-import jassimp.AiScene;
 import main.java.render.entities.Player;
-import main.java.utils.loaders.WrapperProvider;
 
 public class PlayerCamera extends Camera {
 
-	private final AiScene scene;
+	private final AIScene scene;
 	
-	public PlayerCamera(Player player, AiScene scene) {
+	public PlayerCamera(Player player, AIScene scene) {
 		super(player);
 		cameraMode = CameraMode.POV_CAMERA;
 		
@@ -27,30 +26,35 @@ public class PlayerCamera extends Camera {
 	
 	private void loadCameras() {
 		
-		WrapperProvider wrapper = new WrapperProvider();
+		AINode root = scene.mRootNode();
 		
-		AiNode root = scene.getSceneRoot(new AiBuiltInWrapperProvider());
+		PointerBuffer buffer = scene.mCameras();
 		
-		List<AiCamera> cameras = scene.getCameras();
-		for (AiCamera aiCamera : cameras) {
-			AiNode parent = getCameraNode(root, aiCamera);
-			Mat4 matrix = new Mat4(parent.getTransform(wrapper));
+		while(buffer.hasRemaining()) {
+			AICamera aiCamera = AICamera.create(buffer.get());
+			AINode parent = getCameraNode(root, aiCamera);
+
+			AIMatrix4x4 parentTransformation = parent.mTransformation();
 			
-			initialCameraPosition = new Vec3(matrix.m30, matrix.m31, matrix.m32);
-			cameraPosition = new Vec3(matrix.m30, matrix.m31, matrix.m32);
+			initialCameraPosition = new Vec3(parentTransformation.a4(), parentTransformation.b4(), parentTransformation.c4());
+			cameraPosition = new Vec3(initialCameraPosition);
 			
-			cameraFront = aiCamera.getLookAt(wrapper);
+			AIVector3D aiCameraUp = aiCamera.mUp();
+			AIVector3D aiCameraFront = aiCamera.mLookAt();
 			
-			cameraUp = aiCamera.getUp(wrapper);
+			cameraUp = new Vec3(aiCameraUp.x(), aiCameraUp.y(), aiCameraUp.z());
+			cameraFront = new Vec3(aiCameraFront.x(), aiCameraFront.y(), aiCameraFront.z());
 		}
 	}
 	
-	private AiNode getCameraNode(AiNode node, AiCamera camera) {
-		if(node.getName().strip().startsWith(camera.getName().strip())) {
+	private AINode getCameraNode(AINode node, AICamera camera) {
+		System.out.println(node.mName().dataString());
+		if(node.mName().dataString().strip().startsWith(camera.mName().dataString().strip())) {
 			return node;
 		} else {
-			for (AiNode child : node.getChildren()) {
-				return getCameraNode(child, camera);
+			PointerBuffer children = node.mChildren();
+			while(children.hasRemaining()) {
+				return getCameraNode(AINode.create(children.get()), camera);
 			}
 		}
 		return null;

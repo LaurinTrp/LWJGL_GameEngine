@@ -4,7 +4,6 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -19,15 +18,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AIScene;
 import org.lwjgl.opengl.GL11;
 
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
-import jassimp.AiMesh;
-import jassimp.AiScene;
 import main.java.render.Renderer;
 import main.java.render.model.Material;
 import main.java.render.renderobject.IRenderObject;
@@ -37,7 +36,7 @@ import main.java.utils.ModelUtils;
 
 public abstract class AssimpModel implements IRenderObject {
 
-	private AiScene scene;
+	private AIScene scene;
 	private List<Mesh> meshes;
 
 	protected boolean init;
@@ -57,7 +56,7 @@ public abstract class AssimpModel implements IRenderObject {
 
 	private BoundingBox boundingBox;
 
-	public AssimpModel(AiScene scene) {
+	public AssimpModel(AIScene scene) {
 
 		this.scene = scene;
 
@@ -84,11 +83,14 @@ public abstract class AssimpModel implements IRenderObject {
 	}
 
 	private void loadMeshes() {
-		int meshCount = scene.getNumMeshes();
-		List<AiMesh> sceneMeshes = scene.getMeshes();
+		int meshCount = scene.mNumMeshes();
+		
+		PointerBuffer aiMeshes = scene.mMeshes();
+		
 		meshes = new ArrayList<>();
 		for (int i = 0; i < meshCount; ++i) {
-			Mesh mesh = new Mesh(sceneMeshes.get(i));
+			AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
+			Mesh mesh = new Mesh(aiMesh);
 			meshes.add(mesh);
 
 			minmax[0] = Math.min(mesh.getMinmax()[0], minmax[0]);
@@ -186,8 +188,9 @@ public abstract class AssimpModel implements IRenderObject {
 						uploadMatrixes();
 						glUniform3fv(uniformsObjectPick.get("colorID"),
 								new Vec3(ModelUtils.getObjectIdAsColor(mesh.getId())).div(255f).toFa_());
-
-						glDrawElements(GL_TRIANGLES, mesh.elements, GL11.GL_UNSIGNED_INT, 0);
+						if(render) {
+							glDrawElements(GL_TRIANGLES, mesh.elements, GL11.GL_UNSIGNED_INT, 0);
+						}
 					}
 					glBindVertexArray(0);
 				}

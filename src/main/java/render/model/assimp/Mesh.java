@@ -12,10 +12,14 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import java.util.Arrays;
+import java.nio.IntBuffer;
+
+import org.lwjgl.assimp.AIFace;
+import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AIVector2D;
+import org.lwjgl.assimp.AIVector3D;
 
 import glm.mat._4.Mat4;
-import jassimp.AiMesh;
 import main.java.render.Renderer;
 
 public class Mesh {
@@ -25,7 +29,7 @@ public class Mesh {
 
 	private Mat4 modelMatrix;
 
-	private final AiMesh mesh;
+	private final AIMesh mesh;
 	
 	private float[] vertices;
 	private float[] texCoords;
@@ -39,7 +43,7 @@ public class Mesh {
 	
 	private boolean selected;
 	
-	public Mesh(AiMesh mesh) {
+	public Mesh(AIMesh mesh) {
 		id=Mesh.idCounter;
 		Mesh.idCounter++;
 		Renderer.modelObserver.addObjectToSelectables(this);
@@ -61,43 +65,67 @@ public class Mesh {
 	}
 	
 	private void loadData() {
-		vertices = new float[mesh.getNumVertices() * 3];
-		texCoords = new float[mesh.getNumVertices() * 2];
-		normals = new float[mesh.getNumVertices() * 3];
-		indices = new int[mesh.getNumFaces() * 3];
+		normals = new float[mesh.mNumVertices() * 3];
+		indices = new int[mesh.mNumFaces() * 3];
 		
 		elements = indices.length;
 	
+		processVertices();
+		processUVs();
+	    processNormals();
+	    processFaces();
+	}
+	
+	private void processVertices() {
+		vertices = new float[mesh.mNumVertices() * 3];
 		int counter = 0;
-	    for (int v = 0; v < mesh.getNumVertices(); v++) {
-	        vertices[counter++] = mesh.getPositionX(v);
-	        vertices[counter++] = mesh.getPositionY(v);
-	        vertices[counter++] = mesh.getPositionZ(v);
+    	AIVector3D.Buffer aiVertices = mesh.mVertices();
+	    for (int v = 0; v < mesh.mNumVertices(); v++) {
+	    	AIVector3D aiVertex = aiVertices.get();
+	        vertices[counter++] = aiVertex.x();
+	        vertices[counter++] = aiVertex.y();
+	        vertices[counter++] = aiVertex.z();
 	        
-	        minmax[0] = Math.min(minmax[0], mesh.getPositionX(v));
-	        minmax[1] = Math.max(minmax[1], mesh.getPositionX(v));
-	        minmax[2] = Math.min(minmax[2], mesh.getPositionY(v));
-	        minmax[3] = Math.max(minmax[3], mesh.getPositionY(v));
-	        minmax[4] = Math.min(minmax[4], mesh.getPositionZ(v));
-	        minmax[5] = Math.max(minmax[5], mesh.getPositionZ(v));
+	        minmax[0] = Math.min(minmax[0], aiVertex.x());
+	        minmax[1] = Math.max(minmax[1], aiVertex.x());
+	        minmax[2] = Math.min(minmax[2], aiVertex.y());
+	        minmax[3] = Math.max(minmax[3], aiVertex.y());
+	        minmax[4] = Math.min(minmax[4], aiVertex.z());
+	        minmax[5] = Math.max(minmax[5], aiVertex.z());
 	    }
-	    counter = 0;
-	    for (int t = 0; t < mesh.getNumVertices(); t++) {
-	        texCoords[counter++] = mesh.getTexCoordU(t, 0);
-	        texCoords[counter++] = mesh.getTexCoordV(t, 0);
+	}
+	
+	private void processUVs() {
+		texCoords = new float[mesh.mNumVertices() * 2];
+		int counter = 0;
+		AIVector3D.Buffer aiUVs = mesh.mTextureCoords(0);
+	    for (int t = 0; t < mesh.mNumVertices(); t++) {
+	    	AIVector3D aiUV = aiUVs.get();
+	        texCoords[counter++] = aiUV.x();
+	        texCoords[counter++] = aiUV.y();
 	    }
-	    counter = 0;
-	    for (int n = 0; n < mesh.getNumVertices(); n++) {
-	        normals[counter++] = mesh.getNormalX(n);
-	        normals[counter++] = mesh.getNormalY(n);
-	        normals[counter++] = mesh.getNormalZ(n);
+	}
+	
+	private void processNormals() {
+	    int counter = 0;
+	    AIVector3D.Buffer aiNormals = mesh.mNormals();
+	    for (int n = 0; n < mesh.mNumVertices(); n++) {
+	    	AIVector3D aiNormal = aiNormals.get();
+	        normals[counter++] = aiNormal.x();
+	        normals[counter++] = aiNormal.y();
+	        normals[counter++] = aiNormal.z();
 	    }
-
-	    counter = 0;
-	    for (int f = 0; f < mesh.getNumFaces(); f++) {
-	        indices[counter++] = mesh.getFaceVertex(f, 0);
-	        indices[counter++] = mesh.getFaceVertex(f, 1);
-	        indices[counter++] = mesh.getFaceVertex(f, 2);
+	}
+	
+	private void processFaces() {
+	    int counter = 0;
+	    AIFace.Buffer aiFaces = mesh.mFaces();
+	    for (int f = 0; f < mesh.mNumFaces(); f++) {
+	    	AIFace aiFace = aiFaces.get();
+	    	IntBuffer buffer = aiFace.mIndices();
+	    	while(buffer.remaining() > 0) {
+	    		indices[counter++] = buffer.get();
+	    	}
 	    }
 	}
 

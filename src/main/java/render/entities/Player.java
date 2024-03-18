@@ -8,19 +8,17 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_X;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
+import org.lwjgl.assimp.AIScene;
 
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
-import jassimp.AiCamera;
-import jassimp.AiScene;
 import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.camera.CameraMode;
@@ -52,7 +50,7 @@ public class Player extends AssimpModel {
 
 	private ArrayList<IRenderObject> intersectors = new ArrayList<>();
 
-	private static AiScene scene;
+	private static AIScene scene;
 	private PlayerCamera camera;
 
 	static {

@@ -57,9 +57,7 @@ import org.lwjgl.BufferUtils;
 import main.java.gui.Engine_Main;
 import main.java.gui.PaneObserver;
 import main.java.render.Renderer;
-import main.java.render.model.Model;
 import main.java.render.model.assimp.Mesh;
-import main.java.render.renderobject.IRenderObject;
 import main.java.shader.ShaderProgram;
 
 public class ObjectPickBuffer implements IFramebuffer {

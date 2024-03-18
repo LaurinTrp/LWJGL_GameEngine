@@ -2,11 +2,9 @@ package main.java.render.passes;
 
 import org.lwjgl.glfw.GLFW;
 
-import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import main.java.gui.Engine_Main;
 import main.java.render.model.Material;
-import main.java.render.model.Model;
 import main.java.render.model.assimp.AssimpModel;
 import main.java.utils.loaders.ImageLoader;
 import main.java.utils.loaders.StaticMeshesLoader;

@@ -38,11 +38,12 @@
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-opengles-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-opengl-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-stb-natives-linux.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/assimp4j"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/GLM"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/LWJGL_GameEngineResource"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/LWJGUI"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/assimp"/>
-	<classpathentry kind="lib" path="/home/laurin/Desktop/Assimp.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/LWJGL_GameEngineResource"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/GLM"/>
+	<classpathentry kind="lib" path="lib/assimp/lwjgl-assimp.jar" sourcepath="lib/assimp/lwjgl-assimp-sources.jar"/>
+	<classpathentry kind="lib" path="lib/assimp/lwjgl-assimp-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/assimp/lwjgl-assimp-natives-linux.jar"/>
+	<classpathentry kind="lib" path="lib/assimp/lwjgl-assimp-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

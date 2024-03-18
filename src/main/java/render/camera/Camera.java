@@ -1,6 +1,6 @@
 package main.java.render.camera;
 
-import static main.java.utils.constants.Constants.*;
+import static main.java.utils.constants.Constants.POV_CAM_VERTICAL_SPEED;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -8,9 +8,7 @@ import glm.Glm;
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
-import jassimp.AiScene;
 import main.java.gui.Engine_Main;
-import main.java.render.Renderer;
 import main.java.render.entities.Player;
 import main.java.render.model.MultiTextureTerrain;
 
@@ -42,10 +40,15 @@ public class Camera {
 	private boolean buttonV_ready = true;
 
 	public Camera(Player player) {
-		projectionMatrix = Glm.perspective_(45.0f, (float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight,
+		calculateProjectionMatrix(45.0f, (float) Engine_Main.windowWidth / (float) Engine_Main.windowHeight,
 				NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
 		focusPoint = new Vec3();
 		this.player = player;
+	}
+	
+	protected void calculateProjectionMatrix(float fov, float aspect, float near, float far) {
+		projectionMatrix = Glm.perspective_(fov, aspect,
+				near, far);
 	}
 
 	public void update() {
@@ -73,7 +76,7 @@ public class Camera {
 		switch (cameraMode) {
 		case PLAYER_CAMERA: {
 			angleHorizontal = player.getRotationAngle() - (float) Math.toRadians(180);
-			
+
 			if (Engine_Main.mouseHandler.getYoffset() > 0) {
 				angleVertical += rotationSpeed;
 			}
@@ -81,10 +84,10 @@ public class Camera {
 				angleVertical -= rotationSpeed;
 			}
 			
-			angleVertical = (float) Math.toDegrees(angleVertical);
-			
 			angleVertical = Math.max(angleVertical, -89);
 			angleVertical = Math.min(angleVertical, 89);
+
+			focusPoint = new Vec3(player.getFocusPoint());
 
 			calculateCameraPos(angleVertical, angleHorizontal);
 			break;

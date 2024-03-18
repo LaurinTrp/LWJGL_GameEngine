@@ -2,8 +2,6 @@ package main.java.render.utils;
 
 import static org.lwjgl.opengl.GL11.glDeleteTextures;
 
-import main.java.utils.loaders.ImageLoader;
-
 public class TexturePack {
 	private int blendMap, background, rTexture, gTexture, bTexture;
 

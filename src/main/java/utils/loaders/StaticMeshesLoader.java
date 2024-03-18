@@ -5,40 +5,38 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import jassimp.AiPostProcessSteps;
-import jassimp.AiScene;
-import jassimp.IHMCJassimp;
+import org.lwjgl.assimp.AIImporterDesc;
+import org.lwjgl.assimp.AIScene;
+import org.lwjgl.assimp.Assimp;
+
 import resources.ResourceLoader;
 
+import static org.lwjgl.assimp.Assimp.*;
+
 public class StaticMeshesLoader {
-		
-	public static final Set<AiPostProcessSteps> ASSIMP_POST = new HashSet<AiPostProcessSteps>() {
-	      {
-	            add(AiPostProcessSteps.Triangulate);
-	            add(AiPostProcessSteps.GenSmoothNormals);
-	            add(AiPostProcessSteps.GenUVCoords);
-	            add(AiPostProcessSteps.FlipUVs);
 
-	            add(AiPostProcessSteps.CalcTangentSpace);
-	            add(AiPostProcessSteps.JoinIdenticalVertices);
+	public static final Set<Integer> ASSIMP_POST = new HashSet<>() {
+		{
+			add(aiProcess_Triangulate);
+			add(aiProcess_GenSmoothNormals);
+			add(aiProcess_GenUVCoords);
+			add(aiProcess_FlipUVs);
 
-	            add(AiPostProcessSteps.OptimizeMeshes);
-	      }
-	  };
-	
-	
-	public static AiScene loadFromResource(String folder, String fileName) {
+			add(aiProcess_CalcTangentSpace);
+			add(aiProcess_JoinIdenticalVertices);
+
+			add(aiProcess_OptimizeMeshes);
+		}
+	};
+
+	public static AIScene loadFromResource(String folder, String fileName) {
 		return load(ResourceLoader.getModelFile(folder, fileName));
 	}
-	
-	public static AiScene load(File file) {
-		try {
-			AiScene scene = IHMCJassimp.importFile(file.getAbsolutePath(), ASSIMP_POST);
-			return scene;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+
+	public static AIScene load(File file) {
+		int combinedFlags = ASSIMP_POST.stream().reduce(0, (a, b) -> a | b);
+		AIScene scene = AssimpWrapper.aiImportFile(file.getAbsolutePath(), combinedFlags);
+		return scene;
 	}
 //	
 //	private static void processMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDir) throws Exception {
