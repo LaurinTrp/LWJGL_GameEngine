@@ -23,7 +23,6 @@ import main.java.camera.CameraMode;
 import main.java.camera.PlayerCamera;
 import main.java.data.Material;
 import main.java.gui.Engine_Main;
-import main.java.model.AnimatedModel;
 import main.java.model.AssimpModel;
 import main.java.render.Renderer;
 import main.java.render.passes.MultiTextureTerrain;
@@ -31,7 +30,7 @@ import main.java.render.renderobject.IRenderObject;
 import main.java.utils.loaders.AssimpModelLoader;
 import main.java.utils.loaders.ImageLoader;
 
-public class Player extends AnimatedModel {
+public class Player extends AssimpModel {
 
 	private Vec3 position;
 	@SuppressWarnings("unused")
@@ -91,14 +90,15 @@ public class Player extends AnimatedModel {
 		prevPosition = new Vec3(position);
 
 		modelMatrix = new Mat4(1.0f);
-//		modelMatrix = modelMatrix.rotate((float) Math.toRadians(180), new Vec3(0.0, 1.0, 0.0));
 		modelMatrix = modelMatrix.translation(position);
 
+		scale(0.5f);
+		
 		rotationAngle = (float) Math.toRadians(180);
-
+		
 		render = false;
 	}
-
+	
 	/**
 	 * Rotate the player around its axis
 	 */

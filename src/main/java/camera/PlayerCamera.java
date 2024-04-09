@@ -48,7 +48,6 @@ public class PlayerCamera extends Camera {
 	}
 	
 	private AINode getCameraNode(AINode node, AICamera camera) {
-		System.out.println(node.mName().dataString());
 		if(node.mName().dataString().strip().startsWith(camera.mName().dataString().strip())) {
 			return node;
 		} else {
