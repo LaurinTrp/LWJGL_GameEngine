@@ -30,8 +30,8 @@ import glm.mat._4.Mat4;
 import main.java.render.Renderer;
 import main.java.render.renderobject.IRenderObject;
 import main.java.shader.ShaderProgram;
-import main.java.utils.ModelUtils;
 import main.java.utils.loaders.ImageLoader;
+import main.java.utils.model.ModelUtils;
 
 public class Skybox implements IRenderObject {
 

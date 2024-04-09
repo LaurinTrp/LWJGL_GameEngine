@@ -37,6 +37,7 @@ import main.java.shader.ShaderProgram;
 public class DepthMap implements IFramebuffer {
 
 	private boolean init = false;
+	@SuppressWarnings("unused")
 	private int vao = 0, vbo = 0, fbo = 0, rbo = 0, texture = 0;
 	private ShaderProgram program;
 	private int uniformLightSpaceMatrix = 0;

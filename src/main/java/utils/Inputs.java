@@ -14,6 +14,7 @@ public class Inputs {
 		private double lastX = 400, lastY = 400;
 		private double xoffset, yoffset;
 
+		@SuppressWarnings("unused")
 		private double mouseX, mouseY;
 
 		private float scrollY;

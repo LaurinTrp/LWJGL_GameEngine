@@ -45,5 +45,8 @@
 	<classpathentry kind="lib" path="lib/assimp/lwjgl-assimp-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/assimp/lwjgl-assimp-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/assimp/lwjgl-assimp-sources.jar"/>
+	<classpathentry kind="lib" path="lib/math/joml-1.10.4.jar"/>
+	<classpathentry kind="lib" path="lib/math/joml-1.10.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/math/joml-1.10.4-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

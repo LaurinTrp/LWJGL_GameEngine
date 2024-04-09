@@ -21,12 +21,12 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.util.HashMap;
 
 import glm.mat._4.Mat4;
+import main.java.model.AssimpModel;
 import main.java.render.Renderer;
-import main.java.render.model.Model;
-import main.java.render.model.MultiTextureTerrain;
+import main.java.render.passes.MultiTextureTerrain;
 import main.java.render.renderobject.IRenderObject;
 import main.java.shader.ShaderProgram;
-import main.java.utils.ModelUtils;
+import main.java.utils.model.ModelUtils;
 
 public class NormalDrawing {
 
@@ -44,14 +44,14 @@ public class NormalDrawing {
 	private boolean init = false;
 
 	public NormalDrawing(IRenderObject model) {
-		if (model instanceof Model) {
-			Model myModel = (Model) model;
-			this.vertices = myModel.getVertices();
-			this.normals = myModel.getNormals();
-
-			data = ModelUtils.createNormals(vertices, normals);
-
-			this.modelMatrices = myModel.getModelMatrices();
+		if (model instanceof AssimpModel) {
+//			AssimpModel myModel = (AssimpModel) model;
+//			this.vertices = myModel.getVertices();
+//			this.normals = myModel.getNormals();
+//
+//			data = ModelUtils.createNormals(vertices, normals);
+//
+//			this.modelMatrices = myModel.getModelMatrices();
 		}
 //
 		if (model instanceof MultiTextureTerrain) {

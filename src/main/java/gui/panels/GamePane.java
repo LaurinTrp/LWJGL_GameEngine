@@ -17,7 +17,7 @@ public class GamePane extends OpenGLPane {
 
 		setKeyEvents();
 
-		cursorVisible = false;
+		cursorVisible = true;
 		currentTheme = new ThemeGame();
 
 		initializeElements();

@@ -71,7 +71,6 @@ import org.lwjgl.assimp.AIString;
 import org.lwjgl.assimp.AIUVTransform;
 import org.lwjgl.assimp.AIVector2D;
 import org.lwjgl.assimp.AIVector3D;
-import org.lwjgl.assimp.Assimp;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.Library;
 import org.lwjgl.system.MemoryStack;

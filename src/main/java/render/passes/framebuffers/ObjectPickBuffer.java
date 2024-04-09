@@ -56,8 +56,8 @@ import org.lwjgl.BufferUtils;
 
 import main.java.gui.Engine_Main;
 import main.java.gui.PaneObserver;
+import main.java.model.objects.Mesh;
 import main.java.render.Renderer;
-import main.java.render.model.assimp.Mesh;
 import main.java.shader.ShaderProgram;
 
 public class ObjectPickBuffer implements IFramebuffer {
@@ -65,7 +65,6 @@ public class ObjectPickBuffer implements IFramebuffer {
 	private boolean init = false;
 	private int vao = 0, vbo = 0, fbo = 0, rbo = 0, texture = 0;
 	private ShaderProgram program;
-	private int uniformScreenSize = 0;
 
 	private boolean clickReady = true;
 

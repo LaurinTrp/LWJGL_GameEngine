@@ -31,6 +31,7 @@ public class FileUtils {
 		ArrayList<String> content = new ArrayList<>();
 		FileInputStream fis = new FileInputStream(file);
 		String contentString = new String(fis.readAllBytes());
+		fis.close();
 		for (String string : contentString.split("\n")) {
 			content.add(string);
 		}
@@ -39,6 +40,7 @@ public class FileUtils {
 	public static String getFileContentAsString(File file) throws IOException {
 		FileInputStream fis = new FileInputStream(file);
 		String contentString = new String(fis.readAllBytes());
+		fis.close();
 		return contentString;
 	}
 	public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
