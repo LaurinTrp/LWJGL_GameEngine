@@ -13,12 +13,6 @@ public class ModelObserver {
 	private HashSet<Mesh> selectableObjects = new HashSet<>();
 
 	public Mesh getObjectById(int id) {
-//		for (Model renderObjectMulti : selectableObjectsMutli) {
-//			if (renderObjectMulti.containsID(id)) {
-//				return renderObjectMulti;
-//			}
-//		}
-//		return null;
 		for(Mesh mesh : selectableObjects) {
 			if(mesh.getId() == id) {
 				return mesh;

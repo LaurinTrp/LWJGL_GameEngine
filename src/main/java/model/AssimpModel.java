@@ -1,13 +1,13 @@
 package main.java.model;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL20.glUniform1i;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glUniform3fv;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
@@ -59,10 +59,10 @@ public abstract class AssimpModel implements IRenderObject {
 
 	public AssimpModel(AIScene scene) {
 
-		if(scene == null) {
+		if (scene == null) {
 			return;
 		}
-		
+
 		this.scene = scene;
 
 		minmax[0] = Float.MAX_VALUE;
@@ -89,9 +89,9 @@ public abstract class AssimpModel implements IRenderObject {
 
 	private void loadMeshes() {
 		int meshCount = scene.mNumMeshes();
-		
+
 		PointerBuffer aiMeshes = scene.mMeshes();
-		
+
 		meshes = new ArrayList<>();
 		for (int i = 0; i < meshCount; ++i) {
 			AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
@@ -131,12 +131,9 @@ public abstract class AssimpModel implements IRenderObject {
 		ModelUtils.createUniform(program, uniforms, "sunColor");
 		ModelUtils.createUniform(program, uniforms, "selected");
 
-		programObjectPick = new ShaderProgram("TransformationObjectPick");
-		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "modelMatrix");
-		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "viewMatrix");
-		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "projectionMatrix");
-		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "cameraPos");
-		ModelUtils.createUniform(programObjectPick, uniformsObjectPick, "colorID");
+		ModelUtils.createUniform(program, uniforms, "bufferID");
+
+		ModelUtils.createUniform(program, uniforms, "colorID");
 	}
 
 	private void uploadMatrixes() {
@@ -178,61 +175,47 @@ public abstract class AssimpModel implements IRenderObject {
 			return;
 		}
 
-		renderToObjectPickBuffer();
-		renderToFramebuffer();
-	}
-
-	private void renderToObjectPickBuffer() {
-		{
-			Renderer.objectPickBuffer.bindFbo();
-			glUseProgram(programObjectPick.getProgramID());
-			{
-				for (Mesh mesh : meshes) {
-					glBindVertexArray(mesh.vao);
-					{
-						uploadMatrixes();
-						glUniform3fv(uniformsObjectPick.get("colorID"),
-								new Vec3(ModelUtils.getObjectIdAsColor(mesh.getId())).div(255f).toFa_());
-						if(render) {
-							glDrawElements(GL_TRIANGLES, mesh.elements, GL11.GL_UNSIGNED_INT, 0);
-						}
-					}
-					glBindVertexArray(0);
-				}
-			}
-			Renderer.objectPickBuffer.unbindFbo();
-			glUseProgram(0);
-		}
-	}
-
-	private void renderToFramebuffer() {
 		glUseProgram(program.getProgramID());
+		if (material != null) {
+			glActiveTexture(GL_TEXTURE0 + 0);
+			glBindTexture(GL_TEXTURE_2D, material.getTexture());
+		}
+		for (Mesh mesh : meshes) {
+			glBindVertexArray(mesh.vao);
+
+			uploadMatrixes();
+			uploadLighting();
+			glUniform3fv(uniforms.get("colorID"),
+					new Vec3(ModelUtils.getObjectIdAsColor(mesh.getId())).div(255f).toFa_());
+			{
+				renderToObjectPickBuffer(mesh);
+				renderToFramebuffer(mesh);
+			}
+
+			glBindVertexArray(0);
+		}
+		glUseProgram(0);
+	}
+
+	private void renderToObjectPickBuffer(Mesh mesh) {
+		glUniform1i(uniforms.get("bufferID"), 0);
+		Renderer.objectPickBuffer.bindFbo();
+		if(render) {
+			glDrawElements(GL_TRIANGLES, mesh.elements, GL_UNSIGNED_INT, 0);
+		}
+		Renderer.objectPickBuffer.unbindFbo();
+	}
+
+	private void renderToFramebuffer(Mesh mesh) {
+		glUniform1i(uniforms.get("bufferID"), 1);
+		renderProcessBegin();
 		Renderer.framebuffer.bindFbo();
-		{
-			if (material != null) {
-				glActiveTexture(GL_TEXTURE0 + 0);
-				glBindTexture(GL_TEXTURE_2D, material.getTexture());
-			}
-			for (Mesh mesh : meshes) {
-				glBindVertexArray(mesh.vao);
-				{
-					renderProcessBegin();
-					if (render) {
-						uploadMatrixes();
-						uploadLighting();
-						glUniform1i(uniforms.get("selected"), mesh.isSelected() ? 1 : 0);
-
-						glDrawElements(GL_TRIANGLES, mesh.elements, GL_UNSIGNED_INT, 0);
-					}
-
-					renderProcessEnd();
-				}
-				glBindVertexArray(0);
-
-			}
+		if (render) {
+			glUniform1i(uniforms.get("selected"), mesh.isSelected() ? 1 : 0);
+			glDrawElements(GL_TRIANGLES, mesh.elements, GL_UNSIGNED_INT, 0);
 		}
 		Renderer.framebuffer.unbindFbo();
-		glUseProgram(0);
+		renderProcessEnd();
 	}
 
 	protected void scale(float scale) {
