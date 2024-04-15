@@ -11,8 +11,6 @@ public class Tree_1 extends AssimpModel {
 	public Tree_1(Mat4[] matrices) {
 		super(AssimpModelLoader.loadStaticFromResource("Trees", "Tree1.obj"));
 
-		modelMatrix = matrices[0];
-		
 		material = new Material(ImageLoader.loadTextureFromResource("trees", "Tree1.png"));
 	}
 

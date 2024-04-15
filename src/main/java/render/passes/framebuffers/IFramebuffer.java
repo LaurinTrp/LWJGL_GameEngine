@@ -2,6 +2,9 @@ package main.java.render.passes.framebuffers;
 
 public interface IFramebuffer {
 
+	public static final int objectPickBufferID = 0;
+	public static final int framebufferID = 1;
+	
 	/**
 	 * Initializing the Frame Buffer Object
 	 */

@@ -1,4 +1,4 @@
-package main.java.render.utils;
+package main.java.data;
 
 import static org.lwjgl.opengl.GL11.glClearColor;
 
@@ -6,7 +6,7 @@ import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 
-public class SunPass {
+public class SunData {
 
 	private boolean init = false;
 

@@ -58,6 +58,7 @@ public class Player extends AssimpModel {
 
 	public Player() {
 		super(scene);
+		
 		camera = new PlayerCamera(this, scene);
 
 		this.material = new Material(ImageLoader.loadTextureFromResource("collada", "diffuse.png"));
@@ -65,31 +66,32 @@ public class Player extends AssimpModel {
 
 	@Override
 	protected void renderProcessBegin() {
+	}
+
+	@Override
+	public void render() {
 		glEnable(GL_CULL_FACE);
 		if (camera.cameraMode == CameraMode.POV_CAMERA) {
 			render = false;
 		} else {
 			render = true;
 		}
-	}
-
-	@Override
-	public void render() {
+		
 		super.render();
 		rotation();
-	}
 
-	@Override
-	protected void renderProcessEnd() {
 		glDisable(GL_CULL_FACE);
 	}
 
 	@Override
+	protected void renderProcessEnd() {
+	}
+
+	@Override
 	public void afterInit() {
-		position = new Vec3(0.0, 0.0, 0.0);
+		position = new Vec3(10.0, 0.0, 0.0);
 		prevPosition = new Vec3(position);
 
-		modelMatrix = new Mat4(1.0f);
 		modelMatrix = modelMatrix.translation(position);
 
 		scale(0.5f);

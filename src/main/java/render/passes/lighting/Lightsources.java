@@ -1,20 +1,23 @@
 package main.java.render.passes.lighting;
 
 import glm.mat._4.Mat4;
+import main.java.data.Material;
 import main.java.model.AssimpModel;
 import main.java.utils.loaders.AssimpModelLoader;
+import main.java.utils.loaders.ImageLoader;
 
 public class Lightsources extends AssimpModel {
 
 	public Lightsources(Mat4[] modelMatrices) {
-		super(AssimpModelLoader.loadStaticFromResource("Cube", "cube.obj"));
-//		super("Cube", "cube.obj", modelMatrices);
+		super(AssimpModelLoader.loadStaticFromResource("Sun", "Sun.obj"), modelMatrices);
+
+		this.material = new Material(ImageLoader.loadTextureFromResource("Sun", "sun.png"));
 //		setShaderFolder("LightSource");
 	}
 
 	@Override
 	protected void afterInit() {
-		
+		scale(0.001f);
 	}
 
 	@Override

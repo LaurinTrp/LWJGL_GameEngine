@@ -26,7 +26,6 @@ import static org.lwjgl.opengl.GL14.GL_MIRRORED_REPEAT;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -91,14 +90,15 @@ public class ImageLoader {
 	public static ByteBuffer bufferedImageToByteBuffer(BufferedImage image) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ImageIO.write(image, "png", baos);
-		InputStream imageFile = new ByteArrayInputStream(baos.toByteArray());
+//		InputStream imageFile = new ByteArrayInputStream(baos.toByteArray());
 
-		byte[] imageData = IOUtils.toByteArray(imageFile);
-		ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
-		imageBuffer.put(imageData);
-		imageBuffer.flip();
+//		byte[] imageData = IOUtils.toByteArray(imageFile);
+//		ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
+//		imageBuffer.put(imageData);
+//		imageBuffer.flip();
 
-		return imageBuffer;
+//		return imageBuffer;
+		return null;
 	}
 
 	/**

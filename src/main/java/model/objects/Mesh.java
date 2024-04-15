@@ -41,7 +41,7 @@ public class Mesh {
 	private final int id;
 	
 	private boolean selected;
-	
+		
 	public Mesh(AIMesh mesh) {
 		id=Mesh.idCounter;
 		Mesh.idCounter++;

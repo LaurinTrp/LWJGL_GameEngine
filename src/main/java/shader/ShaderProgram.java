@@ -37,7 +37,7 @@ public class ShaderProgram {
 		this.path = path;
 
 		vertexID = loadShader(ResourceLoader.loadShader(path, "vertex.glsl"), GL_VERTEX_SHADER);
-		geometryID = loadShader(ResourceLoader.loadShader(path, "geometry.glsl"), GL_GEOMETRY_SHADER);
+//		geometryID = loadShader(ResourceLoader.loadShader(path, "geometry.glsl"), GL_GEOMETRY_SHADER);
 		fragmentID = loadShader(ResourceLoader.loadShader(path, "fragment.glsl"), GL_FRAGMENT_SHADER);
 
 		programID = glCreateProgram();

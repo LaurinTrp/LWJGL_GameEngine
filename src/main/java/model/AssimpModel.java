@@ -1,13 +1,13 @@
 package main.java.model;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUniform3fv;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
@@ -22,7 +22,6 @@ import java.util.List;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIScene;
-import org.lwjgl.opengl.GL11;
 
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
@@ -30,6 +29,7 @@ import glm.vec._4.Vec4;
 import main.java.data.Material;
 import main.java.model.objects.Mesh;
 import main.java.render.Renderer;
+import main.java.render.passes.framebuffers.IFramebuffer;
 import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.BoundingBox;
 import main.java.shader.ShaderProgram;
@@ -48,7 +48,9 @@ public abstract class AssimpModel implements IRenderObject {
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
 	protected HashMap<String, Integer> uniformsObjectPick = new HashMap<>();
 
-	protected Mat4 modelMatrix = new Mat4(1.0f);
+	protected Mat4[] modelMatrices = new Mat4[] {new Mat4(1.0f)};
+	
+	protected Mat4 modelMatrix;
 
 	protected Material material;
 
@@ -57,8 +59,7 @@ public abstract class AssimpModel implements IRenderObject {
 
 	private BoundingBox boundingBox;
 
-	public AssimpModel(AIScene scene) {
-
+	public AssimpModel(AIScene scene, Mat4[] matrices) {
 		if (scene == null) {
 			return;
 		}
@@ -71,7 +72,13 @@ public abstract class AssimpModel implements IRenderObject {
 		minmax[3] = -Float.MAX_VALUE;
 		minmax[4] = Float.MAX_VALUE;
 		minmax[5] = -Float.MAX_VALUE;
-
+		
+		this.modelMatrices = matrices;
+	}
+	
+	public AssimpModel(AIScene scene) {
+		this(scene, new Mat4[] {new Mat4(1.0f)});
+		this.modelMatrix = modelMatrices[0];
 	}
 
 	@Override
@@ -108,11 +115,10 @@ public abstract class AssimpModel implements IRenderObject {
 
 		startMinmax = Arrays.copyOf(minmax, minmax.length);
 
-		boundingBox = new BoundingBox(minmax, modelMatrix);
+//		boundingBox = new BoundingBox(minmax, modelMatrices);
 	}
 
 	private void loadMaterials() {
-
 	}
 
 	private void initShader() {
@@ -136,10 +142,10 @@ public abstract class AssimpModel implements IRenderObject {
 		ModelUtils.createUniform(program, uniforms, "colorID");
 	}
 
-	private void uploadMatrixes() {
+	private void uploadMatrixes(int index) {
 		glUniformMatrix4fv(uniforms.get("viewMatrix"), false, Renderer.camera.getView().toFa_());
 		glUniformMatrix4fv(uniforms.get("projectionMatrix"), false, Renderer.camera.getProjectionMatrix().toFa_());
-		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrix.toFa_());
+		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrices[index].toFa_());
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
 
@@ -175,6 +181,9 @@ public abstract class AssimpModel implements IRenderObject {
 			return;
 		}
 
+		if (!render) {
+			return;
+		}
 		glUseProgram(program.getProgramID());
 		if (material != null) {
 			glActiveTexture(GL_TEXTURE0 + 0);
@@ -183,13 +192,15 @@ public abstract class AssimpModel implements IRenderObject {
 		for (Mesh mesh : meshes) {
 			glBindVertexArray(mesh.vao);
 
-			uploadMatrixes();
 			uploadLighting();
 			glUniform3fv(uniforms.get("colorID"),
 					new Vec3(ModelUtils.getObjectIdAsColor(mesh.getId())).div(255f).toFa_());
-			{
-				renderToObjectPickBuffer(mesh);
-				renderToFramebuffer(mesh);
+			for (int i = 0; i < modelMatrices.length; i++) {
+				uploadMatrixes(i);
+				{
+					renderToObjectPickBuffer(mesh);
+					renderToFramebuffer(mesh);
+				}
 			}
 
 			glBindVertexArray(0);
@@ -198,28 +209,30 @@ public abstract class AssimpModel implements IRenderObject {
 	}
 
 	private void renderToObjectPickBuffer(Mesh mesh) {
-		glUniform1i(uniforms.get("bufferID"), 0);
+		glUniform1i(uniforms.get("bufferID"), IFramebuffer.objectPickBufferID);
 		Renderer.objectPickBuffer.bindFbo();
-		if(render) {
-			glDrawElements(GL_TRIANGLES, mesh.elements, GL_UNSIGNED_INT, 0);
-		}
+
+		glDrawElements(GL_TRIANGLES, mesh.elements, GL_UNSIGNED_INT, 0);
+
 		Renderer.objectPickBuffer.unbindFbo();
 	}
 
 	private void renderToFramebuffer(Mesh mesh) {
-		glUniform1i(uniforms.get("bufferID"), 1);
+		glUniform1i(uniforms.get("bufferID"), IFramebuffer.framebufferID);
 		renderProcessBegin();
 		Renderer.framebuffer.bindFbo();
-		if (render) {
-			glUniform1i(uniforms.get("selected"), mesh.isSelected() ? 1 : 0);
-			glDrawElements(GL_TRIANGLES, mesh.elements, GL_UNSIGNED_INT, 0);
-		}
+
+		glUniform1i(uniforms.get("selected"), mesh.isSelected() ? 1 : 0);
+		glDrawElements(GL_TRIANGLES, mesh.elements, GL_UNSIGNED_INT, 0);
+
 		Renderer.framebuffer.unbindFbo();
 		renderProcessEnd();
 	}
 
 	protected void scale(float scale) {
-		modelMatrix.scale(scale);
+		for (int i = 0; i < modelMatrices.length; i++) {
+			modelMatrices[i] = modelMatrices[i].scale(scale);
+		}
 
 //		for (Mesh mesh : meshes) {
 //			for (float value : mesh.getMinmax()) {
