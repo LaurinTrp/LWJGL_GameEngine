@@ -12,7 +12,6 @@ public class Lightsources extends AssimpModel {
 		super(AssimpModelLoader.loadStaticFromResource("Sun", "Sun.obj"), modelMatrices);
 
 		this.material = new Material(ImageLoader.loadTextureFromResource("Sun", "sun.png"));
-//		setShaderFolder("LightSource");
 	}
 
 	@Override

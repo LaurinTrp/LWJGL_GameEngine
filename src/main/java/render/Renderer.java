@@ -58,8 +58,6 @@ public class Renderer implements lwjgui.gl.Renderer {
 	private IRenderObject tree_1;
 	private IRenderObject tree_2;
 
-	private IRenderObject sceneTest;
-	
 	private MultiTextureTerrain terrainModel;
 
 	public static SunData sun;
@@ -157,7 +155,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-//		sun.update();
+		sun.update();
 		skybox.render();
 		
 		glEnable(GL_DEPTH_TEST);
@@ -229,8 +227,6 @@ public class Renderer implements lwjgui.gl.Renderer {
 		tree_2.dispose();
 		
 		tp.dispose();
-		
-		sceneTest.dispose();
 		
 //		meshCube.dispose();
 	}
