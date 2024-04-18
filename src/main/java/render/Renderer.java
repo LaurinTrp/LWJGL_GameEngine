@@ -101,7 +101,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 
 		generateFirstTerrain();
 
-		tree_1 = new Tree_1(RandomMatrixGenerator.generateRandomWithHeight(1, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
+		tree_1 = new Tree_1(RandomMatrixGenerator.generateRandomWithHeight(10, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
 				new Vec2(3f, 6f)));
 		tree_2 = new Tree_2(RandomMatrixGenerator.generateRandomWithHeight(20, new Vec2(-50f, 50f), new Vec2(-50f, 50f),
 				new Vec2(3f, 6f)));

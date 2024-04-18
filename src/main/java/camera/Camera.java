@@ -151,6 +151,7 @@ public class Camera {
 		rotation();
 
 		view = Glm.lookAt_(cameraPosition, focusPoint, cameraUp);
+		
 	}
 
 	@SuppressWarnings("unused")

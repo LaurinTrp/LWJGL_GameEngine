@@ -12,6 +12,8 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.nio.IntBuffer;
 
 import org.lwjgl.assimp.AIFace;
@@ -19,10 +21,13 @@ import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIVector3D;
 
 import glm.mat._4.Mat4;
+import main.java.model.AssimpModel;
 import main.java.render.Renderer;
 
 public class Mesh {
 
+	private final AssimpModel model;
+	
 	public int vao, vboPositions, vboTexCoords, vboNormals, ebo;
 	public int elements;
 
@@ -42,7 +47,9 @@ public class Mesh {
 	
 	private boolean selected;
 		
-	public Mesh(AIMesh mesh) {
+	public Mesh(AssimpModel model, AIMesh mesh) {
+		this.model = model;
+		
 		id=Mesh.idCounter;
 		Mesh.idCounter++;
 		Renderer.modelObserver.addObjectToSelectables(this);
@@ -166,6 +173,12 @@ public class Mesh {
 	
 	public boolean isSelected() {
 		return selected;
+	}
+	
+	public void clicked() {
+		model.clicked(this);
+
+		setSelected(!isSelected());
 	}
 	
 	public void setSelected(boolean selected) {

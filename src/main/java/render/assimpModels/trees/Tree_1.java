@@ -9,7 +9,7 @@ import main.java.utils.loaders.ImageLoader;
 public class Tree_1 extends AssimpModel {
 
 	public Tree_1(Mat4[] matrices) {
-		super(AssimpModelLoader.loadStaticFromResource("Trees", "Tree1.obj"));
+		super(AssimpModelLoader.loadStaticFromResource("Trees", "Tree1.obj"), matrices);
 
 		material = new Material(ImageLoader.loadTextureFromResource("trees", "Tree1.png"));
 	}

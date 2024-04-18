@@ -44,11 +44,9 @@ public abstract class AssimpModel implements IRenderObject {
 	protected boolean render = true;
 
 	private ShaderProgram program;
-	protected ShaderProgram programObjectPick;
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
-	protected HashMap<String, Integer> uniformsObjectPick = new HashMap<>();
 
-	protected Mat4[] modelMatrices = new Mat4[] {new Mat4(1.0f)};
+	private Mat4[] modelMatrices = new Mat4[] {new Mat4(1.0f)};
 	
 	protected Mat4 modelMatrix;
 
@@ -102,7 +100,7 @@ public abstract class AssimpModel implements IRenderObject {
 		meshes = new ArrayList<>();
 		for (int i = 0; i < meshCount; ++i) {
 			AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-			Mesh mesh = new Mesh(aiMesh);
+			Mesh mesh = new Mesh(this, aiMesh);
 			meshes.add(mesh);
 
 			minmax[0] = Math.min(mesh.getMinmax()[0], minmax[0]);
@@ -243,6 +241,10 @@ public abstract class AssimpModel implements IRenderObject {
 		for (int i = 0; i < startMinmax.length; i++) {
 			startMinmax[i] *= scale;
 		}
+	}
+	
+	public void clicked(Mesh mesh) {
+		
 	}
 
 	@Override

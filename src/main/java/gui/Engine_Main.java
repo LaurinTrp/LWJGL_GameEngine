@@ -35,6 +35,11 @@ import lwjgui.LWJGUIUtil;
 import lwjgui.scene.Scene;
 import lwjgui.scene.Window;
 import lwjgui.theme.Theme;
+import main.SoundTest;
+import main.java.data.sounds.AudioData;
+import main.java.data.sounds.SoundListener;
+import main.java.data.sounds.SoundManager;
+import main.java.data.sounds.SoundSource;
 import main.java.render.Renderer;
 import main.java.utils.Inputs.KeyHandler;
 import main.java.utils.Inputs.MouseInputs;
@@ -50,6 +55,7 @@ public class Engine_Main extends LWJGUIApplication {
 	public static KeyHandler keyHandler;
 	
 	public static Renderer render;
+	public static SoundManager soundManager;
 
 	public static Window lwjguiWindow;
 
@@ -139,6 +145,12 @@ public class Engine_Main extends LWJGUIApplication {
 	}
 
 	private static void initObjects() {
+
+		soundManager = new SoundManager();
+		soundManager.init();
+		
+//		SoundTest.playSounds(soundManager);
+		
 		keyHandler = new KeyHandler();
 		mouseHandler = new MouseInputs();
 		render = new Renderer();
@@ -166,6 +178,8 @@ public class Engine_Main extends LWJGUIApplication {
 
 			// RENDER //
 			LWJGUI.render();
+			
+			soundManager.updateListenerPosition(Renderer.camera);
 
 			if(mouseHandler != null) {
 				mouseHandler.reset();

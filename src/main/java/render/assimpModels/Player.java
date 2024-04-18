@@ -22,6 +22,7 @@ import glm.vec._3.Vec3;
 import main.java.camera.CameraMode;
 import main.java.camera.PlayerCamera;
 import main.java.data.Material;
+import main.java.data.sounds.SoundListener;
 import main.java.gui.Engine_Main;
 import main.java.model.AssimpModel;
 import main.java.render.Renderer;
@@ -52,16 +53,20 @@ public class Player extends AssimpModel {
 	private static AIScene scene;
 	private PlayerCamera camera;
 
+	private SoundListener soundListener;
+
 	static {
 		scene = AssimpModelLoader.loadStaticFromResource("Collada", "model.dae");
 	}
 
 	public Player() {
 		super(scene);
-		
+
 		camera = new PlayerCamera(this, scene);
 
 		this.material = new Material(ImageLoader.loadTextureFromResource("collada", "diffuse.png"));
+
+		soundListener = new SoundListener();
 	}
 
 	@Override
@@ -76,7 +81,7 @@ public class Player extends AssimpModel {
 		} else {
 			render = true;
 		}
-		
+
 		super.render();
 		rotation();
 
@@ -89,18 +94,21 @@ public class Player extends AssimpModel {
 
 	@Override
 	public void afterInit() {
-		position = new Vec3(10.0, 0.0, 0.0);
+		position = new Vec3(0.0, 0.0, 0.0);
 		prevPosition = new Vec3(position);
+		
+		soundListener.setPosition(position.x, position.y, position.z);
+		Engine_Main.soundManager.setListener(soundListener);
 
 		modelMatrix = modelMatrix.translation(position);
 
 		scale(0.5f);
-		
+
 		rotationAngle = (float) Math.toRadians(180);
-		
+
 		render = false;
 	}
-	
+
 	/**
 	 * Rotate the player around its axis
 	 */
@@ -188,6 +196,8 @@ public class Player extends AssimpModel {
 			position = position.add(direction);
 			modelMatrix = modelMatrix.cleanTranslation();
 			modelMatrix = modelMatrix.translation(position);
+			
+			soundListener.setPosition(position.x, position.y, position.z);
 		}
 	}
 

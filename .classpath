@@ -34,7 +34,6 @@
 	<classpathentry kind="lib" path="lib/IOUtils/commons-io-2.11.0-test-sources.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-glfw-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-natives-linux.jar"/>
-	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-openal-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-opengles-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-opengl-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/natives_linux/lwjgl-stb-natives-linux.jar"/>
@@ -48,5 +47,8 @@
 	<classpathentry kind="lib" path="lib/math/joml-1.10.4.jar"/>
 	<classpathentry kind="lib" path="lib/math/joml-1.10.4-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/math/joml-1.10.4-sources.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-openal.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-openal-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl/lwjgl-openal-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
