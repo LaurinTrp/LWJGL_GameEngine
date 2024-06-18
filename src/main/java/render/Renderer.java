@@ -15,12 +15,14 @@ import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import lwjgui.scene.Context;
 import main.java.camera.Camera;
+import main.java.data.LightSourceData;
+import main.java.data.LightType;
 import main.java.data.SunData;
+import main.java.gui.Engine_Main;
 import main.java.model.TerrainModel;
 import main.java.render.assimpModels.Cottage;
 import main.java.render.assimpModels.Cube;
 import main.java.render.assimpModels.Player;
-import main.java.render.assimpModels.SceneTest;
 import main.java.render.assimpModels.trees.Tree_1;
 import main.java.render.assimpModels.trees.Tree_2;
 import main.java.render.passes.Compass;
@@ -57,14 +59,14 @@ public class Renderer implements lwjgui.gl.Renderer {
 
 	private IRenderObject tree_1;
 	private IRenderObject tree_2;
-
+	
 	private MultiTextureTerrain terrainModel;
 
 	public static SunData sun;
 
 	public static Camera camera;
 
-	public static ArrayList<Vec4> lightSourcePositions = new ArrayList<>();
+	public static ArrayList<Vec3> lightSourcePositions = new ArrayList<>();
 	public static ArrayList<Mat4> lightSourcePositionsMats = new ArrayList<>();
 
 	private Skybox skybox;
@@ -120,14 +122,16 @@ public class Renderer implements lwjgui.gl.Renderer {
 	}
 
 	private void initLightSourcePositions() {
+		LightSourceData lightSource = new LightSourceData.SpotLight(new Vec3(0, 4, -2), new Vec3(0, 0, 1), new Vec3(1f), new Vec3(1f), new Vec3(1f), 12.5f, 17.5f);
+		Engine_Main.lightManager.addLight("TEST", lightSource);
+		
+//		LightSourceData lightSource2 = new LightSourceData.PointLightData(new Vec3(-2, 5, 10), new Vec3(-1, 0, 0), new Vec3(0.2f), new Vec3(0.5f), new Vec3(1f), 1.0f, 0.7f, 1.8f);
+//		Engine_Main.lightManager.addLight("TEST2", lightSource2);
 
-		lightSourcePositions.add(new Vec4(10f, 1.0f, 0.0f, 1.0f));
-		lightSourcePositions.add(new Vec4(5f, 1.0f, 2.0f, 1.0f));
-
-		for (Vec4 vec4 : lightSourcePositions) {
-			Mat4 mat4 = new Mat4(1.0f);
-			mat4 = mat4.translate(vec4.toVec3_());
-			lightSourcePositionsMats.add(mat4);
+		lightSourcePositions.add(lightSource.getPosition());
+//		lightSourcePositions.add(lightSource2.getPosition());
+		for (Vec3 vec3 : lightSourcePositions) {
+			lightSourcePositionsMats.add(new Mat4().translate(vec3));
 		}
 		
 	}
@@ -155,7 +159,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		sun.update();
+//		sun.update();
 		skybox.render();
 		
 		glEnable(GL_DEPTH_TEST);
@@ -181,7 +185,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 //		test.render();
 
 //		terrainModel.render();
-//		lightSourcePass.render();
+		lightSourcePass.render();
 
 //		System.out.println("PLAYER POSITION: " + ((Player)player).getPosition());
 
@@ -199,7 +203,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 //		meshCube.render();
 		
 		cottage.render();
-		tree_1.render();
+//		tree_1.render();
 		
 //		glDisable(GL_CULL_FACE);
 

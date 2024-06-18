@@ -35,6 +35,7 @@ import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
+import main.java.gui.Engine_Main;
 import main.java.render.Renderer;
 import main.java.render.renderobject.IRenderObject;
 import main.java.render.utils.NormalDrawing;
@@ -246,21 +247,9 @@ public class MultiTextureTerrain implements IRenderObject {
 	 * upload lighting specific values to the shader
 	 */
 	protected void uploadLighting() {
-//		glUniform4fv(uniforms.get("ambientColor"), Renderer.ambientColor.toFA_());
 
-		ArrayList<Vec4> lights = Renderer.lightSourcePositions;
-		float[] lightsources = new float[lights.size() * 4];
-		for (int i = 0; i < lights.size(); i++) {
-			lightsources[i * 4 + 0] = lights.get(i).x;
-			lightsources[i * 4 + 1] = lights.get(i).y;
-			lightsources[i * 4 + 2] = lights.get(i).z;
-			lightsources[i * 4 + 3] = lights.get(i).w;
-		}
-		glUniform4fv(uniforms.get("lightsources"), lightsources);
-		glUniform1i(uniforms.get("numOfLights"), lights.size());
-
-		glUniform4fv(uniforms.get("sunPosition"), Renderer.sun.getLightPosition().toFA_());
-		glUniform4fv(uniforms.get("sunColor"), Renderer.sun.getColor().toFA_());
+		Engine_Main.lightManager.update(program, uniforms);
+		Engine_Main.lightManager.uploadData(program, uniforms);
 
 	}
 

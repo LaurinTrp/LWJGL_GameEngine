@@ -118,10 +118,8 @@ public class SoundManager {
 			return;
 		}
 		Mat4 viewMatrix = new Mat4(camera.getView());
-//		listener.setPosition(viewMatrix.m30, viewMatrix.m31, viewMatrix.m32);
 
 		Vec3 lookAt = new Vec3(viewMatrix.m20, viewMatrix.m21, viewMatrix.m22);
-		System.out.println(lookAt);
 		
 		Vec3 cameraUp = new Vec3(viewMatrix.m10, viewMatrix.m11, viewMatrix.m12);
 		listener.setOrientation(lookAt, cameraUp);

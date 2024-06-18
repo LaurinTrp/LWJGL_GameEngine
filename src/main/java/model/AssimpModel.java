@@ -7,12 +7,16 @@ import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.glBufferSubData;
 import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUniform3fv;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL31.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +30,9 @@ import org.lwjgl.assimp.AIScene;
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
+import main.java.data.LightManager;
 import main.java.data.Material;
+import main.java.gui.Engine_Main;
 import main.java.model.objects.Mesh;
 import main.java.render.Renderer;
 import main.java.render.passes.framebuffers.IFramebuffer;
@@ -46,8 +52,8 @@ public abstract class AssimpModel implements IRenderObject {
 	private ShaderProgram program;
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
 
-	private Mat4[] modelMatrices = new Mat4[] {new Mat4(1.0f)};
-	
+	private Mat4[] modelMatrices = new Mat4[] { new Mat4(1.0f) };
+
 	protected Mat4 modelMatrix;
 
 	protected Material material;
@@ -59,6 +65,7 @@ public abstract class AssimpModel implements IRenderObject {
 
 	public AssimpModel(AIScene scene, Mat4[] matrices) {
 		if (scene == null) {
+			System.err.println("Failed to load: " + this);
 			return;
 		}
 
@@ -70,12 +77,12 @@ public abstract class AssimpModel implements IRenderObject {
 		minmax[3] = -Float.MAX_VALUE;
 		minmax[4] = Float.MAX_VALUE;
 		minmax[5] = -Float.MAX_VALUE;
-		
+
 		this.modelMatrices = matrices;
 	}
-	
+
 	public AssimpModel(AIScene scene) {
-		this(scene, new Mat4[] {new Mat4(1.0f)});
+		this(scene, new Mat4[] { new Mat4(1.0f) });
 		this.modelMatrix = modelMatrices[0];
 	}
 
@@ -127,17 +134,12 @@ public abstract class AssimpModel implements IRenderObject {
 		ModelUtils.createUniform(program, uniforms, "cameraPos");
 		ModelUtils.createUniform(program, uniforms, "selected");
 
-		// Lighting
-		ModelUtils.createUniform(program, uniforms, "lightsources");
-		ModelUtils.createUniform(program, uniforms, "numOfLights");
-
-		ModelUtils.createUniform(program, uniforms, "sunPosition");
-		ModelUtils.createUniform(program, uniforms, "sunColor");
 		ModelUtils.createUniform(program, uniforms, "selected");
 
 		ModelUtils.createUniform(program, uniforms, "bufferID");
 
 		ModelUtils.createUniform(program, uniforms, "colorID");
+
 	}
 
 	private void uploadMatrixes(int index) {
@@ -148,19 +150,9 @@ public abstract class AssimpModel implements IRenderObject {
 	}
 
 	protected void uploadLighting() {
-		ArrayList<Vec4> lights = Renderer.lightSourcePositions;
-		float[] lightsources = new float[lights.size() * 4];
-		for (int i = 0; i < lights.size(); i++) {
-			lightsources[i * 4 + 0] = lights.get(i).x;
-			lightsources[i * 4 + 1] = lights.get(i).y;
-			lightsources[i * 4 + 2] = lights.get(i).z;
-			lightsources[i * 4 + 3] = lights.get(i).w;
-		}
-		glUniform4fv(uniforms.get("lightsources"), lightsources);
-		glUniform1i(uniforms.get("numOfLights"), lights.size());
 
-		glUniform4fv(uniforms.get("sunPosition"), Renderer.sun.getLightPosition().toFA_());
-		glUniform4fv(uniforms.get("sunColor"), Renderer.sun.getColor().toFA_());
+		Engine_Main.lightManager.update(program, uniforms);
+		Engine_Main.lightManager.uploadData(program, uniforms);
 
 	}
 
@@ -242,9 +234,9 @@ public abstract class AssimpModel implements IRenderObject {
 			startMinmax[i] *= scale;
 		}
 	}
-	
+
 	public void clicked(Mesh mesh) {
-		
+
 	}
 
 	@Override

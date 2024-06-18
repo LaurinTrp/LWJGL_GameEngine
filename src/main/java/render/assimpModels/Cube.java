@@ -15,7 +15,7 @@ public class Cube extends AssimpModel {
 
 	@Override
 	protected void afterInit() {
-		modelMatrix.translate(10, 0, 10);
+		modelMatrix.translate(10, 10, 0);
 //		scale(3);
 	}
 

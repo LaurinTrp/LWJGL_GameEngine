@@ -35,10 +35,10 @@ public class Cottage extends AssimpModel {
 	@Override
 	protected void renderProcessBegin() {
 		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_LEFT)) {
-			modelMatrix.rotateY(Math.toRadians(-1));
+			modelMatrix.translate(1f, 0, 0);
 		}
 		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_RIGHT)) {
-			modelMatrix.rotateY(Math.toRadians(1));
+			modelMatrix.translate(-1f, 0, 0);
 		}
 	}
 	

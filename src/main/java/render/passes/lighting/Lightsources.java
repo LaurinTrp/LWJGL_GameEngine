@@ -1,5 +1,7 @@
 package main.java.render.passes.lighting;
 
+import java.util.Arrays;
+
 import glm.mat._4.Mat4;
 import main.java.data.Material;
 import main.java.model.AssimpModel;
@@ -11,6 +13,10 @@ public class Lightsources extends AssimpModel {
 	public Lightsources(Mat4[] modelMatrices) {
 		super(AssimpModelLoader.loadStaticFromResource("Sun", "Sun.obj"), modelMatrices);
 
+		for (Mat4 mat4 : modelMatrices) {
+			mat4.print();
+		}
+		
 		this.material = new Material(ImageLoader.loadTextureFromResource("Sun", "sun.png"));
 	}
 
