@@ -1,12 +1,19 @@
 package main.java.utils.model;
 
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.assimp.AIColor3D;
+import org.lwjgl.assimp.AILight;
 import org.lwjgl.assimp.AIMatrix4x4;
+import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AINode;
+import org.lwjgl.assimp.AIVector3D;
 
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
@@ -133,5 +140,33 @@ public class ModelUtils {
 				aiMatrix.c1(), aiMatrix.c2(), aiMatrix.c3(), aiMatrix.c4(), 
 				aiMatrix.d1(), aiMatrix.d2(), aiMatrix.d3(), aiMatrix.d4()
 		);
+	}
+	
+	public static Vec3 assimpVec3ToVec3(AIVector3D aiVector3D) {
+		return new Vec3(aiVector3D.x(), aiVector3D.y(), aiVector3D.z());
+	}
+	
+	public static Vec3 assimpColorToVec3(AIColor3D aiColor3D) {
+		return new Vec3(aiColor3D.r(), aiColor3D.g(), aiColor3D.b());
+	}
+	
+
+	public static AINode getMeshParentNode(AINode node, AIMesh aiMesh, int entry) {
+		int meshCount = node.mNumMeshes();
+
+		IntBuffer aiMeshes = node.mMeshes();
+
+		for (int i = 0; i < meshCount; ++i) {
+			if(aiMeshes.get(i) == entry) {
+				return node;
+			}
+		}
+		if(meshCount == 0) {
+			PointerBuffer children = node.mChildren();
+			while(children.hasRemaining()) {
+				return getMeshParentNode(AINode.create(children.get()), aiMesh, entry);
+			}
+		}
+		return null;
 	}
 }

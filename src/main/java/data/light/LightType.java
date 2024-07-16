@@ -1,4 +1,4 @@
-package main.java.data;
+package main.java.data.light;
 
 public enum LightType {
 	DIRECTIONAL(0),

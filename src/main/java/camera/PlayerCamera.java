@@ -9,6 +9,7 @@ import org.lwjgl.assimp.AIVector3D;
 
 import glm.vec._3.Vec3;
 import main.java.render.assimpModels.Player;
+import main.java.utils.model.ModelUtils;
 
 public class PlayerCamera extends Camera {
 
@@ -42,8 +43,8 @@ public class PlayerCamera extends Camera {
 			AIVector3D aiCameraUp = aiCamera.mUp();
 			AIVector3D aiCameraFront = aiCamera.mLookAt();
 			
-			cameraUp = new Vec3(aiCameraUp.x(), aiCameraUp.y(), aiCameraUp.z());
-			cameraFront = new Vec3(aiCameraFront.x(), aiCameraFront.y(), aiCameraFront.z());
+			cameraUp = ModelUtils.assimpVec3ToVec3(aiCameraUp);
+			cameraFront = ModelUtils.assimpVec3ToVec3(aiCameraFront);
 		}
 	}
 	

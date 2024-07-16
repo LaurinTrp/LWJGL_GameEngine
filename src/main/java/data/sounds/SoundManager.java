@@ -35,8 +35,6 @@ public class SoundManager {
 
 	private final Map<String, SoundSource> soundSourceMap;
 
-	private Mat4 viewMatrix;
-
 	public SoundManager() {
 		audioDatas = new HashMap<>();
 		soundSourceMap = new HashMap<>();

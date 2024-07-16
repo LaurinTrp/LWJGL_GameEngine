@@ -36,7 +36,7 @@ import lwjgui.scene.Scene;
 import lwjgui.scene.Window;
 import lwjgui.theme.Theme;
 import main.SoundTest;
-import main.java.data.LightManager;
+import main.java.data.light.LightManager;
 import main.java.data.sounds.AudioData;
 import main.java.data.sounds.SoundListener;
 import main.java.data.sounds.SoundManager;

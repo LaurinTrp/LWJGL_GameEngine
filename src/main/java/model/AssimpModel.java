@@ -24,14 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.lwjgl.PointerBuffer;
+import org.lwjgl.assimp.AILight;
 import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AINode;
 import org.lwjgl.assimp.AIScene;
 
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
-import main.java.data.LightManager;
 import main.java.data.Material;
+import main.java.data.light.Light;
+import main.java.data.light.LightManager;
 import main.java.gui.Engine_Main;
 import main.java.model.objects.Mesh;
 import main.java.render.Renderer;
@@ -52,7 +55,7 @@ public abstract class AssimpModel implements IRenderObject {
 	private ShaderProgram program;
 	protected HashMap<String, Integer> uniforms = new HashMap<>();
 
-	private Mat4[] modelMatrices = new Mat4[] { new Mat4(1.0f) };
+	protected Mat4[] modelMatrices = new Mat4[] { new Mat4(1.0f) };
 
 	protected Mat4 modelMatrix;
 
@@ -107,6 +110,7 @@ public abstract class AssimpModel implements IRenderObject {
 		meshes = new ArrayList<>();
 		for (int i = 0; i < meshCount; ++i) {
 			AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
+			
 			Mesh mesh = new Mesh(this, aiMesh);
 			meshes.add(mesh);
 

@@ -17,10 +17,8 @@ public class Cottage extends AssimpModel {
 	private AudioData audio;
 	private SoundSource source;
 	
-	private float sourcePosZ = -20;
-	
 	public Cottage() {
-		super(AssimpModelLoader.loadStaticFromResource("Cottage", "cottage.obj"));
+		super(AssimpModelLoader.loadStaticFromResource("Cottage", "Cottage_w_Light.dae"));
 		this.material = new Material(ImageLoader.loadTextureFromResource("cottage", "cottage_diffuse.png"));
 	
 		audio = new AudioData("/run/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/audio/bounce.ogg");
@@ -48,9 +46,7 @@ public class Cottage extends AssimpModel {
 
 	@Override
 	public void afterInit() {
-		modelMatrix.translate(new Vec3(10f, 1f, 10f));
-		modelMatrix.scale(0.5f);
-//		scale(0.5f);
+//		modelMatrix.translate(new Vec3(10f, 1f, 10f));
 
 		source.setPosition(0, 0, 0);
 		source.setGain(2f);

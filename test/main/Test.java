@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
-import main.java.data.LightManager;
-import main.java.data.LightSourceData;
+import main.java.data.light.LightManager;
+import main.java.data.light.Light;
 import main.java.data.sounds.AudioData;
 import main.java.data.sounds.SoundManager;
 

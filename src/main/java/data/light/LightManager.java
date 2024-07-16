@@ -1,4 +1,4 @@
-package main.java.data;
+package main.java.data.light;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
@@ -27,7 +27,7 @@ import main.java.shader.ShaderProgram;
 import main.java.utils.model.ModelUtils;
 
 public class LightManager {
-	private Map<String, LightSourceData> lights = new HashMap<>();
+	private Map<String, Light> lights = new HashMap<>();
 	private int bufferLights = -1;
 	public Map<ShaderProgram, Boolean> update = new HashMap<>();
 	public static final int bindingPoint = 0;
@@ -39,9 +39,11 @@ public class LightManager {
 	public LightManager() {
 	}
 
-	public void addLight(String name, LightSourceData data) {
+	public void addLight(String name, Light data) {
 		lights.put(name, data);
 		update.forEach((x, y) -> y = true);
+		
+		System.out.println("LIGHT: " + name);
 	}
 
 	public void removeLight(String name) {
@@ -116,9 +118,9 @@ public class LightManager {
 		int counterTypes = 0;
 		int counter = 0;
 		for (String key : lights.keySet()) {
-			LightSourceData lsd = lights.get(key);
+			Light lsd = lights.get(key);
 
-			System.arraycopy(new int[] { lsd.getType().getIndex() }, 0, lightData.types, counterTypes, 1);
+			System.arraycopy(new int[] { lsd.getType() }, 0, lightData.types, counterTypes, 1);
 
 			System.arraycopy(lsd.getPosition().toFa_(), 0, lightData.positions, counter, 3);
 
@@ -130,8 +132,8 @@ public class LightManager {
 
 			System.arraycopy(lsd.getSpecular().toFa_(), 0, lightData.speculars, counter, 3);
 
-			if (lsd.getType() == LightType.POINT) {
-				LightSourceData.PointLightData pld = (LightSourceData.PointLightData) lsd;
+			if (lsd.getType() == Light.TYPE_POINT) {
+				Light.PointLightData pld = (Light.PointLightData) lsd;
 				lightData.constant[counterTypes] = pld.getConstant();
 				lightData.linear[counterTypes] = pld.getLinear();
 				lightData.quadratic[counterTypes] = pld.getQuadatic();
@@ -141,8 +143,8 @@ public class LightManager {
 				lightData.quadratic[counterTypes] = 0;
 			}
 
-			if (lsd.getType() == LightType.SPOT) {
-				LightSourceData.SpotLight sl = (LightSourceData.SpotLight) lsd;
+			if (lsd.getType() == Light.TYPE_SPOT) {
+				Light.SpotLight sl = (Light.SpotLight) lsd;
 				lightData.innerCutoff[counterTypes] = sl.getInnerCutoff();
 				lightData.outerCutoff[counterTypes] = sl.getOuterCutoff();
 			} else {
@@ -153,6 +155,7 @@ public class LightManager {
 			counterTypes++;
 			counter += 3;
 		}
+		
 	}
 
 	public int getBuffer() {

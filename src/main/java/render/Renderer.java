@@ -8,16 +8,18 @@ import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import lwjgui.scene.Context;
+import main.LightDataReader;
 import main.java.camera.Camera;
-import main.java.data.LightSourceData;
-import main.java.data.LightType;
 import main.java.data.SunData;
+import main.java.data.light.Light;
+import main.java.data.light.LightType;
 import main.java.gui.Engine_Main;
 import main.java.model.TerrainModel;
 import main.java.render.assimpModels.Cottage;
@@ -122,18 +124,13 @@ public class Renderer implements lwjgui.gl.Renderer {
 	}
 
 	private void initLightSourcePositions() {
-		LightSourceData lightSource = new LightSourceData.SpotLight(new Vec3(0, 4, -2), new Vec3(0, 0, 1), new Vec3(1f), new Vec3(1f), new Vec3(1f), 12.5f, 17.5f);
-		Engine_Main.lightManager.addLight("TEST", lightSource);
 		
-//		LightSourceData lightSource2 = new LightSourceData.PointLightData(new Vec3(-2, 5, 10), new Vec3(-1, 0, 0), new Vec3(0.2f), new Vec3(0.5f), new Vec3(1f), 1.0f, 0.7f, 1.8f);
-//		Engine_Main.lightManager.addLight("TEST2", lightSource2);
-
-		lightSourcePositions.add(lightSource.getPosition());
-//		lightSourcePositions.add(lightSource2.getPosition());
-		for (Vec3 vec3 : lightSourcePositions) {
-			lightSourcePositionsMats.add(new Mat4().translate(vec3));
-		}
-		
+		List<Light> lights = LightDataReader.readLightData("/run/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/Models/Cottage/lights_data.xml");
+		System.out.println(lights);
+		lights.forEach(light -> {
+			lightSourcePositionsMats.add(new Mat4().translate(light.getPosition()));
+			Engine_Main.lightManager.addLight(light.getName(), light);
+		});
 	}
 
 	private Skybox createSkybox() {
@@ -164,7 +161,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 		
 		glEnable(GL_DEPTH_TEST);
 		
-		lightSourcePass.render();
+//		lightSourcePass.render();
 		
 		renderModels();
 //

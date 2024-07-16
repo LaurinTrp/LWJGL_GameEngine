@@ -5,6 +5,7 @@ import java.util.Arrays;
 import glm.mat._4.Mat4;
 import main.java.data.Material;
 import main.java.model.AssimpModel;
+import main.java.render.Renderer;
 import main.java.utils.loaders.AssimpModelLoader;
 import main.java.utils.loaders.ImageLoader;
 
@@ -27,7 +28,6 @@ public class Lightsources extends AssimpModel {
 
 	@Override
 	protected void renderProcessBegin() {
-		
 	}
 
 	@Override

@@ -47,6 +47,8 @@ public class Skybox implements IRenderObject {
 	public Skybox(String[] faces) {
 		try {
 			textureID = ImageLoader.loadSkybox(faces);
+			
+			System.out.println("Skybox: " + textureID);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

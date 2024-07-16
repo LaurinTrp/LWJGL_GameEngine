@@ -123,5 +123,10 @@ public class ShaderProgram {
 	public int getTextureID() {
 		return textureID;
 	}
+	
+	@Override
+	public String toString() {
+		return path;
+	}
 
 }
