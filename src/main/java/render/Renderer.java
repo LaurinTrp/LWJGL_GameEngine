@@ -27,6 +27,7 @@ import main.java.render.assimpModels.Cube;
 import main.java.render.assimpModels.Player;
 import main.java.render.assimpModels.trees.Tree_1;
 import main.java.render.assimpModels.trees.Tree_2;
+import main.java.render.debug.DebugRenderPass;
 import main.java.render.passes.Compass;
 import main.java.render.passes.MultiTextureTerrain;
 import main.java.render.passes.TrianglePass;
@@ -61,6 +62,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 
 	private IRenderObject tree_1;
 	private IRenderObject tree_2;
+	
+	private IRenderObject debugRenderer;
 	
 	private MultiTextureTerrain terrainModel;
 
@@ -117,15 +120,15 @@ public class Renderer implements lwjgui.gl.Renderer {
 		
 		cube = new Cube();
 		
+		debugRenderer = new DebugRenderPass();
+		((DebugRenderPass) debugRenderer).debugLine(new Vec3(0,0,0), new Vec3(0, 100, 0));
+		
 //		meshCube = new Mesh(Shapes.SimpleCube.vertices, Shapes.SimpleCube.texCoords, Shapes.SimpleCube.normals, Shapes.SimpleCube.indices);
-		
-		
-		ResourceLoader.clear();
 	}
 
 	private void initLightSourcePositions() {
 		
-		List<Light> lights = LightDataReader.readLightData("/run/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/Models/Cottage/lights_data.xml");
+		List<Light> lights = LightDataReader.readLightData(ResourceLoader.getResourceFile("models", "Cottage", "lights_data.xml"));
 		System.out.println(lights);
 		lights.forEach(light -> {
 			lightSourcePositionsMats.add(new Mat4().translate(light.getPosition()));
@@ -203,6 +206,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 //		tree_1.render();
 		
 //		glDisable(GL_CULL_FACE);
+		
+		debugRenderer.render();
 
 	}
 

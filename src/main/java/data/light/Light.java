@@ -186,8 +186,6 @@ public class Light {
 
 			innerCutoff = (float) Math.cos(innerCutoffAngle);
 			outerCutoff = (float) Math.cos(outerCutoffAngle);
-			
-			System.out.println(innerCutoff);
 		}
 
 		public float getInnerCutoff() {

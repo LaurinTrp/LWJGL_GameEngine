@@ -2,7 +2,6 @@ package main.java.render.assimpModels;
 
 import org.lwjgl.glfw.GLFW;
 
-import glm.vec._3.Vec3;
 import main.java.data.Material;
 import main.java.data.sounds.AudioData;
 import main.java.data.sounds.SoundSource;
@@ -21,7 +20,8 @@ public class Cottage extends AssimpModel {
 		super(AssimpModelLoader.loadStaticFromResource("Cottage", "Cottage_w_Light.dae"));
 		this.material = new Material(ImageLoader.loadTextureFromResource("cottage", "cottage_diffuse.png"));
 	
-		audio = new AudioData("/run/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/audio/bounce.ogg");
+		audio = new AudioData("", "bounce.ogg");
+		
 		Engine_Main.soundManager.addAudioData("Loopmusic", audio);
 		
 		source = new SoundSource(true, false);

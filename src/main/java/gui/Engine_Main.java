@@ -112,7 +112,7 @@ public class Engine_Main extends LWJGUIApplication {
 		lwjguiWindow = LWJGUI.initialize(window);
 		lwjguiWindow.setResizible(false);
 		
-		File f = ResourceLoader.getFile("Textures", "flatearth.png");
+		File f = ResourceLoader.getResourceFile("textures", "", "flatearth.png");
 		lwjguiWindow.setIcon("png", new File[] { f });
 
 	}

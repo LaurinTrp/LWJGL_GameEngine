@@ -18,7 +18,7 @@ public class SoundTest {
 	
 	public static void playSounds(SoundManager soundManager) throws Exception {
 		
-		AudioData data = new AudioData("/run/media/laurin/Festplatte/Programmieren/Java/3D-Workbench/LWJGL_GameEngineResource/src/resources/audio/loopmusic.ogg");
+		AudioData data = new AudioData("", "loopmusic.ogg");
 		soundManager.addAudioData("Doorbell", data);
 		
 		SoundSource soundSource = new SoundSource(true, false);

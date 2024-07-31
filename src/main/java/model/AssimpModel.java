@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AILight;
@@ -53,7 +54,7 @@ public abstract class AssimpModel implements IRenderObject {
 	protected boolean render = true;
 
 	private ShaderProgram program;
-	protected HashMap<String, Integer> uniforms = new HashMap<>();
+	protected Map<String, Integer> uniforms = new HashMap<>();
 
 	protected Mat4[] modelMatrices = new Mat4[] { new Mat4(1.0f) };
 
