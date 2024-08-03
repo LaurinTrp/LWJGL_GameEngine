@@ -1,12 +1,8 @@
 package main.java.render;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.*;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +23,7 @@ import main.java.render.assimpModels.Cube;
 import main.java.render.assimpModels.Player;
 import main.java.render.assimpModels.trees.Tree_1;
 import main.java.render.assimpModels.trees.Tree_2;
+import main.java.render.debug.DebugLine;
 import main.java.render.debug.DebugRenderPass;
 import main.java.render.passes.Compass;
 import main.java.render.passes.MultiTextureTerrain;
@@ -63,8 +60,6 @@ public class Renderer implements lwjgui.gl.Renderer {
 	private IRenderObject tree_1;
 	private IRenderObject tree_2;
 	
-	private IRenderObject debugRenderer;
-	
 	private MultiTextureTerrain terrainModel;
 
 	public static SunData sun;
@@ -81,6 +76,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 	TrianglePass tp;
 	
 	Cube cube;
+
+	private DebugRenderPass debugRenderer;
 
 	public Renderer() {
 		modelObserver = new ModelObserver();
@@ -121,8 +118,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 		cube = new Cube();
 		
 		debugRenderer = new DebugRenderPass();
-		((DebugRenderPass) debugRenderer).debugLine(new Vec3(0,0,0), new Vec3(0, 100, 0));
-		
+		debugRenderer.addLine(new Vec3(0,0,0), new Vec3(0,100,0), Color.red, 10);
+		debugRenderer.addPoint(new Vec3(0, 10, 0), Color.GREEN, 10);
 //		meshCube = new Mesh(Shapes.SimpleCube.vertices, Shapes.SimpleCube.texCoords, Shapes.SimpleCube.normals, Shapes.SimpleCube.indices);
 	}
 
@@ -181,6 +178,7 @@ public class Renderer implements lwjgui.gl.Renderer {
 	}
 
 	public void renderModels() {
+
 		cube.render();
 //		test.render();
 
@@ -207,8 +205,9 @@ public class Renderer implements lwjgui.gl.Renderer {
 		
 //		glDisable(GL_CULL_FACE);
 		
+		compass.render();
+		
 		debugRenderer.render();
-
 	}
 
 	/**
@@ -233,6 +232,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 		tree_2.dispose();
 		
 		tp.dispose();
+		
+		debugRenderer.dispose();
 		
 //		meshCube.dispose();
 	}

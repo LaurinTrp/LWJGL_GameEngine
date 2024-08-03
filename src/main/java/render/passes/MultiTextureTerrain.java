@@ -1,11 +1,14 @@
 package main.java.render.passes;
 
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -235,12 +238,14 @@ public class MultiTextureTerrain implements IRenderObject {
 	 * Needs override to run functions in the render process
 	 */
 	protected void renderProcessBegin() {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 
 	/**
 	 * Needs override to run functions in the render process
 	 */
 	protected void renderProcessEnd() {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
 	/**
@@ -322,8 +327,10 @@ public class MultiTextureTerrain implements IRenderObject {
 //					glUniform1f(uniforms.get("terrainSize"), generator.getSize());
 //					System.out.println(generator.getVerticesList());
 
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 					glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
 
+					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 					renderProcessEnd();
 
 				}

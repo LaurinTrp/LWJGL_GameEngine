@@ -68,6 +68,7 @@ public class BoundingBox implements IRenderObject {
 		vao = glGenVertexArrays();
 		vbo = glGenBuffers();
 
+		// @formatter:off
 		float[] vertices = { minmax[0], minmax[2], minmax[4], 1.0f, minmax[1], minmax[2], minmax[4], 1.0f,
 
 				minmax[0], minmax[2], minmax[4], 1.0f, minmax[0], minmax[3], minmax[4], 1.0f,
@@ -93,6 +94,7 @@ public class BoundingBox implements IRenderObject {
 				minmax[1], minmax[3], minmax[4], 1.0f, minmax[1], minmax[3], minmax[5], 1.0f,
 
 		};
+		// @formatter:on
 		glBindVertexArray(vao);
 		{
 			// upload VBO
@@ -140,7 +142,11 @@ public class BoundingBox implements IRenderObject {
 
 					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
 
+					Renderer.framebuffer.bindFbo();
+					
 					glDrawArrays(GL_LINES, 0, 32);
+					
+					Renderer.framebuffer.unbindFbo();
 
 				}
 				glBindVertexArray(0);

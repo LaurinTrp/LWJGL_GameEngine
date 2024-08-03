@@ -65,7 +65,7 @@ public abstract class AssimpModel implements IRenderObject {
 	protected float[] minmax = new float[6];
 	protected float[] startMinmax = new float[6];
 
-	private BoundingBox boundingBox;
+	private List<BoundingBox> boundingBoxes = new ArrayList<>();
 
 	public AssimpModel(AIScene scene, Mat4[] matrices) {
 		if (scene == null) {
@@ -125,7 +125,9 @@ public abstract class AssimpModel implements IRenderObject {
 
 		startMinmax = Arrays.copyOf(minmax, minmax.length);
 
-//		boundingBox = new BoundingBox(minmax, modelMatrices);
+		for (Mat4 matrix : modelMatrices) {
+			boundingBoxes.add(new BoundingBox(minmax, matrix));
+		}
 	}
 
 	private void loadMaterials() {
@@ -201,6 +203,10 @@ public abstract class AssimpModel implements IRenderObject {
 			glBindVertexArray(0);
 		}
 		glUseProgram(0);
+		
+		for (BoundingBox boundingBox : boundingBoxes) {
+			boundingBox.render();
+		}
 	}
 
 	private void renderToObjectPickBuffer(Mesh mesh) {
@@ -248,9 +254,10 @@ public abstract class AssimpModel implements IRenderObject {
 	public void dispose() {
 		scene = null;
 		meshes = null;
+	
+		for (BoundingBox boundingBox : boundingBoxes) {
+			boundingBox.dispose();
+		}
 	}
-
-	public BoundingBox getBoundingBox() {
-		return boundingBox;
-	}
+	
 }

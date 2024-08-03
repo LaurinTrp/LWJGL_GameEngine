@@ -47,8 +47,6 @@ public class Skybox implements IRenderObject {
 	public Skybox(String[] faces) {
 		try {
 			textureID = ImageLoader.loadSkybox(faces);
-			
-			System.out.println("Skybox: " + textureID);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -68,34 +66,39 @@ public class Skybox implements IRenderObject {
 		// @formatter:off
 		float skyboxVertices[] = {
 			    // positions
+				// Back
 			    -1.0f,  1.0f, -1.0f,
 			    -1.0f, -1.0f, -1.0f,
 			     1.0f, -1.0f, -1.0f,
 			     1.0f, -1.0f, -1.0f,
 			     1.0f,  1.0f, -1.0f,
 			    -1.0f,  1.0f, -1.0f,
-
+//
+//			    // Left
 			    -1.0f, -1.0f,  1.0f,
 			    -1.0f, -1.0f, -1.0f,
 			    -1.0f,  1.0f, -1.0f,
 			    -1.0f,  1.0f, -1.0f,
 			    -1.0f,  1.0f,  1.0f,
 			    -1.0f, -1.0f,  1.0f,
-
+//
+//			    // Right
 			     1.0f, -1.0f, -1.0f,
 			     1.0f, -1.0f,  1.0f,
 			     1.0f,  1.0f,  1.0f,
 			     1.0f,  1.0f,  1.0f,
 			     1.0f,  1.0f, -1.0f,
 			     1.0f, -1.0f, -1.0f,
-
+//
+//			     // Front
 			    -1.0f, -1.0f,  1.0f,
 			    -1.0f,  1.0f,  1.0f,
 			     1.0f,  1.0f,  1.0f,
 			     1.0f,  1.0f,  1.0f,
 			     1.0f, -1.0f,  1.0f,
 			    -1.0f, -1.0f,  1.0f,
-
+//
+//			    // Top
 			    -1.0f,  1.0f, -1.0f,
 			     1.0f,  1.0f, -1.0f,
 			     1.0f,  1.0f,  1.0f,

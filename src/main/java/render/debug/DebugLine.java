@@ -1,15 +1,8 @@
-package main.java.render.passes;
+package main.java.render.debug;
 
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL11.glDrawElements;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glLineWidth;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_READ;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
@@ -18,7 +11,6 @@ import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
@@ -26,30 +18,36 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import glm.mat._4.Mat4;
+import java.awt.Color;
+import java.io.File;
+
+import glm.vec._3.Vec3;
 import main.java.render.Renderer;
-import main.java.render.passes.framebuffers.IFramebuffer;
 import main.java.render.renderobject.IRenderObject;
 import main.java.shader.ShaderProgram;
 
-public class Compass implements IRenderObject {
+public class DebugLine implements IRenderObject {
 
 	private boolean init = false;
 
 	private int vao = 0, vbo = 0;
-	private int modelID;
 	private int viewID;
 	private int projID;
 
 	private ShaderProgram program;
 
-	private Mat4 modelMatrix;
+	private final Vec3 start, end, color;
+
+	public DebugLine(Vec3 start, Vec3 end, Color color) {
+		this.start = start;
+		this.end = end;
+		this.color = new Vec3(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
+	}
 
 	@Override
 	public void init() {
 		initVAOs();
 		initShader();
-		initMatrixes();
 		init = true;
 	}
 
@@ -59,20 +57,10 @@ public class Compass implements IRenderObject {
 
 		// @formatter:off
 		float[] vertices = {
-			0.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 0.0f, 1.0f,
-
-			0.0f, 0.0f, 0.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 1.0f, 0.0f, 1.0f,
-
-			0.0f, 0.0f, 0.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f,
-			0.0f, 0.0f, 1.0f, 1.0f,
+			start.x, start.y, start.z, 1.0f,
+			color.x, color.y, color.z, 1.0f,
+			end.x, end.y, end.z, 1.0f,
+			color.x, color.y, color.z, 1.0f,
 		};
 		// @formatter:on
 
@@ -92,15 +80,9 @@ public class Compass implements IRenderObject {
 		glBindVertexArray(0);
 	}
 
-	private void initMatrixes() {
-		modelMatrix = new Mat4(1.0f);
-		modelMatrix.scale(10f);
-	}
-
 	private void initShader() {
 
-		program = new ShaderProgram("Compass");
-		modelID = glGetUniformLocation(program.getProgramID(), "modelMatrix");
+		program = new ShaderProgram("debug" + File.separator + "DebugLine");
 		viewID = glGetUniformLocation(program.getProgramID(), "viewMatrix");
 		projID = glGetUniformLocation(program.getProgramID(), "projectionMatrix");
 
@@ -116,7 +98,6 @@ public class Compass implements IRenderObject {
 		if (!init) {
 			return;
 		}
-		glDisable(GL_DEPTH_TEST);
 		{
 			glUseProgram(program.getProgramID());
 			{
@@ -125,11 +106,9 @@ public class Compass implements IRenderObject {
 					glUniformMatrix4fv(viewID, false, Renderer.camera.getView().toFa_());
 					glUniformMatrix4fv(projID, false, Renderer.camera.getProjectionMatrix().toFa_());
 
-					glUniformMatrix4fv(modelID, false, modelMatrix.toFa_());
-
 					Renderer.framebuffer.bindFbo();
-
-					glDrawArrays(GL_LINES, 0, 9);
+					
+					glDrawArrays(GL_LINES, 0, 2);
 
 					Renderer.framebuffer.unbindFbo();
 
@@ -138,7 +117,6 @@ public class Compass implements IRenderObject {
 			}
 			glUseProgram(0);
 		}
-		glEnable(GL_DEPTH_TEST);
 	}
 
 	@Override
