@@ -280,7 +280,6 @@ public class ObjectPickBuffer implements IFramebuffer {
 
 						int objectId = (red << 16) | (green << 8) | blue;
 						Mesh object = Renderer.modelObserver.getObjectById(objectId);
-						System.out.println("Pickbuffer: " + object + "\t" + objectId);
 						if(object != null) {
 							object.clicked();
 						}

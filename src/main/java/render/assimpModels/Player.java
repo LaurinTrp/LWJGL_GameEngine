@@ -82,6 +82,7 @@ public class Player extends AssimpModel {
 			render = true;
 		}
 
+		updateMeshMatrices();
 		super.render();
 		rotation();
 

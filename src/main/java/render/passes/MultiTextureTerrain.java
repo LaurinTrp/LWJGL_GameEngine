@@ -325,7 +325,6 @@ public class MultiTextureTerrain implements IRenderObject {
 					uploadMatrixes();
 
 //					glUniform1f(uniforms.get("terrainSize"), generator.getSize());
-//					System.out.println(generator.getVerticesList());
 
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 					glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);

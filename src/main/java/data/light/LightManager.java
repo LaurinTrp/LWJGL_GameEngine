@@ -42,8 +42,6 @@ public class LightManager {
 	public void addLight(String name, Light data) {
 		lights.put(name, data);
 		update.forEach((x, y) -> y = true);
-		
-		System.out.println("LIGHT: " + name);
 	}
 
 	public void removeLight(String name) {

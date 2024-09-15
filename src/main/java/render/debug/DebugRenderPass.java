@@ -52,7 +52,6 @@ public class DebugRenderPass implements IRenderObject {
 	public DebugRenderPass() {
 		float[] lineWidthRange = {0.0f, 0.0f};
 		glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
-		System.out.println(Arrays.toString(lineWidthRange));
 		// Maximum supported line width is in lineWidthRange[1].
 	}
 
@@ -141,8 +140,12 @@ public class DebugRenderPass implements IRenderObject {
 
 	@Override
 	public void dispose() {
-		lineData.dispose();
-		pointData.dispose();
+		if(lineData != null) {
+			lineData.dispose();
+		}
+		if(pointData != null) {
+			pointData.dispose();
+		}
 
 		init = false;
 	}

@@ -57,9 +57,10 @@ public abstract class AssimpModel implements IRenderObject {
 	protected Map<String, Integer> uniforms = new HashMap<>();
 
 	protected Mat4[] modelMatrices = new Mat4[] { new Mat4(1.0f) };
+	private Map<Mesh, Mat4[]> meshMatrices = new HashMap<>();
 
 	protected Mat4 modelMatrix;
-
+	
 	protected Material material;
 
 	protected float[] minmax = new float[6];
@@ -108,13 +109,20 @@ public abstract class AssimpModel implements IRenderObject {
 
 		PointerBuffer aiMeshes = scene.mMeshes();
 
+		AINode root = scene.mRootNode();
+		
 		meshes = new ArrayList<>();
 		for (int i = 0; i < meshCount; ++i) {
 			AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-			
-			Mesh mesh = new Mesh(this, aiMesh);
-			meshes.add(mesh);
 
+			AINode parent = ModelUtils.getMeshParentNode(root, aiMesh, 0);
+			Mat4 meshMatrix = new Mat4(1.0f);
+			if(parent != null) {
+				meshMatrix = ModelUtils.assimpMatrixToMat4(parent.mTransformation());
+			}
+			Mesh mesh = new Mesh(this, aiMesh, meshMatrix);
+			meshes.add(mesh);
+			
 			minmax[0] = Math.min(mesh.getMinmax()[0], minmax[0]);
 			minmax[1] = Math.max(mesh.getMinmax()[1], minmax[1]);
 			minmax[2] = Math.min(mesh.getMinmax()[2], minmax[2]);
@@ -127,6 +135,21 @@ public abstract class AssimpModel implements IRenderObject {
 
 		for (Mat4 matrix : modelMatrices) {
 			boundingBoxes.add(new BoundingBox(minmax, matrix));
+		}
+		
+		updateMeshMatrices();
+	}
+	
+	protected void updateMeshMatrices() {
+		if(meshes == null) {
+			return;
+		}
+		for (Mesh mesh : meshes) {
+			Mat4[] tempMeshMatrices = new Mat4[modelMatrices.length];
+			for(int j = 0; j < modelMatrices.length; j++) {
+				tempMeshMatrices[j] = new Mat4(mesh.getModelMatrix()).mul(modelMatrices[j]);
+			}
+			meshMatrices.put(mesh, tempMeshMatrices);
 		}
 	}
 
@@ -146,13 +169,12 @@ public abstract class AssimpModel implements IRenderObject {
 		ModelUtils.createUniform(program, uniforms, "bufferID");
 
 		ModelUtils.createUniform(program, uniforms, "colorID");
-
 	}
 
-	private void uploadMatrixes(int index) {
+	private void uploadMatrixes(Mat4 meshMatrix) {
 		glUniformMatrix4fv(uniforms.get("viewMatrix"), false, Renderer.camera.getView().toFa_());
 		glUniformMatrix4fv(uniforms.get("projectionMatrix"), false, Renderer.camera.getProjectionMatrix().toFa_());
-		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, modelMatrices[index].toFa_());
+		glUniformMatrix4fv(uniforms.get("modelMatrix"), false, meshMatrix.toFa_());
 		glUniform4fv(uniforms.get("cameraPos"), new Vec4(Renderer.camera.getCameraPosition(), 1.0f).toFA_());
 	}
 
@@ -193,7 +215,7 @@ public abstract class AssimpModel implements IRenderObject {
 			glUniform3fv(uniforms.get("colorID"),
 					new Vec3(ModelUtils.getObjectIdAsColor(mesh.getId())).div(255f).toFa_());
 			for (int i = 0; i < modelMatrices.length; i++) {
-				uploadMatrixes(i);
+				uploadMatrixes(meshMatrices.get(mesh)[i]);
 				{
 					renderToObjectPickBuffer(mesh);
 					renderToFramebuffer(mesh);
@@ -247,7 +269,6 @@ public abstract class AssimpModel implements IRenderObject {
 	}
 
 	public void clicked(Mesh mesh) {
-
 	}
 
 	@Override

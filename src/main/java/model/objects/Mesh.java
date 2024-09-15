@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.lwjgl.assimp.AIFace;
@@ -26,6 +27,7 @@ import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import main.java.model.AssimpModel;
 import main.java.render.Renderer;
+import main.java.utils.model.ModelUtils;
 
 public class Mesh {
 
@@ -50,14 +52,16 @@ public class Mesh {
 	private final int id;
 
 	private boolean selected;
+	
+	private String name;
 
-	public Mesh(AssimpModel model, AIMesh mesh) {
+	public Mesh(AssimpModel model, AIMesh mesh, Mat4 modelMatrix) {
 		this.model = model;
-
+		
 		id = Mesh.idCounter;
 		Mesh.idCounter++;
 		Renderer.modelObserver.addObjectToSelectables(this);
-
+		
 		this.mesh = mesh;
 
 		minmax[0] = Float.MAX_VALUE;
@@ -70,8 +74,7 @@ public class Mesh {
 		loadData();
 		bindData();
 
-		this.modelMatrix = new Mat4(1.0f);
-		this.modelMatrix.translate(10, 3, 10);
+		this.modelMatrix = modelMatrix;
 	}
 
 	protected void loadData() {
@@ -79,6 +82,8 @@ public class Mesh {
 		processUVs();
 		processNormals();
 		processFaces();
+		
+		this.name = mesh.mName().dataString();
 
 		elements = indices.length;
 	}
@@ -180,6 +185,10 @@ public class Mesh {
 
 		glBindVertexArray(0);
 	}
+	
+	public Mat4 getModelMatrix() {
+		return modelMatrix;
+	}
 
 	public int getId() {
 		return id;
@@ -203,4 +212,7 @@ public class Mesh {
 		return minmax;
 	}
 
+	public String getName() {
+		return name;
+	}
 }

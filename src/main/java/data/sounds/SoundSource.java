@@ -26,7 +26,6 @@ public class SoundSource {
 		
 		float[] f1 = new float[1], f2 = new float[1], f3 = new float[1];
 		alGetSource3f(sourceID, AL_POSITION, f1, f2, f3);
-		System.out.println(Arrays.toString(f1) + "\t" + Arrays.toString(f2) + "\t" + Arrays.toString(f3));
 	}
 
 	public void setVelocity(float x, float y, float z) {

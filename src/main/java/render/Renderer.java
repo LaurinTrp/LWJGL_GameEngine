@@ -6,6 +6,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.text.StyledEditorKit.ForegroundAction;
+
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
@@ -20,6 +22,7 @@ import main.java.gui.Engine_Main;
 import main.java.model.TerrainModel;
 import main.java.render.assimpModels.Cottage;
 import main.java.render.assimpModels.Cube;
+import main.java.render.assimpModels.Forest;
 import main.java.render.assimpModels.Player;
 import main.java.render.assimpModels.trees.Tree_1;
 import main.java.render.assimpModels.trees.Tree_2;
@@ -75,6 +78,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 	
 	TrianglePass tp;
 	
+	private IRenderObject forest;
+	
 	Cube cube;
 
 	private DebugRenderPass debugRenderer;
@@ -120,13 +125,14 @@ public class Renderer implements lwjgui.gl.Renderer {
 		debugRenderer = new DebugRenderPass();
 		debugRenderer.addLine(new Vec3(0,0,0), new Vec3(0,100,0), Color.red, 10);
 		debugRenderer.addPoint(new Vec3(0, 10, 0), Color.GREEN, 10);
+		
+		forest = new Forest();
 //		meshCube = new Mesh(Shapes.SimpleCube.vertices, Shapes.SimpleCube.texCoords, Shapes.SimpleCube.normals, Shapes.SimpleCube.indices);
 	}
 
 	private void initLightSourcePositions() {
 		
 		List<Light> lights = LightDataReader.readLightData(ResourceLoader.getResourceFile("models", "Cottage", "lights_data.xml"));
-		System.out.println(lights);
 		lights.forEach(light -> {
 			lightSourcePositionsMats.add(new Mat4().translate(light.getPosition()));
 			Engine_Main.lightManager.addLight(light.getName(), light);
@@ -179,6 +185,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 
 	public void renderModels() {
 
+		glEnable(GL_CULL_FACE);
+		
 		cube.render();
 //		test.render();
 
@@ -203,11 +211,13 @@ public class Renderer implements lwjgui.gl.Renderer {
 		cottage.render();
 //		tree_1.render();
 		
-//		glDisable(GL_CULL_FACE);
+		glDisable(GL_CULL_FACE);
 		
 		compass.render();
 		
 		debugRenderer.render();
+		
+		forest.render();
 	}
 
 	/**
@@ -234,6 +244,8 @@ public class Renderer implements lwjgui.gl.Renderer {
 		tp.dispose();
 		
 		debugRenderer.dispose();
+		
+		forest.dispose();
 		
 //		meshCube.dispose();
 	}
