@@ -1,6 +1,6 @@
 package main.java.utils.loaders;
 
-import static org.lwjgl.assimp.Assimp.aiProcess_CalcTangentSpace;
+import static org.lwjgl.assimp.Assimp.*;
 import static org.lwjgl.assimp.Assimp.aiProcess_FixInfacingNormals;
 import static org.lwjgl.assimp.Assimp.aiProcess_FlipUVs;
 import static org.lwjgl.assimp.Assimp.aiProcess_GenSmoothNormals;
@@ -33,6 +33,8 @@ public class AssimpModelLoader {
 			add(aiProcess_JoinIdenticalVertices);
 
 			add(aiProcess_OptimizeMeshes);
+			
+			add(aiProcess_GenBoundingBoxes);
 		}
 	};
 	

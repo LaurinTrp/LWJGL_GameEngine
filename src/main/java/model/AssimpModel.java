@@ -7,25 +7,19 @@ import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferSubData;
 import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUniform3fv;
 import static org.lwjgl.opengl.GL20.glUniform4fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL31.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.AILight;
 import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AINode;
 import org.lwjgl.assimp.AIScene;
@@ -34,14 +28,11 @@ import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.data.Material;
-import main.java.data.light.Light;
-import main.java.data.light.LightManager;
 import main.java.gui.Engine_Main;
 import main.java.model.objects.Mesh;
 import main.java.render.Renderer;
 import main.java.render.passes.framebuffers.IFramebuffer;
 import main.java.render.renderobject.IRenderObject;
-import main.java.render.utils.BoundingBox;
 import main.java.shader.ShaderProgram;
 import main.java.utils.model.ModelUtils;
 
@@ -65,8 +56,6 @@ public abstract class AssimpModel implements IRenderObject {
 
 	protected float[] minmax = new float[6];
 	protected float[] startMinmax = new float[6];
-
-	private List<BoundingBox> boundingBoxes = new ArrayList<>();
 
 	public AssimpModel(AIScene scene, Mat4[] matrices) {
 		if (scene == null) {
@@ -122,21 +111,8 @@ public abstract class AssimpModel implements IRenderObject {
 			}
 			Mesh mesh = new Mesh(this, aiMesh, meshMatrix);
 			meshes.add(mesh);
-			
-			minmax[0] = Math.min(mesh.getMinmax()[0], minmax[0]);
-			minmax[1] = Math.max(mesh.getMinmax()[1], minmax[1]);
-			minmax[2] = Math.min(mesh.getMinmax()[2], minmax[2]);
-			minmax[3] = Math.max(mesh.getMinmax()[3], minmax[3]);
-			minmax[4] = Math.min(mesh.getMinmax()[4], minmax[4]);
-			minmax[5] = Math.max(mesh.getMinmax()[5], minmax[5]);
 		}
 
-		startMinmax = Arrays.copyOf(minmax, minmax.length);
-
-		for (Mat4 matrix : modelMatrices) {
-			boundingBoxes.add(new BoundingBox(minmax, matrix));
-		}
-		
 		updateMeshMatrices();
 	}
 	
@@ -226,8 +202,8 @@ public abstract class AssimpModel implements IRenderObject {
 		}
 		glUseProgram(0);
 		
-		for (BoundingBox boundingBox : boundingBoxes) {
-			boundingBox.render();
+		for (Mesh mesh : meshes) {
+			mesh.getBoundingBox().render();
 		}
 	}
 
@@ -257,12 +233,6 @@ public abstract class AssimpModel implements IRenderObject {
 			modelMatrices[i] = modelMatrices[i].scale(scale);
 		}
 
-//		for (Mesh mesh : meshes) {
-//			for (float value : mesh.getMinmax()) {
-//				value *= scale;
-//			}
-//		}
-
 		for (int i = 0; i < startMinmax.length; i++) {
 			startMinmax[i] *= scale;
 		}
@@ -275,10 +245,6 @@ public abstract class AssimpModel implements IRenderObject {
 	public void dispose() {
 		scene = null;
 		meshes = null;
-	
-		for (BoundingBox boundingBox : boundingBoxes) {
-			boundingBox.dispose();
-		}
 	}
 	
 }

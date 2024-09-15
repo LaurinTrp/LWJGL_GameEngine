@@ -38,6 +38,7 @@ public class Cottage extends AssimpModel {
 		if(Engine_Main.keyHandler.isPressed(GLFW.GLFW_KEY_RIGHT)) {
 			modelMatrix.translate(-1f, 0, 0);
 		}
+		updateMeshMatrices();
 	}
 	
 	@Override

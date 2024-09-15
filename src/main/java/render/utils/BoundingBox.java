@@ -22,6 +22,7 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.util.Arrays;
 
 import glm.mat._4.Mat4;
+import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import main.java.render.Renderer;
 import main.java.render.renderobject.IRenderObject;
@@ -40,19 +41,19 @@ public class BoundingBox implements IRenderObject {
 
 	private Mat4 modelMatrix;
 
-	private final float[] startMinmax;
-	private float[] minmax;
+	private final Vec3 minVectorStart, maxVectorStart;
+	private Vec3 minVector, maxVector;
 
-	public BoundingBox(float[] minmax) {
-		this(minmax, new Mat4(1.0f));
+	public BoundingBox(Vec3 minVector, Vec3 maxVector) {
+		this(minVector, maxVector, new Mat4(1.0f));
 	}
 	
-	public BoundingBox(float[] minmax, Mat4 modelMatrix) {
-		this.startMinmax = Arrays.copyOf(minmax, minmax.length);
-		this.minmax = Arrays.copyOf(startMinmax, startMinmax.length);
-		for (int i = 0; i < minmax.length; i++) {
-			this.minmax[i] = minmax[i];
-		}
+	public BoundingBox(Vec3 minVector, Vec3 maxVector, Mat4 modelMatrix) {
+		this.minVectorStart = new Vec3(minVector);
+		this.maxVectorStart = new Vec3(maxVector);
+		this.minVector = new Vec3(minVector);
+		this.maxVector = new Vec3(maxVector);
+		
 		this.modelMatrix = modelMatrix;
 	}
 
@@ -69,29 +70,29 @@ public class BoundingBox implements IRenderObject {
 		vbo = glGenBuffers();
 
 		// @formatter:off
-		float[] vertices = { minmax[0], minmax[2], minmax[4], 1.0f, minmax[1], minmax[2], minmax[4], 1.0f,
+		float[] vertices = { minVector.x, minVector.y, minVector.z, 1.0f, maxVector.x, minVector.y, minVector.z, 1.0f,
 
-				minmax[0], minmax[2], minmax[4], 1.0f, minmax[0], minmax[3], minmax[4], 1.0f,
+				minVector.x, minVector.y, minVector.z, 1.0f, minVector.x, maxVector.y, minVector.z, 1.0f,
 
-				minmax[0], minmax[2], minmax[4], 1.0f, minmax[0], minmax[2], minmax[5], 1.0f,
+				minVector.x, minVector.y, minVector.z, 1.0f, minVector.x, minVector.y, maxVector.z, 1.0f,
 
-				minmax[1], minmax[2], minmax[4], 1.0f, minmax[1], minmax[3], minmax[4], 1.0f,
+				maxVector.x, minVector.y, minVector.z, 1.0f, maxVector.x, maxVector.y, minVector.z, 1.0f,
 
-				minmax[1], minmax[2], minmax[4], 1.0f, minmax[1], minmax[2], minmax[5], 1.0f,
+				maxVector.x, minVector.y, minVector.z, 1.0f, maxVector.x, minVector.y, maxVector.z, 1.0f,
 
-				minmax[0], minmax[2], minmax[5], 1.0f, minmax[0], minmax[3], minmax[5], 1.0f,
+				minVector.x, minVector.y, maxVector.z, 1.0f, minVector.x, maxVector.y, maxVector.z, 1.0f,
 
-				minmax[0], minmax[2], minmax[5], 1.0f, minmax[1], minmax[2], minmax[5], 1.0f,
+				minVector.x, minVector.y, maxVector.z, 1.0f, maxVector.x, minVector.y, maxVector.z, 1.0f,
 
-				minmax[1], minmax[2], minmax[5], 1.0f, minmax[1], minmax[3], minmax[5], 1.0f,
+				maxVector.x, minVector.y, maxVector.z, 1.0f, maxVector.x, maxVector.y, maxVector.z, 1.0f,
 
-				minmax[0], minmax[3], minmax[4], 1.0f, minmax[0], minmax[3], minmax[5], 1.0f,
+				minVector.x, maxVector.y, minVector.z, 1.0f, minVector.x, maxVector.y, maxVector.z, 1.0f,
 
-				minmax[0], minmax[3], minmax[4], 1.0f, minmax[1], minmax[3], minmax[4], 1.0f,
+				minVector.x, maxVector.y, minVector.z, 1.0f, maxVector.x, maxVector.y, minVector.z, 1.0f,
 
-				minmax[0], minmax[3], minmax[5], 1.0f, minmax[1], minmax[3], minmax[5], 1.0f,
+				minVector.x, maxVector.y, maxVector.z, 1.0f, maxVector.x, maxVector.y, maxVector.z, 1.0f,
 
-				minmax[1], minmax[3], minmax[4], 1.0f, minmax[1], minmax[3], minmax[5], 1.0f,
+				maxVector.x, maxVector.y, minVector.z, 1.0f, maxVector.x, maxVector.y, maxVector.z, 1.0f,
 
 		};
 		// @formatter:on
@@ -158,8 +159,8 @@ public class BoundingBox implements IRenderObject {
 
 	private Vec4[] transformedMinmax() {
 		Vec4[] cornerPoints = {
-				new Vec4(minmax[0], minmax[2], minmax[4], 1), 	// Left Bottom Front
-				new Vec4(minmax[1], minmax[3], minmax[5], 1), 	// Right Top Back
+				new Vec4(minVector.x, minVector.y, minVector.z, 1), 	// Left Bottom Front
+				new Vec4(maxVector.x, maxVector.y, maxVector.z, 1), 	// Right Top Back
 		};	
 		for (Vec4 cornerPoint : cornerPoints) {
 			cornerPoint = modelMatrix.mul(cornerPoint);
@@ -190,8 +191,12 @@ public class BoundingBox implements IRenderObject {
 		this.modelMatrix = modelMatrix;
 	}
 	
-	public float[] getStartMinmax() {
-		return startMinmax;
+	public Vec3 getMinVectorStart() {
+		return minVectorStart;
+	}
+	
+	public Vec3 getMaxVectorStart() {
+		return maxVectorStart;
 	}
 	
 	@Override

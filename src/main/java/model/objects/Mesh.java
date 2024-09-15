@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.lwjgl.assimp.AIAABB;
 import org.lwjgl.assimp.AIFace;
 import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIVector3D;
@@ -27,6 +28,7 @@ import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import main.java.model.AssimpModel;
 import main.java.render.Renderer;
+import main.java.render.utils.BoundingBox;
 import main.java.utils.model.ModelUtils;
 
 public class Mesh {
@@ -38,7 +40,7 @@ public class Mesh {
 
 	private Mat4 modelMatrix;
 
-	protected final AIMesh mesh;
+	protected final AIMesh aiMesh;
 
 	protected float[] vertices;
 	protected float[] texCoords;
@@ -46,35 +48,28 @@ public class Mesh {
 	protected int[] indices;
 	protected Vec3[] triangles;
 
-	private float[] minmax = new float[6];
-
 	private static int idCounter;
 	private final int id;
 
 	private boolean selected;
 	
 	private String name;
+	
+	private BoundingBox boundingBox;
 
-	public Mesh(AssimpModel model, AIMesh mesh, Mat4 modelMatrix) {
+	public Mesh(AssimpModel model, AIMesh aiMesh, Mat4 modelMatrix) {
 		this.model = model;
+		this.modelMatrix = modelMatrix;
 		
 		id = Mesh.idCounter;
 		Mesh.idCounter++;
 		Renderer.modelObserver.addObjectToSelectables(this);
 		
-		this.mesh = mesh;
-
-		minmax[0] = Float.MAX_VALUE;
-		minmax[1] = -Float.MAX_VALUE;
-		minmax[2] = Float.MAX_VALUE;
-		minmax[3] = -Float.MAX_VALUE;
-		minmax[4] = Float.MAX_VALUE;
-		minmax[5] = -Float.MAX_VALUE;
+		this.aiMesh = aiMesh;
 
 		loadData();
 		bindData();
 
-		this.modelMatrix = modelMatrix;
 	}
 
 	protected void loadData() {
@@ -83,35 +78,30 @@ public class Mesh {
 		processNormals();
 		processFaces();
 		
-		this.name = mesh.mName().dataString();
+		processAABB();
+		
+		this.name = aiMesh.mName().dataString();
 
 		elements = indices.length;
 	}
 
 	private void processVertices() {
-		vertices = new float[mesh.mNumVertices() * 3];
+		vertices = new float[aiMesh.mNumVertices() * 3];
 		int counter = 0;
-		AIVector3D.Buffer aiVertices = mesh.mVertices();
-		for (int v = 0; v < mesh.mNumVertices(); v++) {
+		AIVector3D.Buffer aiVertices = aiMesh.mVertices();
+		for (int v = 0; v < aiMesh.mNumVertices(); v++) {
 			AIVector3D aiVertex = aiVertices.get();
 			vertices[counter++] = aiVertex.x();
 			vertices[counter++] = aiVertex.y();
 			vertices[counter++] = aiVertex.z();
-
-			minmax[0] = Math.min(minmax[0], aiVertex.x());
-			minmax[1] = Math.max(minmax[1], aiVertex.x());
-			minmax[2] = Math.min(minmax[2], aiVertex.y());
-			minmax[3] = Math.max(minmax[3], aiVertex.y());
-			minmax[4] = Math.min(minmax[4], aiVertex.z());
-			minmax[5] = Math.max(minmax[5], aiVertex.z());
 		}
 	}
 
 	private void processUVs() {
-		texCoords = new float[mesh.mNumVertices() * 2];
+		texCoords = new float[aiMesh.mNumVertices() * 2];
 		int counter = 0;
-		AIVector3D.Buffer aiUVs = mesh.mTextureCoords(0);
-		for (int t = 0; t < mesh.mNumVertices(); t++) {
+		AIVector3D.Buffer aiUVs = aiMesh.mTextureCoords(0);
+		for (int t = 0; t < aiMesh.mNumVertices(); t++) {
 			AIVector3D aiUV = aiUVs.get();
 			texCoords[counter++] = aiUV.x();
 			texCoords[counter++] = aiUV.y();
@@ -119,10 +109,10 @@ public class Mesh {
 	}
 
 	private void processNormals() {
-		normals = new float[mesh.mNumVertices() * 3];
+		normals = new float[aiMesh.mNumVertices() * 3];
 		int counter = 0;
-		AIVector3D.Buffer aiNormals = mesh.mNormals();
-		for (int n = 0; n < mesh.mNumVertices(); n++) {
+		AIVector3D.Buffer aiNormals = aiMesh.mNormals();
+		for (int n = 0; n < aiMesh.mNumVertices(); n++) {
 			AIVector3D aiNormal = aiNormals.get();
 			normals[counter++] = aiNormal.x();
 			normals[counter++] = aiNormal.y();
@@ -131,10 +121,10 @@ public class Mesh {
 	}
 
 	private void processFaces() {
-		indices = new int[mesh.mNumFaces() * 3];
+		indices = new int[aiMesh.mNumFaces() * 3];
 		int counter = 0;
-		AIFace.Buffer aiFaces = mesh.mFaces();
-		for (int f = 0; f < mesh.mNumFaces(); f++) {
+		AIFace.Buffer aiFaces = aiMesh.mFaces();
+		for (int f = 0; f < aiMesh.mNumFaces(); f++) {
 			AIFace aiFace = aiFaces.get();
 			IntBuffer buffer = aiFace.mIndices();
 			while (buffer.remaining() > 0) {
@@ -151,6 +141,14 @@ public class Mesh {
 			triangles[i].z = vertices[vertexIndex + 2];
 		}
 
+	}
+	
+	private void processAABB() {
+		AIAABB aabb = AIAABB.create(aiMesh.mAABB().address());
+		Vec3 minVector = ModelUtils.assimpVec3ToVec3(aabb.mMin());
+		Vec3 maxVector = ModelUtils.assimpVec3ToVec3(aabb.mMax());
+		
+		boundingBox = new BoundingBox(minVector, maxVector, modelMatrix);
 	}
 
 	protected void bindData() {
@@ -208,11 +206,11 @@ public class Mesh {
 		this.selected = selected;
 	}
 
-	public float[] getMinmax() {
-		return minmax;
-	}
-
 	public String getName() {
 		return name;
+	}
+	
+	public BoundingBox getBoundingBox() {
+		return boundingBox;
 	}
 }
