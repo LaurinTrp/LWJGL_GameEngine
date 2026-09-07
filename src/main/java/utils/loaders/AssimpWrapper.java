@@ -223,7 +223,8 @@ import org.lwjgl.system.libffi.FFICIF;
  */
 public class AssimpWrapper {
 
-//    private static final SharedLibrary DRACO = Library.loadNative(Assimp.class, "org.lwjgl.assimp", Configuration.ASSIMP_DRACO_LIBRARY_NAME.get(Platform.mapLibraryNameBundled("draco")), true);
+    // Preload bundled Draco (soname libdraco.so.8); required by libassimp.so. Avoids Configuration.ASSIMP_DRACO_LIBRARY_NAME (not in LWJGL 3.3.1).
+    private static final SharedLibrary DRACO = Library.loadNative(AssimpWrapper.class, "org.lwjgl.assimp", Platform.mapLibraryNameBundled("draco"), true);
     private static final SharedLibrary ASSIMP = Library.loadNative(AssimpWrapper.class, "org.lwjgl.assimp", Configuration.ASSIMP_LIBRARY_NAME.get(Platform.mapLibraryNameBundled("assimp")), true);
 
     /** Contains the function pointers loaded from the assimp {@link SharedLibrary}. */
@@ -369,10 +370,10 @@ public class AssimpWrapper {
         return ASSIMP;
     }
 
-//    /** Returns the Draco {@link SharedLibrary}. */
-//    public static SharedLibrary getDraco() {
-//        return DRACO;
-//    }
+    /** Returns the Draco {@link SharedLibrary}. */
+    public static SharedLibrary getDraco() {
+        return DRACO;
+    }
 
     /**
      * Enables time measurements.
